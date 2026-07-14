@@ -1,0 +1,34 @@
+# ═══════════════════════════════════════════
+# Skillovate V2 — Backend Dependencies
+# ═══════════════════════════════════════════
+#
+# Python: 3.12. Python 3.14 currently forces pydantic-core to build
+# from source with a PyO3 version that does not support that interpreter.
+
+# --- Core Framework ---
+fastapi==0.115.12
+uvicorn[standard]==0.34.3
+python-multipart==0.0.20
+
+# --- Database ---
+sqlalchemy==2.0.41
+alembic==1.15.2
+psycopg[binary]==3.2.9
+
+
+# --- Validation & Serialization ---
+pydantic==2.11.3
+pydantic[email]
+pydantic-settings==2.9.1
+
+# --- Authentication ---
+python-jose[cryptography]==3.4.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.3.0
+
+# --- Security & Middleware ---
+slowapi==0.1.9
+python-dotenv==1.1.0
+
+# --- Utilities ---
+email-validator==2.2.0
