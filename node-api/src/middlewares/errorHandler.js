@@ -20,12 +20,17 @@ function errorHandler(err, req, res, next) {
   } else if (err.code === '22P02') { // invalid_text_representation (bad UUID, etc.)
     statusCode = 400;
     message = 'Invalid identifier or input format';
+  } else if (err.code === 'ECONNREFUSED' || err.errors?.some((e) => e.code === 'ECONNREFUSED')) {
+    // pg raises a Node AggregateError for connection failures, whose top-level
+    // .message is an empty string — surface something actually useful instead.
+    statusCode = 503;
+    message = 'Database is unreachable';
   } else if (!(err instanceof ApiError)) {
-    message = env.isProduction ? 'Internal server error' : message;
+    message = env.isProduction ? 'Internal server error' : message || 'Internal server error';
   }
 
   if (statusCode >= 500) {
-    logger.error(err.message, { stack: err.stack, path: req.originalUrl });
+    logger.error(err.message || message, { stack: err.stack, path: req.originalUrl });
   } else {
     logger.warn(err.message, { path: req.originalUrl, statusCode });
   }
