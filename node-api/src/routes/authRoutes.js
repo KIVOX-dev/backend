@@ -1,0 +1,16 @@
+const express = require('express');
+const authController = require('../controllers/authController');
+const validate = require('../middlewares/validate');
+const authenticate = require('../middlewares/authenticate');
+const { authLimiter } = require('../middlewares/rateLimiter');
+const schema = require('../validations/authValidation');
+
+const router = express.Router();
+
+router.post('/register', authLimiter, validate(schema.register), authController.register);
+router.post('/login', authLimiter, validate(schema.login), authController.login);
+router.post('/google', authLimiter, validate(schema.googleLogin), authController.googleLogin);
+router.post('/refresh', authLimiter, validate(schema.refresh), authController.refresh);
+router.get('/me', authenticate, authController.me);
+
+module.exports = router;

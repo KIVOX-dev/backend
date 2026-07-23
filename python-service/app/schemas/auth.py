@@ -97,11 +97,11 @@ class UpdateProfileRequest(BaseModel):
 
 class UserBriefResponse(BaseModel):
     """Brief user info included in auth responses."""
-    id: int
+    id: str | int
     email: str
     name: str
     role: str
-    college_id: Optional[int] = None
+    college_id: Optional[str | int] = None
     department: Optional[str] = None
     avatar_url: Optional[str] = None
     company_name: Optional[str] = None

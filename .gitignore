@@ -1,2 +1,8 @@
 .venv
 .env
+.env.node
+node_modules
+__pycache__/
+*.pyc
+*.pyo
+*.db
