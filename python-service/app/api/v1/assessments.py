@@ -171,6 +171,7 @@ def submit_test(data: TestSubmitRequest, current_user = Depends(get_current_user
             "duration_minutes": 30,
             "total_marks": data.max_score,
             "pass_percentage": 40,
+            "negative_marking": False,
             "status": "active",
             "difficulty": "medium",
             "created_at": datetime.now(timezone.utc).isoformat(),

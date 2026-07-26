@@ -1,21 +1,22 @@
-// Verifies the Node backend can reach PostgreSQL/Cloud SQL with the current .env.node config.
+// Verifies the Node backend can reach MongoDB with the current .env.node config.
 // Usage: npm run db:test
-const { pool, query } = require('../src/config/database');
+const { connect, getDb, close } = require('../src/config/database');
 const logger = require('../src/utils/logger');
 
 async function main() {
   try {
-    const { rows } = await query('SELECT NOW() AS server_time, version() AS pg_version');
-    logger.info('Database connection OK', rows[0]);
+    await connect();
+    const db = getDb();
 
-    const tableCheck = await query(
-      `SELECT COUNT(*)::int AS count FROM information_schema.tables
-       WHERE table_schema = 'public' AND table_name = 'users'`
-    );
-    if (tableCheck.rows[0].count === 0) {
-      logger.warn('Connected, but schema not found. Run: psql -f sql/schema.sql "$DATABASE_URL"');
-    } else {
-      logger.info('Schema check OK: users table exists');
+    const ping = await db.command({ ping: 1 });
+    logger.info('Database connection OK', { ping, database: db.databaseName });
+
+    const collections = await db.listCollections().toArray();
+    logger.info(`Found ${collections.length} existing collection(s)`, {
+      collections: collections.map((c) => c.name),
+    });
+    if (collections.length === 0) {
+      logger.warn('No collections yet — run: npm run db:setup-indexes (creates them with their indexes)');
     }
 
     process.exit(0);
@@ -23,7 +24,7 @@ async function main() {
     logger.error('Database connection FAILED', { error: err.message });
     process.exit(1);
   } finally {
-    await pool.end();
+    await close();
   }
 }
 

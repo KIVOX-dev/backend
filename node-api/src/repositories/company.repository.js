@@ -1,9 +1,9 @@
 const BaseRepository = require('./BaseRepository');
-const { tableName, columns } = require('../models/company.model');
+const { tableName, columns, defaults } = require('../models/company.model');
 
 class CompanyRepository extends BaseRepository {
   constructor() {
-    super(tableName, columns);
+    super(tableName, columns, { defaults });
   }
 }
 

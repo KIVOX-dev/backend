@@ -13,4 +13,10 @@ router.post('/google', authLimiter, validate(schema.googleLogin), authController
 router.post('/refresh', authLimiter, validate(schema.refresh), authController.refresh);
 router.get('/me', authenticate, authController.me);
 
+// Same authLimiter as login/register — these are exactly the kind of
+// endpoint credential-stuffing/enumeration tooling targets.
+router.post('/forgot-password', authLimiter, validate(schema.forgotPassword), authController.forgotPassword);
+router.post('/reset-password', authLimiter, validate(schema.resetPassword), authController.resetPassword);
+router.get('/verify-email', authLimiter, validate(schema.verifyEmail, 'query'), authController.verifyEmail);
+
 module.exports = router;

@@ -6,7 +6,7 @@ dependency manifest, env files, and `Dockerfile`:
 | Folder | Stack | Purpose |
 |---|---|---|
 | [`python-service/`](python-service/README.md) | Python 3.12 / FastAPI / MongoDB (+ SQLite fallback) | The original Skillovate V2 API |
-| [`node-api/`](node-api/README.md) | Node.js / Express / PostgreSQL (Google Cloud SQL) | Clean-architecture REST API, RBAC, JWT + Google OAuth |
+| [`node-api/`](node-api/README.md) | Node.js / Express / MongoDB | Clean-architecture REST API, RBAC, JWT + Google OAuth |
 
 Neither service's code was touched by the other's setup — see each folder's own `README.md` for
 architecture and `REQUIREMENTS.md` for prerequisites.
@@ -28,6 +28,12 @@ architecture and `REQUIREMENTS.md` for prerequisites.
 - **Found and relocated** `seed_mongo.py` (created outside this cleanup, containing a hardcoded
   plaintext MongoDB Atlas password) into `python-service/` — **that credential should be rotated**;
   see the security note in `python-service/README.md`.
+- **Swapped the Node API's database from PostgreSQL to MongoDB** — no live Postgres instance was
+  ever provisioned, whereas the Python service's MongoDB Atlas connection was already proven
+  working. `sql/schema.sql` was replaced by `node-api/scripts/setupIndexes.js` (creates the same
+  uniqueness/query indexes without SQL). Both services now use MongoDB, but **on separate
+  database names** (`skillovate` for Python, `skillovate_node` for Node) on the same cluster — they
+  do not share collections, and each still owns its own connection string.
 
 ## Local development ports
 

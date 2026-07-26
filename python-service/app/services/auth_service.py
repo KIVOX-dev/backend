@@ -186,6 +186,37 @@ class AuthService:
             user=UserBriefResponse.model_validate(user),
         )
 
+    def google_login(self, email: str, name: str, role: str, college_id: Optional[int] = None) -> TokenResponse:
+        """Find-or-create a user from a verified Google profile, then issue tokens.
+
+        Mirrors register()'s approval rule: student accounts are auto-approved,
+        every other role starts 'pending' until an admin approves them, so
+        _issue_tokens will raise AccountPendingError for a freshly created
+        non-student account — callers should treat that as "check back later",
+        not as a failure.
+        """
+        email = email.lower()
+        if role == "hr":
+            role = "recruiter"
+
+        user = self.user_repo.get_by_email(email)
+        if user is None:
+            import secrets
+
+            user_data = {
+                "email": email,
+                "password_hash": hash_password(secrets.token_urlsafe(32)),
+                "name": name,
+                "role": role,
+                "college_id": college_id,
+                "status": "approved" if role == "student" else "pending",
+            }
+            user = self.user_repo.create(user_data)
+            if role == "student":
+                self.student_profile_repo.create({"user_id": user.id, "student_id": None, "year": None})
+
+        return self._issue_tokens(user)
+
     def logout(self, user_id: int) -> None:
         """Revoke all refresh tokens for a user (global logout for simplicity)."""
         self.refresh_token_repo.revoke_all_user_tokens(user_id)

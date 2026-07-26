@@ -10,4 +10,29 @@ const create = asyncHandler(async (req, res) => {
   ApiResponse.created(res, test);
 });
 
-module.exports = { ...base, create };
+const generateQuestions = asyncHandler(async (req, res) => {
+  const result = await testService.generateQuestions(req.body);
+  ApiResponse.ok(res, result);
+});
+
+const overviewStats = asyncHandler(async (req, res) => {
+  const stats = await testService.overviewStats(req.user);
+  ApiResponse.ok(res, stats);
+});
+
+const getResults = asyncHandler(async (req, res) => {
+  const rows = await testService.getResults(req.params.id, req.user);
+  ApiResponse.ok(res, rows);
+});
+
+const collegeResults = asyncHandler(async (req, res) => {
+  const rows = await testService.collegeResults(req.user);
+  ApiResponse.ok(res, rows);
+});
+
+const submitAttempt = asyncHandler(async (req, res) => {
+  const attempt = await testService.submitAttempt(req.body, req.user);
+  ApiResponse.created(res, attempt);
+});
+
+module.exports = { ...base, create, generateQuestions, overviewStats, getResults, collegeResults, submitAttempt };

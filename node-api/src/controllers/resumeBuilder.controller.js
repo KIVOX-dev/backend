@@ -6,13 +6,59 @@ const ApiResponse = require('../utils/ApiResponse');
 const base = createCrudController(resumeBuilderService);
 
 const getOwn = asyncHandler(async (req, res) => {
-  const resume = await resumeBuilderService.getOwn(req.user);
-  ApiResponse.ok(res, resume);
+  const result = await resumeBuilderService.getOwn(req.user);
+  ApiResponse.ok(res, result);
 });
 
 const saveOwn = asyncHandler(async (req, res) => {
-  const resume = await resumeBuilderService.upsertOwn(req.user, req.body);
-  ApiResponse.ok(res, resume, 'Resume saved');
+  const result = await resumeBuilderService.upsertOwn(req.user, req.body);
+  ApiResponse.ok(res, result);
 });
 
-module.exports = { ...base, getOwn, saveOwn };
+const addVersion = asyncHandler(async (req, res) => {
+  const result = await resumeBuilderService.addVersion(req.user, req.body.name);
+  ApiResponse.ok(res, result);
+});
+
+const restoreVersion = asyncHandler(async (req, res) => {
+  const result = await resumeBuilderService.restoreVersion(req.user, req.params.versionId);
+  ApiResponse.ok(res, result);
+});
+
+const deleteVersion = asyncHandler(async (req, res) => {
+  const result = await resumeBuilderService.deleteVersion(req.user, req.params.versionId);
+  ApiResponse.ok(res, result);
+});
+
+const analyze = asyncHandler(async (req, res) => {
+  const result = await resumeBuilderService.analyze(req.user);
+  ApiResponse.ok(res, result);
+});
+
+const matchJobDescription = asyncHandler(async (req, res) => {
+  const result = await resumeBuilderService.matchJobDescription(req.user, req.body.jd_text);
+  ApiResponse.ok(res, result);
+});
+
+const aiSuggest = asyncHandler(async (req, res) => {
+  const result = await resumeBuilderService.aiSuggest(req.user, req.body);
+  ApiResponse.ok(res, result);
+});
+
+const parseResumeText = asyncHandler(async (req, res) => {
+  const result = await resumeBuilderService.parseResumeText(req.body.text);
+  ApiResponse.ok(res, result);
+});
+
+module.exports = {
+  ...base,
+  getOwn,
+  saveOwn,
+  addVersion,
+  restoreVersion,
+  deleteVersion,
+  analyze,
+  matchJobDescription,
+  aiSuggest,
+  parseResumeText,
+};

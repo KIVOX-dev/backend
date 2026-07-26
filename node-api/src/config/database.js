@@ -1,62 +1,74 @@
-// PostgreSQL connection pool (Google Cloud SQL) using the `pg` package.
+// MongoDB connection using the official `mongodb` driver.
 // This is the ONLY module in the codebase allowed to talk to the database driver directly —
-// everything else goes through repositories, which use pool.query()/getClient() from here.
-const { Pool } = require('pg');
+// everything else goes through repositories, which use getDb()/getCollection() from here.
+const dns = require('dns');
+const { MongoClient } = require('mongodb');
 const env = require('./env');
 const logger = require('../utils/logger');
 
-const poolConfig = env.db.connectionString
-  ? {
-      connectionString: env.db.connectionString,
-      ssl: env.db.ssl ? { rejectUnauthorized: false } : false,
-    }
-  : {
-      host: env.db.host,
-      port: env.db.port,
-      database: env.db.database,
-      user: env.db.user,
-      password: env.db.password,
-      ssl: env.db.ssl ? { rejectUnauthorized: false } : false,
-    };
-
-const pool = new Pool({
-  ...poolConfig,
-  max: env.db.poolMax,
-  idleTimeoutMillis: env.db.idleTimeoutMillis,
-  connectionTimeoutMillis: env.db.connectionTimeoutMillis,
-});
-
-pool.on('error', (err) => {
-  // Errors on idle clients (e.g. connection dropped by the server) must not crash the process.
-  logger.error('Unexpected error on idle PostgreSQL client', { error: err.message });
-});
-
-async function query(text, params) {
-  const start = Date.now();
-  const result = await pool.query(text, params);
-  logger.debug('executed query', { text, duration: Date.now() - start, rows: result.rowCount });
-  return result;
+// Some local networks/VPNs point Node at a resolver that can't answer the SRV/TXT lookups
+// `mongodb+srv://` needs, even though the same host resolves fine elsewhere. Opt-in override,
+// not needed in Cloud Run/most environments — only set DNS_SERVERS if `npm run db:test` reports
+// a "querySrv ECONNREFUSED" error.
+if (process.env.DNS_SERVERS) {
+  dns.setServers(process.env.DNS_SERVERS.split(',').map((s) => s.trim()));
 }
 
-async function getClient() {
-  // Use for multi-statement transactions: const client = await getClient(); try { ... } finally { client.release(); }
-  const client = await pool.connect();
-  return client;
+const client = new MongoClient(env.mongo.uri, {
+  maxPoolSize: env.mongo.poolMax,
+});
+
+let db = null;
+let connectPromise = null;
+
+// Idempotent: safe to call multiple times, only connects once. Must be awaited
+// once at server startup, before the app accepts traffic — see src/server.js.
+async function connect() {
+  if (db) return db;
+  if (!connectPromise) {
+    connectPromise = client
+      .connect()
+      .then(() => {
+        db = client.db(env.mongo.dbName);
+        logger.info('Connected to MongoDB', { database: env.mongo.dbName });
+        return db;
+      })
+      .catch((err) => {
+        connectPromise = null; // allow a retry on the next call instead of caching a rejected promise
+        throw err;
+      });
+  }
+  return connectPromise;
+}
+
+function getDb() {
+  if (!db) {
+    throw new Error('MongoDB not connected yet — connect() must complete before handling requests');
+  }
+  return db;
+}
+
+function getCollection(name) {
+  return getDb().collection(name);
 }
 
 async function withTransaction(fn) {
-  const client = await getClient();
+  const session = client.startSession();
   try {
-    await client.query('BEGIN');
-    const result = await fn(client);
-    await client.query('COMMIT');
+    let result;
+    await session.withTransaction(async () => {
+      result = await fn(session);
+    });
     return result;
-  } catch (err) {
-    await client.query('ROLLBACK');
-    throw err;
   } finally {
-    client.release();
+    await session.endSession();
   }
 }
 
-module.exports = { pool, query, getClient, withTransaction };
+async function close() {
+  await client.close();
+  db = null;
+  connectPromise = null;
+}
+
+module.exports = { connect, getDb, getCollection, withTransaction, close, client };

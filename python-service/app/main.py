@@ -4,9 +4,13 @@ Skillovate V2 — Main FastAPI Application Entry Point
 import logging
 from contextlib import asynccontextmanager
 
+import os
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.config import get_settings
 from app.core.exceptions import SkillovateException
@@ -32,6 +36,20 @@ async def lifespan(app: FastAPI):
     """Lifespan events (startup/shutdown)."""
     logger.info(f"🚀 Starting {settings.APP_NAME} in {settings.APP_ENV} mode...")
     await connect_to_mongo()
+
+    # Ensure query indexes exist. Without them every request is a full
+    # collection scan against a remote cluster. Index builds are backgrounded
+    # and idempotent, and a failure here must never block startup.
+    try:
+        from anyio import to_thread
+
+        from app.db_indexes import ensure_indexes
+        from app.mongodb_sync import mongo_db
+
+        await to_thread.run_sync(ensure_indexes, mongo_db)
+    except Exception as exc:  # noqa: BLE001 — startup must survive any index error
+        logger.warning(f"Skipping index creation: {exc}")
+
     yield
     await close_mongo_connection()
     logger.info("🛑 Shutting down application...")
@@ -47,6 +65,12 @@ app = FastAPI(
     openapi_url="/openapi.json" if settings.DEBUG else None,
     lifespan=lifespan,
 )
+
+# ── Response Compression ─────────────────────────
+# List endpoints return sizeable JSON; gzip cuts transfer time substantially
+# and costs almost nothing at this payload size. Added before CORS so the
+# CORS headers survive on the compressed response.
+app.add_middleware(GZipMiddleware, minimum_size=1024)
 
 # ── CORS Middleware ──────────────────────────────
 app.add_middleware(
@@ -69,6 +93,10 @@ async def skillovate_exception_handler(request: Request, exc: SkillovateExceptio
         content={"success": False, "message": exc.detail},
     )
 
+
+# ── Static Files (onboarding profile photo/signature uploads) ────
+os.makedirs("uploads/profile", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # ── Mount Routers ────────────────────────────────
 app.include_router(api_router)

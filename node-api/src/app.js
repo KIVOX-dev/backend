@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
@@ -36,6 +37,10 @@ app.use(morgan(env.isProduction ? 'combined' : 'dev', { stream: { write: (msg) =
 app.use(apiLimiter);
 
 app.get('/health', (req, res) => res.status(200).json({ status: 'ok', uptime: process.uptime() }));
+
+// Serves uploaded profile photos/signatures (see src/middlewares/upload.js).
+// Matches python-service's public /uploads/profile/<file> URL shape.
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 app.use(env.apiPrefix, routes);
 

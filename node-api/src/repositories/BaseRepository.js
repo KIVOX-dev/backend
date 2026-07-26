@@ -1,73 +1,103 @@
-const { query } = require('../config/database');
+const { v4: uuidv4 } = require('uuid');
+const { getCollection } = require('../config/database');
 
 // Generic CRUD repository shared by every entity module.
-// `tableName` is always a hardcoded string from module code (never request input),
-// and `columns` is a fixed whitelist of column names — this is what keeps dynamic
-// SQL building here safe: only whitelisted column *names* are interpolated, every
-// *value* is still passed through parameterized placeholders ($1, $2, ...).
+// `tableName` is always a hardcoded string from module code (never request input) and is used
+// as the MongoDB collection name; `columns` is a fixed whitelist of field names — this is what
+// keeps create()/update()/filter building here safe against mass-assignment: only whitelisted
+// field *names* ever get written, and `_id` is always an app-generated UUID string (not Mongo's
+// default ObjectId), which is what keeps existing JWT payloads / Joi `.uuid()` validations working
+// unchanged across the rest of the codebase.
 class BaseRepository {
-  constructor(tableName, columns, { defaultOrderBy = 'created_at DESC' } = {}) {
+  constructor(tableName, columns, { defaultOrderBy = { created_at: -1 }, defaults = {} } = {}) {
     this.tableName = tableName;
     this.columns = columns;
-    this.defaultOrderBy = defaultOrderBy;
+    this.defaultSort = defaultOrderBy;
+    // Mirrors SQL `DEFAULT` clauses from the old Postgres schema (e.g. is_active DEFAULT TRUE) —
+    // MongoDB has no column defaults, so a field simply missing from the insert becomes an
+    // *absent* field, not the intended default value. Applied before caller-supplied fields so a
+    // caller can still explicitly override any default.
+    this.defaults = defaults;
   }
 
-  _buildWhere(filters = {}) {
-    const keys = Object.keys(filters).filter(
-      (k) => filters[k] !== undefined && (this.columns.includes(k) || k === 'id')
-    );
-    if (keys.length === 0) return { clause: '', values: [] };
-    const values = keys.map((k) => filters[k]);
-    const clause = 'WHERE ' + keys.map((k, i) => `${k} = $${i + 1}`).join(' AND ');
-    return { clause, values };
+  get collection() {
+    return getCollection(this.tableName);
+  }
+
+  _pickFields(data = {}) {
+    const picked = {};
+    for (const key of Object.keys(data)) {
+      if (this.columns.includes(key) && data[key] !== undefined) picked[key] = data[key];
+    }
+    return picked;
+  }
+
+  _buildFilter(filters = {}) {
+    const filter = {};
+    for (const key of Object.keys(filters)) {
+      if (filters[key] === undefined) continue;
+      if (key === 'id') {
+        filter._id = filters[key];
+      } else if (this.columns.includes(key)) {
+        filter[key] = filters[key];
+      }
+    }
+    return filter;
+  }
+
+  _toEntity(doc) {
+    if (!doc) return null;
+    const { _id, ...rest } = doc;
+    return { id: _id, ...rest };
   }
 
   async findAll({ page = 1, limit = 20, filters = {} } = {}) {
-    const offset = (page - 1) * limit;
-    const { clause, values } = this._buildWhere(filters);
-    const dataSql = `SELECT * FROM ${this.tableName} ${clause} ORDER BY ${this.defaultOrderBy} LIMIT $${values.length + 1} OFFSET $${values.length + 2}`;
-    const countSql = `SELECT COUNT(*)::int AS total FROM ${this.tableName} ${clause}`;
-    const [dataResult, countResult] = await Promise.all([
-      query(dataSql, [...values, limit, offset]),
-      query(countSql, values),
+    const filter = this._buildFilter(filters);
+    const skip = (page - 1) * limit;
+    const [docs, total] = await Promise.all([
+      this.collection.find(filter).sort(this.defaultSort).skip(skip).limit(limit).toArray(),
+      this.collection.countDocuments(filter),
     ]);
-    return { rows: dataResult.rows, total: countResult.rows[0].total, page, limit };
+    return { rows: docs.map((d) => this._toEntity(d)), total, page, limit };
   }
 
   async findById(id) {
-    const { rows } = await query(`SELECT * FROM ${this.tableName} WHERE id = $1`, [id]);
-    return rows[0] || null;
+    const doc = await this.collection.findOne({ _id: id });
+    return this._toEntity(doc);
   }
 
   async findOne(filters) {
-    const { clause, values } = this._buildWhere(filters);
-    if (!clause) return null;
-    const { rows } = await query(`SELECT * FROM ${this.tableName} ${clause} LIMIT 1`, values);
-    return rows[0] || null;
+    const filter = this._buildFilter(filters);
+    if (Object.keys(filter).length === 0) return null; // never return an arbitrary unfiltered row
+    const doc = await this.collection.findOne(filter);
+    return this._toEntity(doc);
   }
 
   async create(data) {
-    const cols = Object.keys(data).filter((k) => this.columns.includes(k));
-    const values = cols.map((c) => data[c]);
-    const placeholders = cols.map((_, i) => `$${i + 1}`);
-    const sql = `INSERT INTO ${this.tableName} (${cols.join(', ')}) VALUES (${placeholders.join(', ')}) RETURNING *`;
-    const { rows } = await query(sql, values);
-    return rows[0];
+    const now = new Date();
+    const doc = { _id: uuidv4(), ...this.defaults, ...this._pickFields(data), created_at: now, updated_at: now };
+    await this.collection.insertOne(doc);
+    return this._toEntity(doc);
   }
 
   async updateById(id, data) {
-    const cols = Object.keys(data).filter((k) => this.columns.includes(k));
-    if (cols.length === 0) return this.findById(id);
-    const setClause = cols.map((c, i) => `${c} = $${i + 1}`).join(', ');
-    const values = cols.map((c) => data[c]);
-    const sql = `UPDATE ${this.tableName} SET ${setClause} WHERE id = $${cols.length + 1} RETURNING *`;
-    const { rows } = await query(sql, [...values, id]);
-    return rows[0] || null;
+    const picked = this._pickFields(data);
+    if (Object.keys(picked).length === 0) return this.findById(id);
+    picked.updated_at = new Date();
+
+    const result = await this.collection.findOneAndUpdate(
+      { _id: id },
+      { $set: picked },
+      { returnDocument: 'after' }
+    );
+    // Driver-version-proof: v5 wraps the doc as { value }, v6 returns the doc directly.
+    const doc = result && Object.prototype.hasOwnProperty.call(result, 'value') ? result.value : result;
+    return this._toEntity(doc);
   }
 
   async deleteById(id) {
-    const { rowCount } = await query(`DELETE FROM ${this.tableName} WHERE id = $1`, [id]);
-    return rowCount > 0;
+    const { deletedCount } = await this.collection.deleteOne({ _id: id });
+    return deletedCount > 0;
   }
 }
 

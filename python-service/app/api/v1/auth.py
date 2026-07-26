@@ -1,15 +1,27 @@
 """
 Skillovate V2 — Auth Router
 """
+from urllib.parse import urlencode, parse_qs
+
+import httpx
 from fastapi import APIRouter, Depends, Response, status, HTTPException
+from fastapi.responses import RedirectResponse
+from app.config import get_settings
 from app.schemas.auth import RegisterRequest, LoginRequest, RefreshTokenRequest, UserBriefResponse, ChangePasswordRequest
 from app.schemas.common import MessageResponse
 from app.services.auth_service import AuthService
 from app.dependencies import get_auth_service
 from app.core.rbac import get_current_user
+from app.core.exceptions import AccountPendingError
 from app.models.user import User
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
+settings = get_settings()
+
+GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
+GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
+GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo"
+GOOGLE_ALLOWED_ROLES = {"hr", "student", "college_admin", "faculty"}
 
 
 def _legacy_user(user: UserBriefResponse):
@@ -165,3 +177,79 @@ def change_password(
     """Change user password."""
     auth_service.change_password(current_user.id, data)
     return MessageResponse(message="Password changed successfully")
+
+
+@router.get("/google")
+def google_login_redirect(role: str, redirect: str = "/onboarding"):
+    """Starts the Google OAuth Authorization Code flow for a given portal role.
+
+    The frontend sends the browser here directly (window.location.href); we
+    redirect it on to Google, then Google redirects to /auth/google/callback.
+    """
+    if role not in GOOGLE_ALLOWED_ROLES:
+        raise HTTPException(status_code=400, detail=f"Invalid role: {role}")
+    if not settings.GOOGLE_CLIENT_ID:
+        raise HTTPException(status_code=503, detail="Google sign-in is not configured on this server")
+
+    params = {
+        "client_id": settings.GOOGLE_CLIENT_ID,
+        "redirect_uri": settings.GOOGLE_OAUTH_REDIRECT_URI,
+        "response_type": "code",
+        "scope": "openid email profile",
+        "access_type": "online",
+        "prompt": "select_account",
+        "state": urlencode({"role": role, "redirect": redirect}),
+    }
+    return RedirectResponse(f"{GOOGLE_AUTH_URL}?{urlencode(params)}")
+
+
+@router.get("/google/callback")
+async def google_login_callback(
+    code: str,
+    state: str = "",
+    auth_service: AuthService = Depends(get_auth_service),
+):
+    """Google's redirect target: exchanges the code, finds/creates the user,
+    then hands off to the frontend's /oauth/callback page with tokens (or a
+    pending-approval flag) in the query string — never as an httpOnly cookie,
+    since the SPA reads the token into localStorage the same way /auth/login does.
+    """
+    parsed_state = {k: v[0] for k, v in parse_qs(state).items()}
+    role = parsed_state.get("role", "student")
+    redirect_path = parsed_state.get("redirect", "/onboarding")
+
+    async with httpx.AsyncClient(timeout=10) as client:
+        token_res = await client.post(GOOGLE_TOKEN_URL, data={
+            "code": code,
+            "client_id": settings.GOOGLE_CLIENT_ID,
+            "client_secret": settings.GOOGLE_CLIENT_SECRET,
+            "redirect_uri": settings.GOOGLE_OAUTH_REDIRECT_URI,
+            "grant_type": "authorization_code",
+        })
+        if token_res.status_code >= 400:
+            raise HTTPException(status_code=502, detail="Google token exchange failed")
+        google_tokens = token_res.json()
+
+        userinfo_res = await client.get(
+            GOOGLE_USERINFO_URL,
+            headers={"Authorization": f"Bearer {google_tokens['access_token']}"},
+        )
+        if userinfo_res.status_code >= 400:
+            raise HTTPException(status_code=502, detail="Failed to fetch Google profile")
+        profile = userinfo_res.json()
+
+    try:
+        token_response = auth_service.google_login(
+            email=profile["email"],
+            name=profile.get("name") or profile["email"],
+            role=role,
+        )
+    except AccountPendingError:
+        return RedirectResponse(f"{settings.FRONTEND_URL}{redirect_path}?pending=1")
+
+    query = urlencode({
+        "token": token_response.access_token,
+        "refresh": token_response.refresh_token,
+        "redirect": redirect_path,
+    })
+    return RedirectResponse(f"{settings.FRONTEND_URL}/oauth/callback?{query}")

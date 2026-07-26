@@ -10,4 +10,19 @@ const create = asyncHandler(async (req, res) => {
   ApiResponse.created(res, placement);
 });
 
-module.exports = { ...base, create };
+const listMine = asyncHandler(async (req, res) => {
+  const rows = await placementService.listMine(req.user);
+  ApiResponse.ok(res, rows);
+});
+
+const listDrives = asyncHandler(async (req, res) => {
+  const rows = await placementService.listDrives(req.user);
+  ApiResponse.ok(res, rows);
+});
+
+const listApplicationsForRecruiter = asyncHandler(async (req, res) => {
+  const rows = await placementService.listApplicationsForRecruiter(req.user);
+  ApiResponse.ok(res, rows);
+});
+
+module.exports = { ...base, create, listMine, listDrives, listApplicationsForRecruiter };

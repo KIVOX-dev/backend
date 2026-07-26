@@ -12,6 +12,7 @@ from app.api.v1 import (
     interviews,
     persistence,
     placements,
+    profile,
     students,
     tests,
     jobs,
@@ -24,6 +25,7 @@ from app.api.v1 import (
 api_router = APIRouter()
 
 api_router.include_router(auth.router)
+api_router.include_router(profile.router)
 api_router.include_router(users.router)
 api_router.include_router(colleges.router)
 api_router.include_router(students.router)

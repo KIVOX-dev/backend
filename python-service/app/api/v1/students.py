@@ -202,9 +202,11 @@ def log_student_test(student_id: int, data: dict, db = Depends(get_db)):
             "duration_minutes": int(data.get("duration") or 30),
             "total_marks": max_score,
             "pass_percentage": 40,
+            "negative_marking": False,
             "status": "active",
             "difficulty": "medium",
             "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
         }
         db["assessments"].insert_one(assessment)
         

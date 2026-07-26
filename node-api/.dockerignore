@@ -1,0 +1,10 @@
+.env.node
+.env.node.*
+!.env.node.example
+node_modules
+uploads/
+.git
+.gitignore
+README.md
+REQUIREMENTS.md
+docs/

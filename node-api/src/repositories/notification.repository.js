@@ -1,9 +1,9 @@
 const BaseRepository = require('./BaseRepository');
-const { tableName, columns } = require('../models/notification.model');
+const { tableName, columns, defaults } = require('../models/notification.model');
 
 class NotificationRepository extends BaseRepository {
   constructor() {
-    super(tableName, columns);
+    super(tableName, columns, { defaults });
   }
 }
 

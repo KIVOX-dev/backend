@@ -33,6 +33,8 @@ app/
 
 ## Note on `seed_mongo.py`
 
-This script contains a **hardcoded, plaintext MongoDB Atlas connection string with credentials**.
-Treat that connection string as compromised (rotate the password in Atlas) and move real
-credentials into `.env`/Secret Manager before this script is used anywhere beyond a local machine.
+This script used to contain a **hardcoded, plaintext MongoDB Atlas connection string with
+credentials**. It now reads `MONGODB_URI`/`SUPER_ADMIN_EMAIL`/`SUPER_ADMIN_PASSWORD` from the
+environment (`.env`) and refuses to run without them — but the credential that was previously
+hardcoded (`KAVI123`) is still compromised (it was committed to git history) and **must be
+rotated in the Atlas console**; removing it from this file does not undo the exposure.

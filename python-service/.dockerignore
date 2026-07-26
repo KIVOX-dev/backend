@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+.venv
+__pycache__/
+*.pyc
+*.pyo
+*.db
+uploads/
+.git
+.gitignore
+README.md
+REQUIREMENTS.md
+seed_mongo.py
+.python-version
+.pytest_cache

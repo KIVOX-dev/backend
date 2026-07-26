@@ -1,18 +1,29 @@
+const http = require('http');
 const app = require('./app');
 const env = require('./config/env');
-const { pool } = require('./config/database');
+const { connect, close } = require('./config/database');
+const { attachChatServer } = require('./websocket/chatServer');
 const logger = require('./utils/logger');
 
-const server = app.listen(env.port, () => {
-  logger.info(`Skillovate Node API listening on port ${env.port} [${env.nodeEnv}]`);
-});
+// Created explicitly (rather than via app.listen()) so the WebSocket server
+// can attach to the same underlying HTTP server instead of opening a second
+// port — ws upgrades share the port/TLS termination Cloud Run already expects.
+const server = http.createServer(app);
+attachChatServer(server);
 
-// Graceful shutdown: stop accepting new connections, then drain the DB pool,
-// so in-flight requests and pooled connections aren't dropped mid-transaction.
+async function start() {
+  await connect(); // must succeed before we accept traffic
+  server.listen(env.port, () => {
+    logger.info(`Skillovate Node API listening on port ${env.port} [${env.nodeEnv}]`);
+  });
+}
+
+// Graceful shutdown: stop accepting new connections, then close the Mongo client,
+// so in-flight requests aren't dropped mid-request.
 async function shutdown(signal) {
   logger.info(`${signal} received, shutting down gracefully`);
-  server.close(async () => {
-    await pool.end();
+  server?.close(async () => {
+    await close();
     logger.info('Shutdown complete');
     process.exit(0);
   });
@@ -23,4 +34,9 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('unhandledRejection', (reason) => {
   logger.error('Unhandled promise rejection', { reason: reason?.message || reason });
+});
+
+start().catch((err) => {
+  logger.error('Failed to start server', { error: err.message });
+  process.exit(1);
 });

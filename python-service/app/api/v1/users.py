@@ -12,6 +12,46 @@ from app.repositories.base import DotDict
 router = APIRouter(prefix="/users", tags=["Users"])
 superadmin_checker = RoleChecker([UserRole.SUPER_ADMIN])
 
+# Number of users returned in one page. The admin tables render a scrollable
+# list, not the entire institution at once, and an unbounded find over a remote
+# cluster was a large part of the load time.
+DEFAULT_PAGE_SIZE = 200
+MAX_PAGE_SIZE = 1000
+
+# Exactly the fields `UserResponse` serialises. Excluding `password_hash` here
+# means the hash never leaves the database, and skipping unused fields keeps
+# the payload small over the wire.
+USER_PROJECTION = {
+    "_id": 1,
+    "id": 1,
+    "email": 1,
+    "name": 1,
+    "role": 1,
+    "college_id": 1,
+    "department": 1,
+    "phone": 1,
+    "avatar_url": 1,
+    "is_active": 1,
+    "is_email_verified": 1,
+    "status": 1,
+    "last_login_at": 1,
+    "created_at": 1,
+    "updated_at": 1,
+    "preferences": 1,
+}
+
+
+def _next_id(db, collection: str) -> int:
+    """Next sequential id for a profile collection.
+
+    Reads the current maximum off the index instead of counting the whole
+    collection. Counting was both a full scan and wrong after any delete —
+    it could hand out an id that already existed.
+    """
+    last = db[collection].find_one(sort=[("id", -1)], projection={"id": 1})
+    return (last["id"] + 1) if last and isinstance(last.get("id"), int) else 1
+
+
 def to_dict(obj):
     if not obj: return None
     if isinstance(obj, list):
@@ -48,10 +88,12 @@ def create_user(
         if payload.role not in [UserRole.STUDENT.value, UserRole.FACULTY.value]:
             raise HTTPException(status_code=403, detail="Can only create students or faculty")
             
-    if db["users"].count_documents({"email": payload.email.lower()}) > 0:
+    # `find_one` with a projection stops as soon as it finds a match; the old
+    # count_documents had to visit every matching document first.
+    if db["users"].find_one({"email": payload.email.lower()}, {"_id": 1}):
         raise HTTPException(status_code=400, detail="Email already registered")
-        
-    last_user = db["users"].find_one(sort=[("id", -1)])
+
+    last_user = db["users"].find_one(sort=[("id", -1)], projection={"id": 1})
     user_id = (last_user["id"] + 1) if last_user and "id" in last_user else 1
     user = {
         "id": user_id,
@@ -70,7 +112,7 @@ def create_user(
     
     if user["role"] == UserRole.STUDENT.value:
         sp = {
-            "id": db["student_profiles"].count_documents({}) + 1,
+            "id": _next_id(db, "student_profiles"),
             "user_id": user_id,
             "student_id": payload.student_id,
             "year": payload.year,
@@ -80,48 +122,62 @@ def create_user(
         db["student_profiles"].insert_one(sp)
     elif user["role"] == UserRole.FACULTY.value:
         fp = {
-            "id": db["faculty_profiles"].count_documents({}) + 1,
+            "id": _next_id(db, "faculty_profiles"),
             "user_id": user_id,
             "department": payload.department
         }
         db["faculty_profiles"].insert_one(fp)
     elif user["role"] == "recruiter":
         rp = {
-            "id": db["recruiter_profiles"].count_documents({}) + 1,
+            "id": _next_id(db, "recruiter_profiles"),
             "user_id": user_id,
             "company_name": "New Company"
         }
         db["recruiter_profiles"].insert_one(rp)
-        
+
     return to_dict(user)
 
 @router.get("/", response_model=List[UserResponse])
 def get_all_users(
     db = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(get_current_user),
+    skip: int = 0,
+    limit: int = DEFAULT_PAGE_SIZE,
 ):
-    """Get users. Superadmin sees all. Others see users in their college."""
+    """Get users. Superadmin sees all. Others see users in their college.
+
+    Paginated and projected: the password hash and other internal fields are
+    never serialised, and the result set is bounded. Callers that pass no
+    paging arguments keep working and simply receive the first page.
+    """
     query = {}
-    
+
     if current_user.role != UserRole.SUPER_ADMIN.value:
         if current_user.college_id is None:
             query["id"] = current_user.id
         else:
             query["college_id"] = current_user.college_id
         query["role"] = {"$ne": UserRole.SUPER_ADMIN.value}
-        
-    users = db["users"].find(query).sort("created_at", -1)
+
+    users = (
+        db["users"]
+        .find(query, USER_PROJECTION)
+        .sort("created_at", -1)
+        .skip(max(skip, 0))
+        .limit(min(max(limit, 1), MAX_PAGE_SIZE))
+    )
     return [to_dict(u) for u in users]
 
 @router.get("/pending", response_model=List[UserResponse])
 def get_pending_users(
     db = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(get_current_user),
+    limit: int = DEFAULT_PAGE_SIZE,
 ):
     """Get all users with 'pending' status."""
     if current_user.role not in [UserRole.SUPER_ADMIN.value, UserRole.COLLEGE_ADMIN.value]:
         raise HTTPException(status_code=403, detail="Not enough permissions")
-        
+
     query = {"status": "pending"}
     if current_user.role == UserRole.COLLEGE_ADMIN.value:
         if current_user.college_id is None:
@@ -129,8 +185,13 @@ def get_pending_users(
         else:
             query["college_id"] = current_user.college_id
         query["role"] = {"$ne": UserRole.SUPER_ADMIN.value}
-        
-    users = db["users"].find(query).sort("created_at", -1)
+
+    users = (
+        db["users"]
+        .find(query, USER_PROJECTION)
+        .sort("created_at", -1)
+        .limit(min(max(limit, 1), MAX_PAGE_SIZE))
+    )
     return [to_dict(u) for u in users]
 
 @router.put("/{user_id}/approve", response_model=UserResponse)
