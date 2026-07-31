@@ -35,11 +35,18 @@ class BaseRepository {
   _buildFilter(filters = {}) {
     const filter = {};
     for (const key of Object.keys(filters)) {
-      if (filters[key] === undefined) continue;
+      const value = filters[key];
+      if (value === undefined) continue;
+      // Guards against Mongo operator injection: with Express's bracket-syntax query
+      // parser, `?status[$ne]=x` arrives here as `{ status: { $ne: 'x' } }`. Column
+      // names are already whitelisted above, but a whitelisted key still can't be
+      // allowed to carry an object/array value straight into a query filter — reject
+      // any query-string-provided value that isn't a primitive.
+      if (value !== null && typeof value === 'object') continue;
       if (key === 'id') {
-        filter._id = filters[key];
+        filter._id = value;
       } else if (this.columns.includes(key)) {
-        filter[key] = filters[key];
+        filter[key] = value;
       }
     }
     return filter;

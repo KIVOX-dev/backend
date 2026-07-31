@@ -18,7 +18,7 @@ const create = asyncHandler(async (req, res) => {
 });
 
 const update = asyncHandler(async (req, res) => {
-  const assignment = await testAssignmentService.update(req.params.id, req.body);
+  const assignment = await testAssignmentService.update(req.params.id, req.body, req.user);
   ApiResponse.ok(res, assignment, 'Updated');
 });
 

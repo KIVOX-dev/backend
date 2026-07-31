@@ -28,7 +28,7 @@ const listPending = asyncHandler(async (req, res) => {
 });
 
 const dashboard = asyncHandler(async (req, res) => {
-  const result = await studentService.dashboard(req.params.id);
+  const result = await studentService.dashboard(req.params.id, req.user);
   ApiResponse.ok(res, result);
 });
 
@@ -43,7 +43,7 @@ const logTest = asyncHandler(async (req, res) => {
 });
 
 const testAnalytics = asyncHandler(async (req, res) => {
-  const result = await studentService.testAnalytics(req.params.id);
+  const result = await studentService.testAnalytics(req.params.id, req.user);
   ApiResponse.ok(res, result);
 });
 
@@ -53,7 +53,7 @@ const listInterviews = asyncHandler(async (req, res) => {
 });
 
 const logInterview = asyncHandler(async (req, res) => {
-  const attempt = await studentService.logInterview(req.params.id, req.body);
+  const attempt = await studentService.logInterview(req.params.id, req.body, req.user);
   ApiResponse.created(res, attempt);
 });
 
@@ -63,12 +63,12 @@ const batchCreate = asyncHandler(async (req, res) => {
 });
 
 const listAchievements = asyncHandler(async (req, res) => {
-  const rows = await achievementService.listForStudent(req.params.id);
+  const rows = await achievementService.listForStudent(req.params.id, req.user);
   ApiResponse.ok(res, rows);
 });
 
 const evaluateAchievements = asyncHandler(async (req, res) => {
-  const rows = await achievementService.evaluate(req.params.id);
+  const rows = await achievementService.evaluate(req.params.id, req.user);
   ApiResponse.ok(res, rows);
 });
 

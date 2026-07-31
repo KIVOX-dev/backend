@@ -29,13 +29,23 @@ class BaseService {
     return this.repository.create(data);
   }
 
-  async update(id, data) {
+  async update(id, data, actor) {
+    if (actor) {
+      const existing = await this.repository.findById(id);
+      if (!existing) throw ApiError.notFound(`${this.entityName} not found`);
+      assertInstitutionOwnership(actor, existing);
+    }
     const updated = await this.repository.updateById(id, data);
     if (!updated) throw ApiError.notFound(`${this.entityName} not found`);
     return updated;
   }
 
-  async remove(id) {
+  async remove(id, actor) {
+    if (actor) {
+      const existing = await this.repository.findById(id);
+      if (!existing) throw ApiError.notFound(`${this.entityName} not found`);
+      assertInstitutionOwnership(actor, existing);
+    }
     const deleted = await this.repository.deleteById(id);
     if (!deleted) throw ApiError.notFound(`${this.entityName} not found`);
   }

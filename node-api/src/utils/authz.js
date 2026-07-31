@@ -31,4 +31,19 @@ function buildInstitutionFilter(actor, extra = {}) {
   return isSuperAdmin(actor) ? { ...extra } : { institution_id: actor.institutionId, ...extra };
 }
 
-module.exports = { isSuperAdmin, assertInstitutionOwnership, assertSameInstitution, buildInstitutionFilter };
+// Per-student ownership check: the student themself, staff in the student's own
+// institution, or super_admin. Shared by student.service.js and achievement.service.js
+// so the two don't drift on what "can act on this student" means.
+function canActOnStudent(actor, student) {
+  if (isSuperAdmin(actor)) return true;
+  if (actor.role === ROLES.STUDENT) return student.user_id === actor.id;
+  return student.institution_id === actor.institutionId;
+}
+
+module.exports = {
+  isSuperAdmin,
+  assertInstitutionOwnership,
+  assertSameInstitution,
+  buildInstitutionFilter,
+  canActOnStudent,
+};

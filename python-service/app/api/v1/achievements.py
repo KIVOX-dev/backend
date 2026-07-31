@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from datetime import datetime, timezone
 
-from app.core.rbac import get_college_scope, get_current_user
+from app.core.rbac import get_college_scope, get_current_user, assert_can_act_on_student
 from app.database import get_db
 
 router = APIRouter(tags=["Achievements"])
@@ -28,7 +28,8 @@ def student_achievements(student_id: int, db = Depends(get_db), college_scope: i
 
 
 @router.post("/students/{student_id}/achievements/evaluate")
-def evaluate_achievements(student_id: int, db = Depends(get_db)):
+def evaluate_achievements(student_id: int, db = Depends(get_db), current_user = Depends(get_current_user)):
+    assert_can_act_on_student(current_user, student_id, db)
     student = db["users"].find_one({"id": student_id})
     if not student:
         return []

@@ -2,6 +2,7 @@ const BaseService = require('./BaseService');
 const placementRecordRepository = require('../repositories/placementRecord.repository');
 const studentRepository = require('../repositories/student.repository');
 const { ROLES } = require('../config/constants');
+const { assertInstitutionOwnership } = require('../utils/authz');
 const ApiError = require('../utils/ApiError');
 
 const STAFF_ROLES = [ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY, ROLES.HR];
@@ -64,6 +65,7 @@ class PlacementRecordService extends BaseService {
   async verify(id, verificationStatus, actor) {
     const record = await this.repository.findById(id);
     if (!record) throw ApiError.notFound('Placement record not found');
+    assertInstitutionOwnership(actor, record);
 
     return this.repository.updateById(id, {
       verification_status: verificationStatus,

@@ -138,3 +138,18 @@ class CollegeScope:
 
 
 get_college_scope = Depends(CollegeScope())
+
+
+def assert_can_act_on_student(current_user, student_id: int, db) -> None:
+    """Allow a student to act on their own record, staff (faculty/college_admin) to act on a
+    student in their own college, and super_admin to act on anyone. Raises otherwise.
+    """
+    if current_user.role == UserRole.SUPER_ADMIN.value:
+        return
+    if current_user.id == student_id:
+        return
+    if current_user.role in (UserRole.FACULTY.value, UserRole.COLLEGE_ADMIN.value):
+        student = db["users"].find_one({"id": student_id})
+        if student is not None and student.get("college_id") == current_user.college_id:
+            return
+    raise InsufficientPermissionsError(role=current_user.role)

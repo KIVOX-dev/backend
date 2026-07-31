@@ -342,7 +342,7 @@ def ai_suggest(payload: AISuggestRequest, db = Depends(get_db), current_user: Us
         raise HTTPException(status_code=500, detail=f"AI suggestion failed: {str(e)}")
 
 @router.post("/parse")
-def parse_resume_text(payload: ResumeParseRequest):
+def parse_resume_text(payload: ResumeParseRequest, current_user = Depends(get_current_user)):
     """Parse raw resume text into structured JSON fields using Groq."""
     client = get_groq_client()
     

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 from datetime import datetime, timezone, timedelta
 from app.core.exceptions import NotFoundError
-from app.core.rbac import UserRole, get_college_scope, require_roles, get_current_user
+from app.core.rbac import UserRole, get_college_scope, require_roles, get_current_user, assert_can_act_on_student
 from app.core.security import hash_password
 from app.database import get_db
 from app.schemas.interview import InterviewSubmitRequest
@@ -121,7 +121,13 @@ def update_student(
     return to_dict(db["users"].find_one({"id": student_id}))
 
 @router.put("/{student_id}/profile")
-def update_student_profile(student_id: int, data: StudentProfileUpdateRequest, db = Depends(get_db)):
+def update_student_profile(
+    student_id: int,
+    data: StudentProfileUpdateRequest,
+    db = Depends(get_db),
+    current_user = Depends(get_current_user),
+):
+    assert_can_act_on_student(current_user, student_id, db)
     profile = db["student_profiles"].find_one({"user_id": student_id})
     update_data = data.model_dump(exclude_unset=True)
     if not profile:
@@ -133,7 +139,8 @@ def update_student_profile(student_id: int, data: StudentProfileUpdateRequest, d
     return MessageResponse(message="Student profile updated")
 
 @router.get("/{student_id}/dashboard")
-def get_student_dashboard(student_id: int, db = Depends(get_db)):
+def get_student_dashboard(student_id: int, db = Depends(get_db), current_user = Depends(get_current_user)):
+    assert_can_act_on_student(current_user, student_id, db)
     profile = db["student_profiles"].find_one({"user_id": student_id})
     if not profile:
         profile = {
@@ -181,11 +188,12 @@ def student_tests(student_id: int, db = Depends(get_db), current_user = Depends(
     return [to_dict(a) for a in attempts]
 
 @router.post("/{student_id}/tests")
-def log_student_test(student_id: int, data: dict, db = Depends(get_db)):
+def log_student_test(student_id: int, data: dict, db = Depends(get_db), current_user = Depends(get_current_user)):
+    assert_can_act_on_student(current_user, student_id, db)
     student = db["users"].find_one({"id": student_id})
     if not student:
         raise NotFoundError("Student", str(student_id))
-        
+
     score = int(data.get("score") or 0)
     max_score = int(data.get("max_score") or data.get("total") or 100)
     pct = float(data.get("percentage") or round((score / max_score) * 100, 2))
@@ -264,7 +272,8 @@ def log_student_test(student_id: int, data: dict, db = Depends(get_db)):
     return MessageResponse(message="Test attempt logged")
 
 @router.get("/{student_id}/tests/analytics")
-def student_test_analytics(student_id: int, db = Depends(get_db)):
+def student_test_analytics(student_id: int, db = Depends(get_db), current_user = Depends(get_current_user)):
+    assert_can_act_on_student(current_user, student_id, db)
     attempts = list(db["assessment_attempts"].find({"student_id": student_id}))
     avg = round(sum(a.get("percentage", 0) for a in attempts) / len(attempts), 2) if attempts else 0
     return {"success": True, "data": {"attempts": len(attempts), "average": avg, "history": [to_dict(a) for a in attempts]}}
@@ -280,11 +289,17 @@ def student_interviews(student_id: int, db = Depends(get_db), current_user = Dep
     return [to_dict(a) for a in attempts]
 
 @router.post("/{student_id}/interviews")
-def log_student_interview(student_id: int, data: InterviewSubmitRequest, db = Depends(get_db)):
+def log_student_interview(
+    student_id: int,
+    data: InterviewSubmitRequest,
+    db = Depends(get_db),
+    current_user = Depends(get_current_user),
+):
+    assert_can_act_on_student(current_user, student_id, db)
     student = db["users"].find_one({"id": student_id})
     if not student:
         raise NotFoundError("Student", str(student_id))
-        
+
     attempt_num = db["interview_attempts"].count_documents({"student_id": student_id}) + 1
     attempt = {
         "id": db["interview_attempts"].count_documents({}) + 1,

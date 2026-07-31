@@ -9,6 +9,7 @@ from uuid import uuid4
 
 from fastapi import FastAPI, Request, Response
 from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.middleware import SlowAPIMiddleware
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -63,9 +64,12 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
 # ── Setup Function ───────────────────────────────
 def setup_middleware(app: FastAPI):
     """Attach all middleware to the FastAPI app."""
-    # Rate limiting
+    # Rate limiting — app.state.limiter + the exception handler alone don't enforce
+    # anything; SlowAPIMiddleware is what actually applies default_limits to every
+    # request (previously missing here, leaving auth/register/refresh unthrottled).
     app.state.limiter = limiter
     app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+    app.add_middleware(SlowAPIMiddleware)
 
     # Request logging
     app.add_middleware(RequestLoggingMiddleware)

@@ -10,6 +10,7 @@ const userService = require('./user.service');
 const { applyTestResult } = require('../utils/studentStats');
 const { findOrCreateStudentUser } = require('../utils/studentOnboarding');
 const { ROLES } = require('../config/constants');
+const { canActOnStudent } = require('../utils/authz');
 const ApiError = require('../utils/ApiError');
 const logger = require('../utils/logger');
 
@@ -26,12 +27,6 @@ const STAFF_ROLES = [ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY];
 // already has the real student id working too.
 async function resolveStudent(id) {
   return (await studentRepository.findById(id)) || (await studentRepository.findByUserId(id));
-}
-
-function canActOnStudent(actor, student) {
-  if (actor.role === ROLES.SUPER_ADMIN) return true;
-  if (actor.role === ROLES.STUDENT) return student.user_id === actor.id;
-  return student.institution_id === actor.institutionId;
 }
 
 class StudentService extends BaseService {
@@ -91,9 +86,10 @@ class StudentService extends BaseService {
     };
   }
 
-  async dashboard(studentId) {
+  async dashboard(studentId, actor) {
     const student = await resolveStudent(studentId);
     if (!student) throw ApiError.notFound('Student not found');
+    if (!canActOnStudent(actor, student)) throw ApiError.forbidden('Not authorized');
 
     const { rows: attempts } = await assessmentAttemptRepository.findAll({
       page: 1,
@@ -185,9 +181,10 @@ class StudentService extends BaseService {
     await applyTestResult(student.id, percentage);
   }
 
-  async testAnalytics(studentId) {
+  async testAnalytics(studentId, actor) {
     const student = await resolveStudent(studentId);
     if (!student) throw ApiError.notFound('Student not found');
+    if (!canActOnStudent(actor, student)) throw ApiError.forbidden('Not authorized');
 
     const { rows: attempts, total } = await assessmentAttemptRepository.findAll({
       page: 1,
@@ -213,9 +210,10 @@ class StudentService extends BaseService {
     return rows;
   }
 
-  async logInterview(studentId, data) {
+  async logInterview(studentId, data, actor) {
     const student = await resolveStudent(studentId);
     if (!student) throw ApiError.notFound('Student not found');
+    if (!canActOnStudent(actor, student)) throw ApiError.forbidden('Not authorized');
 
     const attemptNumber = (await interviewAttemptRepository.countForStudent(student.id)) + 1;
     const attempt = await interviewAttemptRepository.create({

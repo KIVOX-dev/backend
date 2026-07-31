@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from app.core.rbac import UserRole, get_college_scope, require_roles
+from app.core.rbac import UserRole, get_college_scope, require_roles, get_current_user, assert_can_act_on_student
 from app.database import get_db
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
@@ -19,13 +19,14 @@ def to_dict(obj):
 
 
 @router.get("/student/{student_id}")
-def student_dashboard(student_id: int, db = Depends(get_db)):
+def student_dashboard(student_id: int, db = Depends(get_db), current_user = Depends(get_current_user)):
     """Per-student summary.
 
     Totals are computed by the database in a single aggregation rather than
     streaming every attempt to the app and summing in Python — the previous
     approach transferred the student's entire attempt history on every load.
     """
+    assert_can_act_on_student(current_user, student_id, db)
     attempt_filter = {"student_id": student_id, "status": "completed"}
 
     summary = list(

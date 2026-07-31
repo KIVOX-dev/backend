@@ -6,6 +6,7 @@ const assessmentAttemptRepository = require('../repositories/assessmentAttempt.r
 const interviewAttemptRepository = require('../repositories/interviewAttempt.repository');
 const placementRecordRepository = require('../repositories/placementRecord.repository');
 const { ROLES } = require('../config/constants');
+const { canActOnStudent } = require('../utils/authz');
 const ApiError = require('../utils/ApiError');
 
 // Fixed thresholds, checked every call to evaluate() — ported verbatim from
@@ -34,14 +35,19 @@ const RULES = [
 ];
 
 class AchievementService {
-  async listForStudent(studentId) {
+  async listForStudent(studentId, actor) {
+    const student = await studentRepository.findById(studentId);
+    if (!student) throw ApiError.notFound('Student not found');
+    if (!canActOnStudent(actor, student)) throw ApiError.forbidden('Not authorized');
+
     const { rows } = await achievementRepository.findByStudentId(studentId);
     return rows.sort((a, b) => new Date(b.achieved_at) - new Date(a.achieved_at));
   }
 
-  async evaluate(studentId) {
+  async evaluate(studentId, actor) {
     const student = await studentRepository.findById(studentId);
     if (!student) throw ApiError.notFound('Student not found');
+    if (!canActOnStudent(actor, student)) throw ApiError.forbidden('Not authorized');
 
     for (const rule of RULES) {
       const met = await rule.check(studentId);
@@ -60,7 +66,7 @@ class AchievementService {
       });
     }
 
-    return this.listForStudent(studentId);
+    return this.listForStudent(studentId, actor);
   }
 
   // Ported from python-service's GET /leaderboard, including its documented

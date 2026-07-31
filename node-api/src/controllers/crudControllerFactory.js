@@ -21,12 +21,12 @@ function createCrudController(service) {
     }),
 
     update: asyncHandler(async (req, res) => {
-      const item = await service.update(req.params.id, req.body);
+      const item = await service.update(req.params.id, req.body, req.user);
       ApiResponse.ok(res, item, 'Updated');
     }),
 
     remove: asyncHandler(async (req, res) => {
-      await service.remove(req.params.id);
+      await service.remove(req.params.id, req.user);
       ApiResponse.ok(res, null, 'Deleted');
     }),
   };
