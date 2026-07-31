@@ -4,6 +4,7 @@ const authenticate = require('../middlewares/authenticate');
 const authorize = require('../middlewares/authorize');
 const validate = require('../middlewares/validate');
 const scopeInstitution = require('../middlewares/scopeInstitution');
+const { identifyLimiter } = require('../middlewares/rateLimiter');
 const schema = require('../validations/student.validation');
 const { ROLES } = require('../config/constants');
 
@@ -11,9 +12,9 @@ const router = express.Router();
 
 // Unauthenticated on purpose — ported from python-service's POST
 // /students/identify, used by check-in kiosks that have no login. Registered
-// before router.use(authenticate) below so it deliberately bypasses it. See
-// student.service.js#identify for the accepted-tradeoff note.
-router.post('/identify', validate(schema.identify), controller.identify);
+// before router.use(authenticate) below so it deliberately bypasses it.
+// Rate-limited and response-minimized — see student.service.js#identify.
+router.post('/identify', identifyLimiter, validate(schema.identify), controller.identify);
 
 router.use(authenticate, scopeInstitution);
 

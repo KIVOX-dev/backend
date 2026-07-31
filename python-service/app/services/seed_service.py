@@ -1,5 +1,5 @@
 """
-Idempotent seed data for a usable local Skillovate V2 install.
+Idempotent seed data for a usable local UpScaler-AI V2 install.
 """
 from sqlalchemy.orm import Session
 
@@ -15,11 +15,11 @@ def seed_core_data(db: Session) -> None:
     college = db.query(College).filter(College.short_code == "SKILL").first()
     if not college:
         college = College(
-            name="Skillovate Demo College",
+            name="UpScaler-AI Demo College",
             short_code="SKILL",
             location="India",
             address="Demo campus",
-            contact_email="admin@skillovate.com",
+            contact_email="admin@upscaler-ai.com",
         )
         db.add(college)
         db.flush()
@@ -37,7 +37,7 @@ def seed_core_data(db: Session) -> None:
             User(
                 email=settings.SUPER_ADMIN_EMAIL.lower(),
                 password_hash=hash_password(settings.SUPER_ADMIN_PASSWORD),
-                name="Skillovate Super Admin",
+                name="UpScaler-AI Super Admin",
                 role="super_admin",
                 status="approved",
                 is_active=True,

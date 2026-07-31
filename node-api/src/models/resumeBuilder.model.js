@@ -10,7 +10,7 @@
 module.exports = {
   tableName: 'resume_builder',
   columns: [
-    'student_id', 'template', 'zoom',
+    'student_id', 'institution_id', 'template', 'zoom',
     'personal', 'objective', 'education', 'experience', 'projects', 'skills',
     'certifications', 'internships', 'achievements', 'hackathons', 'publications',
     'languages', 'volunteer', 'references', 'customSections', 'sectionOrder',

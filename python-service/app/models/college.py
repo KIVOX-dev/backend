@@ -1,5 +1,5 @@
 """
-Skillovate V2 — College Model
+UpScaler-AI V2 — College Model
 Represents educational institutions registered on the platform.
 """
 

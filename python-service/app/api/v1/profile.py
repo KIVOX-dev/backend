@@ -1,5 +1,5 @@
 """
-Skillovate V2 — Onboarding Profile Router
+UpScaler-AI V2 — Onboarding Profile Router
 
 Backs the frontend's schema-driven "complete your profile" step
 (src/lib/onboarding/*, src/app/onboarding/page.tsx) for the three portals

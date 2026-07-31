@@ -1,5 +1,5 @@
 """
-Skillovate V2 — Middleware
+UpScaler-AI V2 — Middleware
 Request logging, rate limiting, and request timing.
 """
 
@@ -16,7 +16,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from app.config import get_settings
 
 settings = get_settings()
-logger = logging.getLogger("skillovate")
+logger = logging.getLogger("upscaler_ai")
 
 
 # ── Rate Limiter ─────────────────────────────────

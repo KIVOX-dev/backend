@@ -7,7 +7,7 @@ from pymongo import MongoClient
 load_dotenv()
 
 MONGO_URI = os.getenv("MONGODB_URI")
-MONGO_DB_NAME = os.getenv("MONGODB_DB_NAME", "skillovate")
+MONGO_DB_NAME = os.getenv("MONGODB_DB_NAME", "upscaler_ai")
 
 # Synchronous client for the existing synchronous routes.
 #
@@ -33,7 +33,7 @@ client = MongoClient(
     # zlib ships with Python, so this needs no extra dependency. Wire-protocol
     # compression is a real win against a remote Atlas cluster.
     compressors="zlib",
-    appname="skillovate-api",
+    appname="upscaler-ai-api",
 )
 mongo_db = client[MONGO_DB_NAME]
 

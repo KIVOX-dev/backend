@@ -1,1 +1,1 @@
-# Skillovate V2 Backend
+# UpScaler-AI V2 Backend

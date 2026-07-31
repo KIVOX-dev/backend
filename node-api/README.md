@@ -1,4 +1,4 @@
-# Skillovate Node API
+# UpScaler-AI Node API
 
 Clean-architecture REST backend (Node.js/Express) backed by MongoDB.
 Lives in its own folder (`node-api/`) as an independent deployable — see [`REQUIREMENTS.md`](REQUIREMENTS.md)

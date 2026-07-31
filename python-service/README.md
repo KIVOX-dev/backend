@@ -1,6 +1,6 @@
-# Skillovate Python Service
+# UpScaler-AI Python Service
 
-Existing FastAPI backend (Skillovate V2), using MongoDB as the primary datastore with a SQLite
+Existing FastAPI backend (UpScaler-AI V2), using MongoDB as the primary datastore with a SQLite
 fallback (`app/database.py`, `app/mongodb.py`). Lives in its own folder (`python-service/`) as an
 independent deployable from the Node API — see [`REQUIREMENTS.md`](REQUIREMENTS.md) for
 prerequisites and [`../README.md`](../README.md) for how this fits alongside it.

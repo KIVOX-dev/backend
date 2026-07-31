@@ -1,5 +1,5 @@
 """
-Skillovate V2 — Role-Based Access Control
+UpScaler-AI V2 — Role-Based Access Control
 FastAPI dependencies for role enforcement and college scoping.
 """
 

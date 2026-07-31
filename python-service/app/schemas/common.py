@@ -1,5 +1,5 @@
 """
-Skillovate V2 — Common Pydantic Schemas
+UpScaler-AI V2 — Common Pydantic Schemas
 Shared response models and base schemas.
 """
 from datetime import datetime

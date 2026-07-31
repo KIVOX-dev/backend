@@ -11,7 +11,7 @@ function createCrudController(service) {
     }),
 
     getById: asyncHandler(async (req, res) => {
-      const item = await service.getById(req.params.id);
+      const item = await service.getById(req.params.id, req.user);
       ApiResponse.ok(res, item);
     }),
 

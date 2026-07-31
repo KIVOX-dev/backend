@@ -1,5 +1,5 @@
 """
-Skillovate V2 — Security Module
+UpScaler-AI V2 — Security Module
 JWT token creation/verification and password hashing.
 """
 

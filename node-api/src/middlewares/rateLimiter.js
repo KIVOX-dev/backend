@@ -19,4 +19,15 @@ const authLimiter = rateLimit({
   message: { success: false, message: 'Too many authentication attempts, please try again later.' },
 });
 
-module.exports = { apiLimiter, authLimiter };
+// Public, unauthenticated kiosk lookup (see student.routes.js#/identify) —
+// tight limit since it's a no-login endpoint that resolves a college+roll
+// pair to a real student record.
+const identifyLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many lookup attempts, please try again later.' },
+});
+
+module.exports = { apiLimiter, authLimiter, identifyLimiter };

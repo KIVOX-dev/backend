@@ -8,7 +8,7 @@ const list = asyncHandler(async (req, res) => {
 });
 
 const create = asyncHandler(async (req, res) => {
-  const notification = await notificationService.create(req.body);
+  const notification = await notificationService.create(req.body, req.user);
   ApiResponse.created(res, notification);
 });
 

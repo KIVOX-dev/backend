@@ -2,12 +2,14 @@ const express = require('express');
 const controller = require('../controllers/resumeBuilder.controller');
 const authenticate = require('../middlewares/authenticate');
 const authorize = require('../middlewares/authorize');
+const scopeInstitution = require('../middlewares/scopeInstitution');
 const validate = require('../middlewares/validate');
 const schema = require('../validations/resumeBuilder.validation');
 const { ROLES } = require('../config/constants');
 
 const router = express.Router();
 router.use(authenticate);
+router.use(scopeInstitution);
 
 // Mirrors python-service's resume.py paths exactly (GET/POST '/', not
 // '/me') — this is what the live frontend actually calls today.
@@ -31,7 +33,9 @@ router.post('/parse', validate(schema.parse), controller.parseResumeText);
 // this (it never had a cross-student resume listing endpoint); kept at a
 // distinct sub-path specifically to avoid colliding with GET '/' above,
 // which now means "my own resume" to match python's actual path shape.
-router.get('/all', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY, ROLES.HR), controller.list);
-router.get('/all/:id', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY, ROLES.HR), controller.getById);
+// HR excluded: HR has no institutionId and would otherwise see every
+// institution's resumes unfiltered once list()/getById() are institution-scoped.
+router.get('/all', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY), controller.list);
+router.get('/all/:id', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY), controller.getById);
 
 module.exports = router;

@@ -1,5 +1,5 @@
 """
-Skillovate V2 — Auth Pydantic Schemas
+UpScaler-AI V2 — Auth Pydantic Schemas
 Request/Response models for authentication endpoints.
 """
 from datetime import datetime

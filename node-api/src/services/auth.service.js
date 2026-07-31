@@ -1,4 +1,5 @@
 const userRepository = require('../repositories/user.repository');
+const institutionRepository = require('../repositories/institution.repository');
 const { hashPassword, verifyPassword } = require('../utils/password');
 const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../utils/jwt');
 const { verifyGoogleIdToken } = require('../utils/googleAuth');
@@ -30,6 +31,15 @@ function sanitizeUser(user) {
     ...safe
   } = user;
   return safe;
+}
+
+// Attaches the institution's name so the frontend can infer engineering vs.
+// arts-and-science (see src/lib/departmentCatalog.ts) without a separate
+// round trip — `institution_id` alone isn't enough for that client-side check.
+async function withCollegeName(user) {
+  if (!user || !user.institution_id) return user;
+  const institution = await institutionRepository.findById(user.institution_id);
+  return institution ? { ...user, college_name: institution.name } : user;
 }
 
 function issueTokens(user) {
@@ -105,9 +115,46 @@ async function login({ email, password }) {
   const valid = await verifyPassword(password, user.password_hash);
   if (!valid) throw ApiError.unauthorized('Invalid email or password');
 
+  // Bulk-onboarded students with a generated temp password (see
+  // utils/studentOnboarding.js) can't get a real session until they set their
+  // own password — credentials did authenticate, so this is a "next step
+  // required" outcome, not an auth failure.
+  if (user.must_change_password) {
+    return { mustChangePassword: true, user: sanitizeUser(user) };
+  }
+
   await userRepository.updateById(user.id, { last_login_at: new Date() });
   await recordActivity({ userId: user.id, action: 'login', entityType: 'user', entityId: user.id });
-  return { user: sanitizeUser(user), ...issueTokens(user) };
+  return { user: await withCollegeName(sanitizeUser(user)), ...issueTokens(user) };
+}
+
+// Completes onboarding for an account created with a generated temp password.
+// Rejects if the account isn't actually in a must-change state, so this can
+// never become a general "log in with old password to set a new one" backdoor
+// for accounts that already finished onboarding — that's what resetPassword/
+// forgotPassword are for.
+async function changeInitialPassword({ email, currentPassword, newPassword }) {
+  const user = await userRepository.findByEmail(email);
+  if (!user || !user.is_active) throw ApiError.unauthorized('Invalid email or password');
+  if (!user.must_change_password) {
+    throw ApiError.badRequest('This account does not require a password change');
+  }
+
+  const valid = await verifyPassword(currentPassword, user.password_hash);
+  if (!valid) throw ApiError.unauthorized('Invalid email or password');
+
+  const passwordHash = await hashPassword(newPassword);
+  const updated = await userRepository.updateById(user.id, {
+    password_hash: passwordHash,
+    must_change_password: false,
+    // Same reasoning as resetPassword(): invalidates any refresh token that
+    // might already exist for this account.
+    token_version: (user.token_version || 0) + 1,
+    last_login_at: new Date(),
+  });
+  await recordActivity({ userId: user.id, action: 'change_initial_password', entityType: 'user', entityId: user.id });
+
+  return { user: await withCollegeName(sanitizeUser(updated)), ...issueTokens(updated) };
 }
 
 async function googleLogin(idToken) {
@@ -134,7 +181,7 @@ async function googleLogin(idToken) {
 
   await userRepository.updateById(user.id, { last_login_at: new Date() });
   await recordActivity({ userId: user.id, action: 'google_login', entityType: 'user', entityId: user.id });
-  return { user: sanitizeUser(user), ...issueTokens(user) };
+  return { user: await withCollegeName(sanitizeUser(user)), ...issueTokens(user) };
 }
 
 async function refresh(refreshToken) {
@@ -161,7 +208,7 @@ async function refresh(refreshToken) {
 async function me(userId) {
   const user = await userRepository.findById(userId);
   if (!user) throw ApiError.notFound('User not found');
-  return sanitizeUser(user);
+  return withCollegeName(sanitizeUser(user));
 }
 
 // Never reveals whether `email` belongs to a real account — the controller
@@ -238,6 +285,7 @@ module.exports = {
   me,
   forgotPassword,
   resetPassword,
+  changeInitialPassword,
   verifyEmail,
   sanitizeUser,
 };

@@ -22,7 +22,7 @@ module.exports = {
 
   mongo: {
     uri: process.env.MONGODB_URI,
-    dbName: process.env.MONGODB_DB_NAME || 'skillovate_node',
+    dbName: process.env.MONGODB_DB_NAME || 'upscaler_ai_node',
     poolMax: parseInt(process.env.MONGO_POOL_MAX, 10) || 20,
   },
 

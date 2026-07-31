@@ -22,8 +22,9 @@ class BatchService extends BaseService {
       year,
     });
 
+    const createdStudents = [];
     for (const item of students) {
-      const { user } = await findOrCreateStudentUser({
+      const { user, created, tempPassword } = await findOrCreateStudentUser({
         item,
         institutionId: batch.institution_id,
         department: batch.department,
@@ -33,9 +34,12 @@ class BatchService extends BaseService {
       // No dedup check — matches python-service's create_batch exactly (see
       // batchStudent.model.js).
       await batchStudentRepository.create({ batch_id: batch.id, student_id: user.id });
+      if (created && tempPassword) {
+        createdStudents.push({ id: user.id, email: user.email, name: user.full_name, tempPassword });
+      }
     }
 
-    return batch;
+    return { ...batch, createdStudents };
   }
 
   async history(actor) {
@@ -65,7 +69,7 @@ class BatchService extends BaseService {
     const batch = await batchRepository.findById(batchId);
     if (!batch) throw ApiError.notFound('Batch not found');
     if (actor.role !== ROLES.SUPER_ADMIN && batch.institution_id !== actor.institutionId) {
-      throw ApiError.notFound('Batch not found');
+      throw ApiError.forbidden('You do not have access to this resource');
     }
     await batchRepository.updateById(batchId, { status });
   }

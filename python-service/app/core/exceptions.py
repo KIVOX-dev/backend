@@ -1,13 +1,13 @@
 """
-Skillovate V2 — Custom Exception Classes
+UpScaler-AI V2 — Custom Exception Classes
 Centralized exception hierarchy for consistent error handling.
 """
 
 from fastapi import HTTPException, status
 
 
-class SkillovateException(HTTPException):
-    """Base exception for all Skillovate errors."""
+class UpScalerAIException(HTTPException):
+    """Base exception for all UpScaler-AI errors."""
 
     def __init__(
         self,
@@ -18,7 +18,7 @@ class SkillovateException(HTTPException):
 
 
 # ── Authentication Exceptions ────────────────────
-class InvalidCredentialsError(SkillovateException):
+class InvalidCredentialsError(UpScalerAIException):
     def __init__(self):
         super().__init__(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -26,7 +26,7 @@ class InvalidCredentialsError(SkillovateException):
         )
 
 
-class TokenExpiredError(SkillovateException):
+class TokenExpiredError(UpScalerAIException):
     def __init__(self):
         super().__init__(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -34,7 +34,7 @@ class TokenExpiredError(SkillovateException):
         )
 
 
-class InvalidTokenError(SkillovateException):
+class InvalidTokenError(UpScalerAIException):
     def __init__(self):
         super().__init__(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -42,7 +42,7 @@ class InvalidTokenError(SkillovateException):
         )
 
 
-class InactiveAccountError(SkillovateException):
+class InactiveAccountError(UpScalerAIException):
     def __init__(self):
         super().__init__(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -50,7 +50,7 @@ class InactiveAccountError(SkillovateException):
         )
 
 
-class AccountPendingError(SkillovateException):
+class AccountPendingError(UpScalerAIException):
     def __init__(self):
         super().__init__(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -59,7 +59,7 @@ class AccountPendingError(SkillovateException):
 
 
 # ── Authorization Exceptions ────────────────────
-class InsufficientPermissionsError(SkillovateException):
+class InsufficientPermissionsError(UpScalerAIException):
     def __init__(self, role: str = ""):
         detail = f"Role '{role}' is not authorized for this resource" if role else "Insufficient permissions"
         super().__init__(
@@ -68,7 +68,7 @@ class InsufficientPermissionsError(SkillovateException):
         )
 
 
-class CollegeScopeViolationError(SkillovateException):
+class CollegeScopeViolationError(UpScalerAIException):
     def __init__(self):
         super().__init__(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -77,7 +77,7 @@ class CollegeScopeViolationError(SkillovateException):
 
 
 # ── Resource Exceptions ─────────────────────────
-class NotFoundError(SkillovateException):
+class NotFoundError(UpScalerAIException):
     def __init__(self, resource: str = "Resource", identifier: str = ""):
         detail = f"{resource} not found"
         if identifier:
@@ -88,7 +88,7 @@ class NotFoundError(SkillovateException):
         )
 
 
-class DuplicateError(SkillovateException):
+class DuplicateError(UpScalerAIException):
     def __init__(self, resource: str = "Resource", field: str = ""):
         detail = f"{resource} already exists"
         if field:
@@ -99,7 +99,7 @@ class DuplicateError(SkillovateException):
         )
 
 
-class ValidationError(SkillovateException):
+class ValidationError(UpScalerAIException):
     def __init__(self, detail: str = "Validation failed"):
         super().__init__(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,

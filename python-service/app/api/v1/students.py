@@ -328,7 +328,7 @@ def create_batch_students(
     default_status = "pending" if current_user.get("role") == "faculty" else "approved"
     
     for item in students:
-        email = item.get("email") or f"{item.get('roll') or item.get('studentId')}@skillovate.local"
+        email = item.get("email") or f"{item.get('roll') or item.get('studentId')}@upscaler-ai.local"
         if db["users"].count_documents({"email": email.lower()}) > 0:
             continue
             

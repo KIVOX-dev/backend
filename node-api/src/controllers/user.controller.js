@@ -13,7 +13,7 @@ const listPending = asyncHandler(async (req, res) => {
 });
 
 const getById = asyncHandler(async (req, res) => {
-  const user = await userService.getById(req.params.id);
+  const user = await userService.getById(req.params.id, req.user);
   ApiResponse.ok(res, user);
 });
 

@@ -1,5 +1,5 @@
 """
-Skillovate V2 — Pagination Utilities
+UpScaler-AI V2 — Pagination Utilities
 Offset-based pagination with consistent response format.
 """
 

@@ -5,6 +5,14 @@ const ApiResponse = require('../utils/ApiResponse');
 
 const base = createCrudController(testService);
 
+// Overrides the generic factory's list — testService.list needs the actor
+// to gate a student's results to their own visible tests (see
+// test.service.js#list).
+const list = asyncHandler(async (req, res) => {
+  const { rows, meta } = await testService.list(req.query, req.user);
+  ApiResponse.paginated(res, rows, meta);
+});
+
 const create = asyncHandler(async (req, res) => {
   const test = await testService.create(req.body, req.user);
   ApiResponse.created(res, test);
@@ -35,4 +43,4 @@ const submitAttempt = asyncHandler(async (req, res) => {
   ApiResponse.created(res, attempt);
 });
 
-module.exports = { ...base, create, generateQuestions, overviewStats, getResults, collegeResults, submitAttempt };
+module.exports = { ...base, list, create, generateQuestions, overviewStats, getResults, collegeResults, submitAttempt };

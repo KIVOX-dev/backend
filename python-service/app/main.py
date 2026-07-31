@@ -1,5 +1,5 @@
 """
-Skillovate V2 — Main FastAPI Application Entry Point
+UpScaler-AI V2 — Main FastAPI Application Entry Point
 """
 import logging
 from contextlib import asynccontextmanager
@@ -13,7 +13,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.config import get_settings
-from app.core.exceptions import SkillovateException
+from app.core.exceptions import UpScalerAIException
 from app.core.middleware import setup_middleware
 from app.api.router import api_router
 from app.schemas.common import HealthResponse
@@ -24,7 +24,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
-logger = logging.getLogger("skillovate")
+logger = logging.getLogger("upscaler_ai")
 
 settings = get_settings()
 
@@ -86,8 +86,8 @@ setup_middleware(app)
 
 
 # ── Global Exception Handler ─────────────────────
-@app.exception_handler(SkillovateException)
-async def skillovate_exception_handler(request: Request, exc: SkillovateException):
+@app.exception_handler(UpScalerAIException)
+async def upscaler_ai_exception_handler(request: Request, exc: UpScalerAIException):
     return JSONResponse(
         status_code=exc.status_code,
         content={"success": False, "message": exc.detail},

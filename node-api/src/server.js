@@ -14,7 +14,7 @@ attachChatServer(server);
 async function start() {
   await connect(); // must succeed before we accept traffic
   server.listen(env.port, () => {
-    logger.info(`Skillovate Node API listening on port ${env.port} [${env.nodeEnv}]`);
+    logger.info(`UpScaler-AI Node API listening on port ${env.port} [${env.nodeEnv}]`);
   });
 }
 

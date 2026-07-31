@@ -56,9 +56,17 @@ class StudentProfileService {
     const existing = await studentRepository.findByUserId(actor.id);
     if (!existing) throw ApiError.notFound('Profile not found — create it first');
 
-    const collegeId = data.collegeId || existing.institution_id;
+    // institution_id is locked once set by createOwn — a student can't
+    // reassign themselves to a different college later just by posting a
+    // different collegeId. Changing institutions is an admin-mediated
+    // process, not a self-service one.
+    if (data.collegeId && existing.institution_id && data.collegeId !== existing.institution_id) {
+      throw ApiError.badRequest('Your college is already set and cannot be changed here — contact an administrator to transfer institutions');
+    }
+
+    const collegeId = existing.institution_id;
     const departmentId = data.departmentId || existing.department_id;
-    if (data.collegeId || data.departmentId) {
+    if (data.departmentId) {
       await this._validateCollegeDepartment(collegeId, departmentId);
     }
     if (data.rollNumber && data.rollNumber !== existing.roll_number) {
@@ -66,7 +74,6 @@ class StudentProfileService {
     }
 
     const payload = {};
-    if (data.collegeId) payload.institution_id = data.collegeId;
     if (data.departmentId) payload.department_id = data.departmentId;
     if (data.rollNumber) payload.roll_number = data.rollNumber;
     if (data.year != null) payload.year_of_study = data.year;
@@ -77,9 +84,7 @@ class StudentProfileService {
     if (data.gender) payload.gender = data.gender;
     if (data.address) payload.address = data.address;
 
-    const updated = await studentRepository.updateById(existing.id, payload);
-    if (data.collegeId) await userRepository.updateById(actor.id, { institution_id: data.collegeId });
-    return updated;
+    return studentRepository.updateById(existing.id, payload);
   }
 
   async _validateCollegeDepartment(collegeId, departmentId) {

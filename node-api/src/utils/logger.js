@@ -7,7 +7,7 @@ const logger = winston.createLogger({
     winston.format.errors({ stack: true }),
     winston.format.json()
   ),
-  defaultMeta: { service: 'skillovate-node-api' },
+  defaultMeta: { service: 'upscaler-ai-node-api' },
   transports: [new winston.transports.Console()],
 });
 

@@ -1,5 +1,5 @@
 """
-Skillovate V2 — Interview Models
+UpScaler-AI V2 — Interview Models
 Mock interview question banks, attempts, and per-question responses.
 """
 from datetime import datetime, timezone

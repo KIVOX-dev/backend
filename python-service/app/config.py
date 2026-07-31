@@ -1,5 +1,5 @@
 """
-Skillovate V2 — Application Configuration
+UpScaler-AI V2 — Application Configuration
 Uses Pydantic Settings for type-safe environment variables.
 """
 
@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     )
 
     # ── Application ──────────────────────────────
-    APP_NAME: str = "Skillovate V2"
+    APP_NAME: str = "UpScaler-AI V2"
     APP_ENV: str = "development"
     # Safe-by-default: DEBUG must be explicitly enabled in a local .env, since
     # it also controls whether /docs, /redoc and /openapi.json are public
@@ -30,11 +30,11 @@ class Settings(BaseSettings):
     API_V1_PREFIX: str = "/api/v1"
 
     # ── Database ─────────────────────────────────
-    DATABASE_URL: str = "sqlite:///./data/skillovate.db"
+    DATABASE_URL: str = "sqlite:///./data/upscaler_ai.db"
 
     # ── MongoDB ──────────────────────────────────
     MONGODB_URI: str = "mongodb://localhost:27017"
-    MONGODB_DB_NAME: str = "skillovate"
+    MONGODB_DB_NAME: str = "upscaler_ai"
 
     # ── JWT ──────────────────────────────────────
     # No default: a placeholder secret here is worse than an app that refuses
@@ -55,13 +55,13 @@ class Settings(BaseSettings):
     SMTP_PORT: int = 587
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
-    EMAIL_FROM: str = "noreply@skillovate.com"
+    EMAIL_FROM: str = "noreply@upscaler-ai.com"
 
     # ── Super Admin Seed ─────────────────────────
     # No password default on purpose — set a real one in .env before seeding.
     # (Note: app/services/seed_service.py, the only reader of these two
     # settings, is dead/unreachable code — see Phase 6 of the audit roadmap.)
-    SUPER_ADMIN_EMAIL: str = "admin@skillovate.com"
+    SUPER_ADMIN_EMAIL: str = "admin@upscaler-ai.com"
     SUPER_ADMIN_PASSWORD: str = ""
     
     # ── AI Keys ──────────────────────────────────

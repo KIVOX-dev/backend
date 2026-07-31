@@ -1,5 +1,5 @@
 # Python/FastAPI service image. Build context is this directory (python-service/):
-#   docker build -t skillovate-python-service -f python-service/Dockerfile python-service/
+#   docker build -t upscaler-ai-python-service -f python-service/Dockerfile python-service/
 
 # ---- builder: install deps into a venv; build toolchain never reaches runtime ----
 FROM python:3.12-slim AS builder

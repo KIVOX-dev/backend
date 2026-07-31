@@ -56,6 +56,7 @@ const INDEX_PLAN = {
     { key: { placement_id: 1, student_id: 1 }, options: { unique: true } },
     { key: { student_id: 1 }, options: {} },
     { key: { status: 1 }, options: {} },
+    { key: { institution_id: 1 }, options: {} },
   ],
   tests: [
     { key: { institution_id: 1 }, options: {} },
@@ -64,21 +65,60 @@ const INDEX_PLAN = {
     { key: { test_id: 1, student_id: 1 }, options: { unique: true } },
     { key: { student_id: 1 }, options: {} },
     { key: { status: 1 }, options: {} },
+    { key: { institution_id: 1 }, options: {} },
   ],
   results: [
     { key: { test_assignment_id: 1 }, options: { unique: true } },
     { key: { student_id: 1 }, options: {} },
     { key: { test_id: 1 }, options: {} },
+    { key: { institution_id: 1 }, options: {} },
   ],
   notifications: [
     { key: { user_id: 1, is_read: 1 }, options: {} },
   ],
   resume_builder: [
     { key: { student_id: 1 }, options: { unique: true } },
+    { key: { institution_id: 1 }, options: {} },
   ],
   activity_logs: [
     { key: { user_id: 1 }, options: {} },
     { key: { created_at: 1 }, options: {} },
+  ],
+  achievements: [
+    { key: { student_id: 1 }, options: {} },
+    { key: { student_id: 1, achievement_type: 1 }, options: {} },
+  ],
+  assessment_attempts: [
+    { key: { student_id: 1 }, options: {} },
+  ],
+  interview_attempts: [
+    { key: { student_id: 1 }, options: {} },
+  ],
+  interview_responses: [
+    { key: { student_id: 1 }, options: {} },
+  ],
+  resume_versions: [
+    { key: { student_id: 1, created_at: -1 }, options: {} },
+  ],
+  profile_data: [
+    { key: { user_id: 1 }, options: { unique: true } },
+  ],
+  user_data_states: [
+    { key: { user_id: 1 }, options: { unique: true } },
+  ],
+  batches: [
+    { key: { institution_id: 1 }, options: {} },
+    { key: { status: 1 }, options: {} },
+  ],
+  batch_students: [
+    { key: { batch_id: 1, student_id: 1 }, options: { unique: true } },
+  ],
+  placement_records: [
+    { key: { student_id: 1 }, options: {} },
+  ],
+  messages: [
+    { key: { sender_id: 1, receiver_id: 1, created_at: -1 }, options: {} },
+    { key: { receiver_id: 1, sender_id: 1, created_at: -1 }, options: {} },
   ],
 };
 

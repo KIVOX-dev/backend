@@ -12,11 +12,14 @@ const list = asyncHandler(async (req, res) => {
 });
 
 const identify = asyncHandler(async (req, res) => {
-  const result = await studentService.identify({
-    collegeName: req.body.collegeId || req.body.collegeName,
-    rollNumber: req.body.rollNo || req.body.studentId,
-  });
-  ApiResponse.ok(res, { success: true, student: result });
+  const result = await studentService.identify(
+    {
+      collegeName: req.body.collegeId || req.body.collegeName,
+      rollNumber: req.body.rollNo || req.body.studentId,
+    },
+    { ip: req.ip }
+  );
+  ApiResponse.ok(res, result, 'Student verified');
 });
 
 const listPending = asyncHandler(async (req, res) => {
@@ -56,7 +59,7 @@ const logInterview = asyncHandler(async (req, res) => {
 
 const batchCreate = asyncHandler(async (req, res) => {
   const result = await studentService.batchCreate(req.body, req.user);
-  ApiResponse.created(res, null, `Successfully onboarded ${result.created} students. Status: ${result.status}`);
+  ApiResponse.created(res, result, `Successfully onboarded ${result.created} students. Status: ${result.status}`);
 });
 
 const listAchievements = asyncHandler(async (req, res) => {

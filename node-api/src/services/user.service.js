@@ -5,25 +5,13 @@ const facultyRepository = require('../repositories/faculty.repository');
 const hrRepository = require('../repositories/hr.repository');
 const { hashPassword } = require('../utils/password');
 const { ROLES } = require('../config/constants');
+const { assertSameInstitution } = require('../utils/authz');
 const ApiError = require('../utils/ApiError');
 
 function sanitize(user) {
   if (!user) return user;
   const { password_hash, ...safe } = user;
   return safe;
-}
-
-// Ported from python-service's users.py, which lets an institution_admin/faculty
-// caller act on any user id as long as they don't touch role/institution_id —
-// it never actually checked the TARGET user belonged to their own institution.
-// That's a real IDOR (an institution_admin at Institution A could edit/delete a
-// user at Institution B). Fixed here rather than carried forward — see the
-// Phase 3 migration plan's "fix immediately" note on newly discovered issues.
-function assertSameInstitution(actor, targetUser) {
-  if (actor.role === ROLES.SUPER_ADMIN) return;
-  if (targetUser.institution_id !== actor.institutionId) {
-    throw ApiError.forbidden('You may only manage users within your own institution');
-  }
 }
 
 class UserService extends BaseService {
@@ -51,8 +39,8 @@ class UserService extends BaseService {
     return { rows: visible.map(sanitize), meta };
   }
 
-  async getById(id) {
-    return sanitize(await super.getById(id));
+  async getById(id, actor) {
+    return sanitize(await super.getById(id, actor));
   }
 
   // `actor` is the authenticated caller (req.user). Tiering ported from

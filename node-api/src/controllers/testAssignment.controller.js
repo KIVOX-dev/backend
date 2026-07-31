@@ -8,7 +8,7 @@ const list = asyncHandler(async (req, res) => {
 });
 
 const getById = asyncHandler(async (req, res) => {
-  const assignment = await testAssignmentService.getById(req.params.id);
+  const assignment = await testAssignmentService.getById(req.params.id, req.user);
   ApiResponse.ok(res, assignment);
 });
 
@@ -22,4 +22,14 @@ const update = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, assignment, 'Updated');
 });
 
-module.exports = { list, getById, create, update };
+const getQuestions = asyncHandler(async (req, res) => {
+  const questions = await testAssignmentService.getQuestions(req.params.id, req.user);
+  ApiResponse.ok(res, questions);
+});
+
+const submit = asyncHandler(async (req, res) => {
+  const attempt = await testAssignmentService.submitForAssignment(req.params.id, req.body, req.user);
+  ApiResponse.created(res, attempt);
+});
+
+module.exports = { list, getById, create, update, getQuestions, submit };

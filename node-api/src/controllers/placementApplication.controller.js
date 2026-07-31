@@ -8,7 +8,7 @@ const list = asyncHandler(async (req, res) => {
 });
 
 const getById = asyncHandler(async (req, res) => {
-  const application = await placementApplicationService.getById(req.params.id);
+  const application = await placementApplicationService.getById(req.params.id, req.user);
   ApiResponse.ok(res, application);
 });
 

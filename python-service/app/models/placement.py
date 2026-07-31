@@ -1,5 +1,5 @@
 """
-Skillovate V2 — Placement Models
+UpScaler-AI V2 — Placement Models
 Job postings, applications, and confirmed placements.
 """
 from datetime import datetime, timezone

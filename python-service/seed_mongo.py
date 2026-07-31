@@ -17,7 +17,7 @@ pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 # password committed in plaintext, which must be treated as compromised and
 # rotated in the Atlas console regardless of this fix.
 MONGODB_URI = os.environ.get('MONGODB_URI')
-MONGODB_DB_NAME = os.environ.get('MONGODB_DB_NAME', 'skillovate')
+MONGODB_DB_NAME = os.environ.get('MONGODB_DB_NAME', 'upscaler_ai')
 SUPER_ADMIN_EMAIL = os.environ.get('SUPER_ADMIN_EMAIL')
 SUPER_ADMIN_PASSWORD = os.environ.get('SUPER_ADMIN_PASSWORD')
 
@@ -39,7 +39,7 @@ async def seed():
         await db.users.insert_one({
             'email': email,
             'password_hash': pwd_context.hash(password),
-            'name': 'Skillovate Super Admin',
+            'name': 'UpScaler-AI Super Admin',
             'role': 'super_admin',
             'status': 'approved',
             'is_active': True,

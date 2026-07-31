@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 
-router.use('/auth', require('./authRoutes'));
+router.use('/auth', require('./auth.routes'));
 router.use('/users', require('./user.routes'));
 router.use('/institutions', require('./institution.routes'));
 router.use('/departments', require('./department.routes'));

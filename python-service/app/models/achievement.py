@@ -1,5 +1,5 @@
 """
-Skillovate V2 — Achievement & Activity Log Models
+UpScaler-AI V2 — Achievement & Activity Log Models
 """
 from datetime import datetime, timezone
 from sqlalchemy import (

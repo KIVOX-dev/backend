@@ -2,6 +2,7 @@ const BaseService = require('./BaseService');
 const placementApplicationRepository = require('../repositories/placementApplication.repository');
 const studentRepository = require('../repositories/student.repository');
 const { ROLES } = require('../config/constants');
+const { buildInstitutionFilter, assertInstitutionOwnership } = require('../utils/authz');
 const ApiError = require('../utils/ApiError');
 
 class PlacementApplicationService extends BaseService {
@@ -10,12 +11,27 @@ class PlacementApplicationService extends BaseService {
   }
 
   async list(queryParams, actor) {
-    const extraFilters = {};
+    let extraFilters;
     if (actor.role === ROLES.STUDENT) {
       const student = await studentRepository.findByUserId(actor.id);
-      extraFilters.student_id = student ? student.id : null;
+      extraFilters = { student_id: student ? student.id : null };
+    } else {
+      extraFilters = buildInstitutionFilter(actor);
     }
     return super.list(queryParams, extraFilters);
+  }
+
+  // See testAssignment.service.js#getById for why the row-level student check
+  // is needed on top of the institution-level one.
+  async getById(id, actor) {
+    const item = await super.getById(id, actor);
+    if (actor.role === ROLES.STUDENT) {
+      const student = await studentRepository.findByUserId(actor.id);
+      if (!student || item.student_id !== student.id) {
+        throw ApiError.forbidden('You do not have access to this resource');
+      }
+    }
+    return item;
   }
 
   // A student can only ever create an application for THEIR OWN student_id — it is
@@ -30,6 +46,7 @@ class PlacementApplicationService extends BaseService {
     return this.repository.create({
       placement_id: data.placement_id,
       student_id: student.id,
+      institution_id: student.institution_id,
       status: 'applied',
     });
   }
@@ -46,6 +63,10 @@ class PlacementApplicationService extends BaseService {
       if (!student || application.student_id !== student.id) {
         throw ApiError.forbidden('You may only withdraw your own application');
       }
+    } else if (actor.role === ROLES.INSTITUTION_ADMIN || actor.role === ROLES.FACULTY) {
+      // HR and SUPER_ADMIN are exempt by design: HR recruits across institutions
+      // via /placements/applications/me, and super_admin is global.
+      assertInstitutionOwnership(actor, application);
     }
 
     return this.repository.updateById(id, { status });

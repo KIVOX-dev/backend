@@ -1,5 +1,5 @@
 """
-Skillovate V2 — Assessment Models
+UpScaler-AI V2 — Assessment Models
 Covers: Questions, Categories, Assessments, Attempts, and Answers.
 Fully normalized — no JSON columns.
 """

@@ -9,7 +9,7 @@ All commands below assume your working directory is `node-api/` (i.e. `cd node-a
 
 Use a MongoDB Atlas cluster (or any managed MongoDB). Create a database user, grab the
 `mongodb+srv://` connection string, and use a **database name dedicated to this API**
-(e.g. `skillovate_node`) so it never shares collections with the Python service's database.
+(e.g. `upscaler_ai_node`) so it never shares collections with the Python service's database.
 
 Under Atlas → Network Access, either allow Cloud Run's egress (0.0.0.0/0 with a strong DB user
 password + Atlas's built-in TLS, simplest) or set up VPC/Private Endpoint peering for a locked-down
@@ -18,14 +18,14 @@ setup. Atlas connections are TLS-encrypted by default — no separate SSL config
 Once you have the connection string, create the collections' indexes once:
 
 ```bash
-MONGODB_URI="mongodb+srv://user:pass@cluster.mongodb.net" MONGODB_DB_NAME=skillovate_node \
+MONGODB_URI="mongodb+srv://user:pass@cluster.mongodb.net" MONGODB_DB_NAME=upscaler_ai_node \
   node scripts/setupIndexes.js
 ```
 
 ## 2. Build & push the backend image
 
 ```bash
-gcloud builds submit --tag gcr.io/PROJECT_ID/skillovate-api -f Dockerfile
+gcloud builds submit --tag gcr.io/PROJECT_ID/upscaler-ai-api -f Dockerfile
 ```
 
 ## 3. Store secrets
@@ -42,11 +42,11 @@ printf '%s' '<value>' | gcloud secrets create GOOGLE_CLIENT_SECRET --data-file=-
 ## 4. Deploy to Cloud Run
 
 ```bash
-gcloud run deploy skillovate-api \
-  --image gcr.io/PROJECT_ID/skillovate-api \
+gcloud run deploy upscaler-ai-api \
+  --image gcr.io/PROJECT_ID/upscaler-ai-api \
   --region asia-south1 \
   --platform managed \
-  --set-env-vars NODE_ENV=production,PORT=8080,API_PREFIX=/api/v1,MONGODB_DB_NAME=skillovate_node \
+  --set-env-vars NODE_ENV=production,PORT=8080,API_PREFIX=/api/v1,MONGODB_DB_NAME=upscaler_ai_node \
   --set-env-vars CORS_ORIGINS=https://your-frontend.example.com \
   --set-env-vars GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com \
   --set-secrets MONGODB_URI=MONGODB_URI:latest,JWT_SECRET=JWT_SECRET:latest,JWT_REFRESH_SECRET=JWT_REFRESH_SECRET:latest,GOOGLE_CLIENT_SECRET=GOOGLE_CLIENT_SECRET:latest \

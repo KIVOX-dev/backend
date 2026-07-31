@@ -1,4 +1,5 @@
 const ApiError = require('../utils/ApiError');
+const { assertInstitutionOwnership } = require('../utils/authz');
 
 // Generic service shared by every entity module. Entity-specific services extend this
 // and override/add methods for anything beyond plain CRUD (see authService, placementService).
@@ -17,9 +18,10 @@ class BaseService {
     return { rows, meta: { page, limit, total } };
   }
 
-  async getById(id) {
+  async getById(id, actor) {
     const item = await this.repository.findById(id);
     if (!item) throw ApiError.notFound(`${this.entityName} not found`);
+    if (actor) assertInstitutionOwnership(actor, item);
     return item;
   }
 

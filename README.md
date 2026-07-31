@@ -1,11 +1,11 @@
-# Skillovate Backend
+# UpScaler-AI Backend
 
 This repository hosts **two independent backend services**, each in its own folder with its own
 dependency manifest, env files, and `Dockerfile`:
 
 | Folder | Stack | Purpose |
 |---|---|---|
-| [`python-service/`](python-service/README.md) | Python 3.12 / FastAPI / MongoDB (+ SQLite fallback) | The original Skillovate V2 API |
+| [`python-service/`](python-service/README.md) | Python 3.12 / FastAPI / MongoDB (+ SQLite fallback) | The original UpScaler-AI V2 API |
 | [`node-api/`](node-api/README.md) | Node.js / Express / MongoDB | Clean-architecture REST API, RBAC, JWT + Google OAuth |
 
 Neither service's code was touched by the other's setup — see each folder's own `README.md` for
@@ -32,7 +32,7 @@ architecture and `REQUIREMENTS.md` for prerequisites.
   ever provisioned, whereas the Python service's MongoDB Atlas connection was already proven
   working. `sql/schema.sql` was replaced by `node-api/scripts/setupIndexes.js` (creates the same
   uniqueness/query indexes without SQL). Both services now use MongoDB, but **on separate
-  database names** (`skillovate` for Python, `skillovate_node` for Node) on the same cluster — they
+  database names** (`upscaler_ai` for Python, `upscaler_ai_node` for Node) on the same cluster — they
   do not share collections, and each still owns its own connection string.
 
 ## Local development ports

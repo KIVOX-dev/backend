@@ -1,4 +1,4 @@
-const authService = require('../services/authService');
+const authService = require('../services/auth.service');
 const asyncHandler = require('../utils/asyncHandler');
 const ApiResponse = require('../utils/ApiResponse');
 
@@ -35,7 +35,16 @@ const register = asyncHandler(async (req, res) => {
 
 const login = asyncHandler(async (req, res) => {
   const result = await authService.login(req.body);
+  if (result.mustChangePassword) {
+    ApiResponse.ok(res, { mustChangePassword: true, user: result.user }, 'You must set a new password before continuing');
+    return;
+  }
   ApiResponse.ok(res, withLegacyAuthFields(result), 'Login successful');
+});
+
+const changeInitialPassword = asyncHandler(async (req, res) => {
+  const result = await authService.changeInitialPassword(req.body);
+  ApiResponse.ok(res, withLegacyAuthFields(result), 'Password set successfully');
 });
 
 const googleLogin = asyncHandler(async (req, res) => {
@@ -70,4 +79,4 @@ const verifyEmail = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, null, 'Email verified successfully.');
 });
 
-module.exports = { register, login, googleLogin, refresh, me, forgotPassword, resetPassword, verifyEmail };
+module.exports = { register, login, googleLogin, refresh, me, forgotPassword, resetPassword, changeInitialPassword, verifyEmail };

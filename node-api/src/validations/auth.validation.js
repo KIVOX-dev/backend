@@ -41,8 +41,23 @@ const resetPassword = Joi.object({
   newPassword: Joi.string().min(8).max(128).required(),
 });
 
+const changeInitialPassword = Joi.object({
+  email: Joi.string().email().required(),
+  currentPassword: Joi.string().required(),
+  newPassword: Joi.string().min(8).max(128).required(),
+});
+
 const verifyEmail = Joi.object({
   token: Joi.string().required(),
 });
 
-module.exports = { register, login, googleLogin, refresh, forgotPassword, resetPassword, verifyEmail };
+module.exports = {
+  register,
+  login,
+  googleLogin,
+  refresh,
+  forgotPassword,
+  resetPassword,
+  changeInitialPassword,
+  verifyEmail,
+};

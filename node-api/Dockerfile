@@ -1,5 +1,5 @@
 # Node/Express API image. Build context is this directory (node-api/):
-#   docker build -t skillovate-node-api -f node-api/Dockerfile node-api/
+#   docker build -t upscaler-ai-node-api -f node-api/Dockerfile node-api/
 
 # ---- deps: install production dependencies in an isolated stage ----
 # bcrypt needs a native build toolchain on some platforms/registries; keeping

@@ -1,0 +1,5502 @@
+[
+  {
+    "id": 1,
+    "question": "What is the output?\nlet x = 14; console.log(++x + x++);",
+    "options": [
+      "30",
+      "28",
+      "31",
+      "29"
+    ],
+    "answer": "30"
+  },
+  {
+    "id": 2,
+    "question": "What is binary of 17?",
+    "options": [
+      "10010",
+      "10000",
+      "10011",
+      "10001"
+    ],
+    "answer": "10001"
+  },
+  {
+    "id": 3,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(log n)",
+      "O(n^2)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 4,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Array",
+      "Stack",
+      "Graph",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 5,
+    "question": "Find next: 2, 4, 8, ?",
+    "options": [
+      "12",
+      "16",
+      "24",
+      "20"
+    ],
+    "answer": "16"
+  },
+  {
+    "id": 6,
+    "question": "What is the output?\nlet x = 11; let y = 7; console.log(x % y);",
+    "options": [
+      "3",
+      "7",
+      "34",
+      "4"
+    ],
+    "answer": "4"
+  },
+  {
+    "id": 7,
+    "question": "What is the output?\nlet x = 3; console.log(++x + x++);",
+    "options": [
+      "7",
+      "9",
+      "8",
+      "6"
+    ],
+    "answer": "8"
+  },
+  {
+    "id": 8,
+    "question": "What is binary of 4?",
+    "options": [
+      "11",
+      "101",
+      "110",
+      "100"
+    ],
+    "answer": "100"
+  },
+  {
+    "id": 9,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n^2)",
+      "O(log n)",
+      "O(1)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 10,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Array",
+      "Stack",
+      "Graph"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 11,
+    "question": "Find next: 10, 20, 40, ?",
+    "options": [
+      "80",
+      "120",
+      "100",
+      "60"
+    ],
+    "answer": "80"
+  },
+  {
+    "id": 12,
+    "question": "What is the output?\nlet x = 6; let y = 5; console.log(x % y);",
+    "options": [
+      "5",
+      "54",
+      "1",
+      "0"
+    ],
+    "answer": "1"
+  },
+  {
+    "id": 13,
+    "question": "What is the output?\nlet x = 11; console.log(++x + x++);",
+    "options": [
+      "24",
+      "23",
+      "25",
+      "22"
+    ],
+    "answer": "24"
+  },
+  {
+    "id": 14,
+    "question": "What is binary of 4?",
+    "options": [
+      "101",
+      "11",
+      "100",
+      "110"
+    ],
+    "answer": "100"
+  },
+  {
+    "id": 15,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(n)",
+      "O(log n)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 16,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Queue",
+      "Array",
+      "Stack"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 17,
+    "question": "Find next: 4, 8, 16, ?",
+    "options": [
+      "24",
+      "40",
+      "48",
+      "32"
+    ],
+    "answer": "32"
+  },
+  {
+    "id": 18,
+    "question": "What is the output?\nlet x = 13; let y = 9; console.log(x % y);",
+    "options": [
+      "92",
+      "3",
+      "9",
+      "4"
+    ],
+    "answer": "4"
+  },
+  {
+    "id": 19,
+    "question": "What is the output?\nlet x = 12; console.log(++x + x++);",
+    "options": [
+      "26",
+      "27",
+      "24",
+      "25"
+    ],
+    "answer": "26"
+  },
+  {
+    "id": 20,
+    "question": "What is binary of 7?",
+    "options": [
+      "1000",
+      "111",
+      "1001",
+      "110"
+    ],
+    "answer": "111"
+  },
+  {
+    "id": 21,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(1)",
+      "O(log n)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 22,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Graph",
+      "Array",
+      "Stack"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 23,
+    "question": "Find next: 4, 8, 16, ?",
+    "options": [
+      "32",
+      "24",
+      "40",
+      "48"
+    ],
+    "answer": "32"
+  },
+  {
+    "id": 24,
+    "question": "What is the output?\nlet x = 10; let y = 8; console.log(x % y);",
+    "options": [
+      "2",
+      "8",
+      "1",
+      "40"
+    ],
+    "answer": "2"
+  },
+  {
+    "id": 25,
+    "question": "What is the output?\nlet x = 7; console.log(++x + x++);",
+    "options": [
+      "14",
+      "15",
+      "17",
+      "16"
+    ],
+    "answer": "16"
+  },
+  {
+    "id": 26,
+    "question": "What is binary of 18?",
+    "options": [
+      "10010",
+      "10001",
+      "10011",
+      "10100"
+    ],
+    "answer": "10010"
+  },
+  {
+    "id": 27,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(n^2)",
+      "O(log n)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 28,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Array",
+      "Queue",
+      "Graph",
+      "Stack"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 29,
+    "question": "Find next: 20, 40, 80, ?",
+    "options": [
+      "120",
+      "200",
+      "160",
+      "240"
+    ],
+    "answer": "160"
+  },
+  {
+    "id": 30,
+    "question": "What is the output?\nlet x = 7; let y = 10; console.log(x % y);",
+    "options": [
+      "7",
+      "3",
+      "19",
+      "51"
+    ],
+    "answer": "7"
+  },
+  {
+    "id": 31,
+    "question": "What is the output?\nlet x = 13; console.log(++x + x++);",
+    "options": [
+      "26",
+      "27",
+      "29",
+      "28"
+    ],
+    "answer": "28"
+  },
+  {
+    "id": 32,
+    "question": "What is binary of 11?",
+    "options": [
+      "1010",
+      "1011",
+      "1101",
+      "1100"
+    ],
+    "answer": "1011"
+  },
+  {
+    "id": 33,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(n)",
+      "O(log n)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 34,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Array",
+      "Queue",
+      "Graph",
+      "Stack"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 35,
+    "question": "Find next: 7, 14, 28, ?",
+    "options": [
+      "42",
+      "84",
+      "56",
+      "70"
+    ],
+    "answer": "56"
+  },
+  {
+    "id": 36,
+    "question": "What is the output?\nlet x = 17; let y = 4; console.log(x % y);",
+    "options": [
+      "2",
+      "1",
+      "4",
+      "64"
+    ],
+    "answer": "1"
+  },
+  {
+    "id": 37,
+    "question": "What is the output?\nlet x = 2; console.log(++x + x++);",
+    "options": [
+      "6",
+      "4",
+      "7",
+      "5"
+    ],
+    "answer": "6"
+  },
+  {
+    "id": 38,
+    "question": "What is binary of 9?",
+    "options": [
+      "1000",
+      "1011",
+      "1001",
+      "1010"
+    ],
+    "answer": "1001"
+  },
+  {
+    "id": 39,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(n^2)",
+      "O(log n)",
+      "O(1)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 40,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Stack",
+      "Queue",
+      "Array",
+      "Graph"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 41,
+    "question": "Find next: 4, 8, 16, ?",
+    "options": [
+      "40",
+      "32",
+      "24",
+      "48"
+    ],
+    "answer": "32"
+  },
+  {
+    "id": 42,
+    "question": "What is the output?\nlet x = 6; let y = 4; console.log(x % y);",
+    "options": [
+      "1",
+      "4",
+      "182",
+      "2"
+    ],
+    "answer": "2"
+  },
+  {
+    "id": 43,
+    "question": "What is the output?\nlet x = 8; console.log(++x + x++);",
+    "options": [
+      "16",
+      "17",
+      "19",
+      "18"
+    ],
+    "answer": "18"
+  },
+  {
+    "id": 44,
+    "question": "What is binary of 14?",
+    "options": [
+      "10000",
+      "1110",
+      "1101",
+      "1111"
+    ],
+    "answer": "1110"
+  },
+  {
+    "id": 45,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(n^2)",
+      "O(log n)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 46,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Graph",
+      "Array",
+      "Stack"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 47,
+    "question": "Find next: 5, 10, 20, ?",
+    "options": [
+      "40",
+      "60",
+      "50",
+      "30"
+    ],
+    "answer": "40"
+  },
+  {
+    "id": 48,
+    "question": "What is the output?\nlet x = 20; let y = 3; console.log(x % y);",
+    "options": [
+      "3",
+      "2",
+      "30",
+      "0"
+    ],
+    "answer": "2"
+  },
+  {
+    "id": 49,
+    "question": "What is the output?\nlet x = 2; console.log(++x + x++);",
+    "options": [
+      "4",
+      "6",
+      "5",
+      "7"
+    ],
+    "answer": "6"
+  },
+  {
+    "id": 50,
+    "question": "What is binary of 14?",
+    "options": [
+      "1111",
+      "1110",
+      "10000",
+      "1101"
+    ],
+    "answer": "1110"
+  },
+  {
+    "id": 51,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(1)",
+      "O(n^2)",
+      "O(log n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 52,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Array",
+      "Stack",
+      "Queue",
+      "Graph"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 53,
+    "question": "Find next: 2, 4, 8, ?",
+    "options": [
+      "12",
+      "24",
+      "20",
+      "16"
+    ],
+    "answer": "16"
+  },
+  {
+    "id": 54,
+    "question": "What is the output?\nlet x = 11; let y = 4; console.log(x % y);",
+    "options": [
+      "142",
+      "4",
+      "1",
+      "3"
+    ],
+    "answer": "3"
+  },
+  {
+    "id": 55,
+    "question": "What is the output?\nlet x = 16; console.log(++x + x++);",
+    "options": [
+      "35",
+      "33",
+      "32",
+      "34"
+    ],
+    "answer": "34"
+  },
+  {
+    "id": 56,
+    "question": "What is binary of 16?",
+    "options": [
+      "10000",
+      "10001",
+      "1111",
+      "10010"
+    ],
+    "answer": "10000"
+  },
+  {
+    "id": 57,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(n^2)",
+      "O(log n)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 58,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Stack",
+      "Queue",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 59,
+    "question": "Find next: 19, 38, 76, ?",
+    "options": [
+      "190",
+      "228",
+      "152",
+      "114"
+    ],
+    "answer": "152"
+  },
+  {
+    "id": 60,
+    "question": "What is the output?\nlet x = 19; let y = 7; console.log(x % y);",
+    "options": [
+      "7",
+      "3",
+      "117",
+      "5"
+    ],
+    "answer": "5"
+  },
+  {
+    "id": 61,
+    "question": "What is the output?\nlet x = 6; console.log(++x + x++);",
+    "options": [
+      "13",
+      "15",
+      "12",
+      "14"
+    ],
+    "answer": "14"
+  },
+  {
+    "id": 62,
+    "question": "What is binary of 3?",
+    "options": [
+      "101",
+      "100",
+      "10",
+      "11"
+    ],
+    "answer": "11"
+  },
+  {
+    "id": 63,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(log n)",
+      "O(n^2)",
+      "O(1)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 64,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Stack",
+      "Array",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 65,
+    "question": "Find next: 13, 26, 52, ?",
+    "options": [
+      "78",
+      "130",
+      "156",
+      "104"
+    ],
+    "answer": "104"
+  },
+  {
+    "id": 66,
+    "question": "What is the output?\nlet x = 14; let y = 3; console.log(x % y);",
+    "options": [
+      "146",
+      "3",
+      "191",
+      "2"
+    ],
+    "answer": "2"
+  },
+  {
+    "id": 67,
+    "question": "What is the output?\nlet x = 19; console.log(++x + x++);",
+    "options": [
+      "38",
+      "40",
+      "41",
+      "39"
+    ],
+    "answer": "40"
+  },
+  {
+    "id": 68,
+    "question": "What is binary of 15?",
+    "options": [
+      "10000",
+      "1111",
+      "10001",
+      "1110"
+    ],
+    "answer": "1111"
+  },
+  {
+    "id": 69,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(log n)",
+      "O(1)",
+      "O(n^2)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 70,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Stack",
+      "Queue",
+      "Array",
+      "Graph"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 71,
+    "question": "Find next: 11, 22, 44, ?",
+    "options": [
+      "110",
+      "88",
+      "66",
+      "132"
+    ],
+    "answer": "88"
+  },
+  {
+    "id": 72,
+    "question": "What is the output?\nlet x = 8; let y = 4; console.log(x % y);",
+    "options": [
+      "74",
+      "4",
+      "0",
+      "3"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 73,
+    "question": "What is the output?\nlet x = 14; console.log(++x + x++);",
+    "options": [
+      "30",
+      "28",
+      "31",
+      "29"
+    ],
+    "answer": "30"
+  },
+  {
+    "id": 74,
+    "question": "What is binary of 14?",
+    "options": [
+      "10000",
+      "1111",
+      "1101",
+      "1110"
+    ],
+    "answer": "1110"
+  },
+  {
+    "id": 75,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(n^2)",
+      "O(n)",
+      "O(log n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 76,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Array",
+      "Queue",
+      "Stack"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 77,
+    "question": "Find next: 15, 30, 60, ?",
+    "options": [
+      "180",
+      "150",
+      "90",
+      "120"
+    ],
+    "answer": "120"
+  },
+  {
+    "id": 78,
+    "question": "What is the output?\nlet x = 20; let y = 4; console.log(x % y);",
+    "options": [
+      "0",
+      "4",
+      "59",
+      "198"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 79,
+    "question": "What is the output?\nlet x = 4; console.log(++x + x++);",
+    "options": [
+      "11",
+      "8",
+      "9",
+      "10"
+    ],
+    "answer": "10"
+  },
+  {
+    "id": 80,
+    "question": "What is binary of 3?",
+    "options": [
+      "101",
+      "10",
+      "100",
+      "11"
+    ],
+    "answer": "11"
+  },
+  {
+    "id": 81,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(log n)",
+      "O(1)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 82,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Array",
+      "Stack",
+      "Graph",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 83,
+    "question": "Find next: 10, 20, 40, ?",
+    "options": [
+      "60",
+      "120",
+      "100",
+      "80"
+    ],
+    "answer": "80"
+  },
+  {
+    "id": 84,
+    "question": "What is the output?\nlet x = 4; let y = 6; console.log(x % y);",
+    "options": [
+      "56",
+      "4",
+      "2",
+      "67"
+    ],
+    "answer": "4"
+  },
+  {
+    "id": 85,
+    "question": "What is the output?\nlet x = 17; console.log(++x + x++);",
+    "options": [
+      "36",
+      "34",
+      "37",
+      "35"
+    ],
+    "answer": "36"
+  },
+  {
+    "id": 86,
+    "question": "What is binary of 19?",
+    "options": [
+      "10100",
+      "10011",
+      "10010",
+      "10101"
+    ],
+    "answer": "10011"
+  },
+  {
+    "id": 87,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(log n)",
+      "O(n^2)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 88,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Stack",
+      "Queue",
+      "Graph",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 89,
+    "question": "Find next: 20, 40, 80, ?",
+    "options": [
+      "160",
+      "240",
+      "120",
+      "200"
+    ],
+    "answer": "160"
+  },
+  {
+    "id": 90,
+    "question": "What is the output?\nlet x = 16; let y = 5; console.log(x % y);",
+    "options": [
+      "199",
+      "1",
+      "5",
+      "4"
+    ],
+    "answer": "1"
+  },
+  {
+    "id": 91,
+    "question": "What is the output?\nlet x = 18; console.log(++x + x++);",
+    "options": [
+      "36",
+      "37",
+      "39",
+      "38"
+    ],
+    "answer": "38"
+  },
+  {
+    "id": 92,
+    "question": "What is binary of 11?",
+    "options": [
+      "1101",
+      "1100",
+      "1010",
+      "1011"
+    ],
+    "answer": "1011"
+  },
+  {
+    "id": 93,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(log n)",
+      "O(n)",
+      "O(n^2)",
+      "O(1)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 94,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Array",
+      "Graph",
+      "Stack"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 95,
+    "question": "Find next: 19, 38, 76, ?",
+    "options": [
+      "190",
+      "114",
+      "152",
+      "228"
+    ],
+    "answer": "152"
+  },
+  {
+    "id": 96,
+    "question": "What is the output?\nlet x = 8; let y = 4; console.log(x % y);",
+    "options": [
+      "0",
+      "3",
+      "137",
+      "4"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 97,
+    "question": "What is the output?\nlet x = 10; console.log(++x + x++);",
+    "options": [
+      "22",
+      "21",
+      "20",
+      "23"
+    ],
+    "answer": "22"
+  },
+  {
+    "id": 98,
+    "question": "What is binary of 4?",
+    "options": [
+      "11",
+      "101",
+      "110",
+      "100"
+    ],
+    "answer": "100"
+  },
+  {
+    "id": 99,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(n)",
+      "O(log n)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 100,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Stack",
+      "Array",
+      "Graph",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 101,
+    "question": "Find next: 16, 32, 64, ?",
+    "options": [
+      "128",
+      "96",
+      "192",
+      "160"
+    ],
+    "answer": "128"
+  },
+  {
+    "id": 102,
+    "question": "What is the output?\nlet x = 19; let y = 5; console.log(x % y);",
+    "options": [
+      "5",
+      "1",
+      "4",
+      "6"
+    ],
+    "answer": "4"
+  },
+  {
+    "id": 103,
+    "question": "What is the output?\nlet x = 20; console.log(++x + x++);",
+    "options": [
+      "41",
+      "40",
+      "43",
+      "42"
+    ],
+    "answer": "42"
+  },
+  {
+    "id": 104,
+    "question": "What is binary of 3?",
+    "options": [
+      "11",
+      "100",
+      "101",
+      "10"
+    ],
+    "answer": "11"
+  },
+  {
+    "id": 105,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n^2)",
+      "O(log n)",
+      "O(n)",
+      "O(1)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 106,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Array",
+      "Graph",
+      "Stack"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 107,
+    "question": "Find next: 7, 14, 28, ?",
+    "options": [
+      "42",
+      "56",
+      "84",
+      "70"
+    ],
+    "answer": "56"
+  },
+  {
+    "id": 108,
+    "question": "What is the output?\nlet x = 7; let y = 7; console.log(x % y);",
+    "options": [
+      "162",
+      "7",
+      "161",
+      "0"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 109,
+    "question": "What is the output?\nlet x = 10; console.log(++x + x++);",
+    "options": [
+      "23",
+      "20",
+      "21",
+      "22"
+    ],
+    "answer": "22"
+  },
+  {
+    "id": 110,
+    "question": "What is binary of 9?",
+    "options": [
+      "1011",
+      "1000",
+      "1001",
+      "1010"
+    ],
+    "answer": "1001"
+  },
+  {
+    "id": 111,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(log n)",
+      "O(n^2)",
+      "O(1)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 112,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Array",
+      "Stack",
+      "Graph",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 113,
+    "question": "Find next: 8, 16, 32, ?",
+    "options": [
+      "80",
+      "64",
+      "96",
+      "48"
+    ],
+    "answer": "64"
+  },
+  {
+    "id": 114,
+    "question": "What is the output?\nlet x = 11; let y = 2; console.log(x % y);",
+    "options": [
+      "1",
+      "67",
+      "2",
+      "158"
+    ],
+    "answer": "1"
+  },
+  {
+    "id": 115,
+    "question": "What is the output?\nlet x = 4; console.log(++x + x++);",
+    "options": [
+      "10",
+      "9",
+      "8",
+      "11"
+    ],
+    "answer": "10"
+  },
+  {
+    "id": 116,
+    "question": "What is binary of 13?",
+    "options": [
+      "1101",
+      "1111",
+      "1110",
+      "1100"
+    ],
+    "answer": "1101"
+  },
+  {
+    "id": 117,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(1)",
+      "O(log n)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 118,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Stack",
+      "Queue",
+      "Array",
+      "Graph"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 119,
+    "question": "Find next: 7, 14, 28, ?",
+    "options": [
+      "70",
+      "84",
+      "56",
+      "42"
+    ],
+    "answer": "56"
+  },
+  {
+    "id": 120,
+    "question": "What is the output?\nlet x = 14; let y = 1; console.log(x % y);",
+    "options": [
+      "196",
+      "87",
+      "0",
+      "1"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 121,
+    "question": "What is the output?\nlet x = 16; console.log(++x + x++);",
+    "options": [
+      "32",
+      "33",
+      "34",
+      "35"
+    ],
+    "answer": "34"
+  },
+  {
+    "id": 122,
+    "question": "What is binary of 4?",
+    "options": [
+      "100",
+      "11",
+      "110",
+      "101"
+    ],
+    "answer": "100"
+  },
+  {
+    "id": 123,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(log n)",
+      "O(n)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 124,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Array",
+      "Queue",
+      "Graph",
+      "Stack"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 125,
+    "question": "Find next: 20, 40, 80, ?",
+    "options": [
+      "160",
+      "200",
+      "120",
+      "240"
+    ],
+    "answer": "160"
+  },
+  {
+    "id": 126,
+    "question": "What is the output?\nlet x = 8; let y = 10; console.log(x % y);",
+    "options": [
+      "2",
+      "13",
+      "8",
+      "90"
+    ],
+    "answer": "8"
+  },
+  {
+    "id": 127,
+    "question": "What is the output?\nlet x = 6; console.log(++x + x++);",
+    "options": [
+      "14",
+      "12",
+      "13",
+      "15"
+    ],
+    "answer": "14"
+  },
+  {
+    "id": 128,
+    "question": "What is binary of 17?",
+    "options": [
+      "10010",
+      "10011",
+      "10001",
+      "10000"
+    ],
+    "answer": "10001"
+  },
+  {
+    "id": 129,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(n^2)",
+      "O(n)",
+      "O(log n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 130,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Graph",
+      "Stack",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 131,
+    "question": "Find next: 8, 16, 32, ?",
+    "options": [
+      "64",
+      "80",
+      "96",
+      "48"
+    ],
+    "answer": "64"
+  },
+  {
+    "id": 132,
+    "question": "What is the output?\nlet x = 9; let y = 2; console.log(x % y);",
+    "options": [
+      "0",
+      "1",
+      "107",
+      "2"
+    ],
+    "answer": "1"
+  },
+  {
+    "id": 133,
+    "question": "What is the output?\nlet x = 15; console.log(++x + x++);",
+    "options": [
+      "32",
+      "31",
+      "30",
+      "33"
+    ],
+    "answer": "32"
+  },
+  {
+    "id": 134,
+    "question": "What is binary of 17?",
+    "options": [
+      "10001",
+      "10010",
+      "10011",
+      "10000"
+    ],
+    "answer": "10001"
+  },
+  {
+    "id": 135,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n^2)",
+      "O(n)",
+      "O(1)",
+      "O(log n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 136,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Stack",
+      "Queue",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 137,
+    "question": "Find next: 3, 6, 12, ?",
+    "options": [
+      "24",
+      "30",
+      "18",
+      "36"
+    ],
+    "answer": "24"
+  },
+  {
+    "id": 138,
+    "question": "What is the output?\nlet x = 20; let y = 1; console.log(x % y);",
+    "options": [
+      "1",
+      "4",
+      "0",
+      "48"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 139,
+    "question": "What is the output?\nlet x = 20; console.log(++x + x++);",
+    "options": [
+      "40",
+      "41",
+      "43",
+      "42"
+    ],
+    "answer": "42"
+  },
+  {
+    "id": 140,
+    "question": "What is binary of 4?",
+    "options": [
+      "110",
+      "100",
+      "11",
+      "101"
+    ],
+    "answer": "100"
+  },
+  {
+    "id": 141,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(n^2)",
+      "O(log n)",
+      "O(1)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 142,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Graph",
+      "Stack",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 143,
+    "question": "Find next: 16, 32, 64, ?",
+    "options": [
+      "160",
+      "128",
+      "96",
+      "192"
+    ],
+    "answer": "128"
+  },
+  {
+    "id": 144,
+    "question": "What is the output?\nlet x = 5; let y = 8; console.log(x % y);",
+    "options": [
+      "3",
+      "200",
+      "5",
+      "174"
+    ],
+    "answer": "5"
+  },
+  {
+    "id": 145,
+    "question": "What is the output?\nlet x = 8; console.log(++x + x++);",
+    "options": [
+      "16",
+      "19",
+      "18",
+      "17"
+    ],
+    "answer": "18"
+  },
+  {
+    "id": 146,
+    "question": "What is binary of 18?",
+    "options": [
+      "10001",
+      "10011",
+      "10100",
+      "10010"
+    ],
+    "answer": "10010"
+  },
+  {
+    "id": 147,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n^2)",
+      "O(1)",
+      "O(n)",
+      "O(log n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 148,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Array",
+      "Stack",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 149,
+    "question": "Find next: 10, 20, 40, ?",
+    "options": [
+      "120",
+      "80",
+      "100",
+      "60"
+    ],
+    "answer": "80"
+  },
+  {
+    "id": 150,
+    "question": "What is the output?\nlet x = 13; let y = 9; console.log(x % y);",
+    "options": [
+      "4",
+      "182",
+      "3",
+      "9"
+    ],
+    "answer": "4"
+  },
+  {
+    "id": 151,
+    "question": "What is the output?\nlet x = 11; console.log(++x + x++);",
+    "options": [
+      "23",
+      "24",
+      "25",
+      "22"
+    ],
+    "answer": "24"
+  },
+  {
+    "id": 152,
+    "question": "What is binary of 17?",
+    "options": [
+      "10000",
+      "10010",
+      "10001",
+      "10011"
+    ],
+    "answer": "10001"
+  },
+  {
+    "id": 153,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(log n)",
+      "O(n)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 154,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Stack",
+      "Graph",
+      "Array",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 155,
+    "question": "Find next: 9, 18, 36, ?",
+    "options": [
+      "72",
+      "90",
+      "108",
+      "54"
+    ],
+    "answer": "72"
+  },
+  {
+    "id": 156,
+    "question": "What is the output?\nlet x = 10; let y = 1; console.log(x % y);",
+    "options": [
+      "96",
+      "8",
+      "0",
+      "1"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 157,
+    "question": "What is the output?\nlet x = 12; console.log(++x + x++);",
+    "options": [
+      "25",
+      "26",
+      "27",
+      "24"
+    ],
+    "answer": "26"
+  },
+  {
+    "id": 158,
+    "question": "What is binary of 16?",
+    "options": [
+      "1111",
+      "10001",
+      "10010",
+      "10000"
+    ],
+    "answer": "10000"
+  },
+  {
+    "id": 159,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(log n)",
+      "O(n)",
+      "O(n^2)",
+      "O(1)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 160,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Array",
+      "Stack",
+      "Graph",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 161,
+    "question": "Find next: 11, 22, 44, ?",
+    "options": [
+      "132",
+      "88",
+      "66",
+      "110"
+    ],
+    "answer": "88"
+  },
+  {
+    "id": 162,
+    "question": "What is the output?\nlet x = 15; let y = 4; console.log(x % y);",
+    "options": [
+      "0",
+      "4",
+      "3",
+      "194"
+    ],
+    "answer": "3"
+  },
+  {
+    "id": 163,
+    "question": "What is the output?\nlet x = 8; console.log(++x + x++);",
+    "options": [
+      "17",
+      "19",
+      "18",
+      "16"
+    ],
+    "answer": "18"
+  },
+  {
+    "id": 164,
+    "question": "What is binary of 8?",
+    "options": [
+      "1001",
+      "1010",
+      "111",
+      "1000"
+    ],
+    "answer": "1000"
+  },
+  {
+    "id": 165,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n^2)",
+      "O(log n)",
+      "O(n)",
+      "O(1)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 166,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Graph",
+      "Array",
+      "Stack"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 167,
+    "question": "Find next: 4, 8, 16, ?",
+    "options": [
+      "24",
+      "40",
+      "32",
+      "48"
+    ],
+    "answer": "32"
+  },
+  {
+    "id": 168,
+    "question": "What is the output?\nlet x = 19; let y = 3; console.log(x % y);",
+    "options": [
+      "1",
+      "3",
+      "129",
+      "84"
+    ],
+    "answer": "1"
+  },
+  {
+    "id": 169,
+    "question": "What is the output?\nlet x = 12; console.log(++x + x++);",
+    "options": [
+      "27",
+      "25",
+      "24",
+      "26"
+    ],
+    "answer": "26"
+  },
+  {
+    "id": 170,
+    "question": "What is binary of 6?",
+    "options": [
+      "111",
+      "110",
+      "101",
+      "1000"
+    ],
+    "answer": "110"
+  },
+  {
+    "id": 171,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n^2)",
+      "O(log n)",
+      "O(1)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 172,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Stack",
+      "Array",
+      "Queue",
+      "Graph"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 173,
+    "question": "Find next: 15, 30, 60, ?",
+    "options": [
+      "150",
+      "120",
+      "180",
+      "90"
+    ],
+    "answer": "120"
+  },
+  {
+    "id": 174,
+    "question": "What is the output?\nlet x = 17; let y = 7; console.log(x % y);",
+    "options": [
+      "1",
+      "7",
+      "3",
+      "184"
+    ],
+    "answer": "3"
+  },
+  {
+    "id": 175,
+    "question": "What is the output?\nlet x = 4; console.log(++x + x++);",
+    "options": [
+      "10",
+      "8",
+      "9",
+      "11"
+    ],
+    "answer": "10"
+  },
+  {
+    "id": 176,
+    "question": "What is binary of 4?",
+    "options": [
+      "11",
+      "110",
+      "101",
+      "100"
+    ],
+    "answer": "100"
+  },
+  {
+    "id": 177,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(n^2)",
+      "O(log n)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 178,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Array",
+      "Stack",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 179,
+    "question": "Find next: 15, 30, 60, ?",
+    "options": [
+      "180",
+      "90",
+      "120",
+      "150"
+    ],
+    "answer": "120"
+  },
+  {
+    "id": 180,
+    "question": "What is the output?\nlet x = 10; let y = 2; console.log(x % y);",
+    "options": [
+      "0",
+      "20",
+      "2",
+      "1"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 181,
+    "question": "What is the output?\nlet x = 17; console.log(++x + x++);",
+    "options": [
+      "37",
+      "35",
+      "36",
+      "34"
+    ],
+    "answer": "36"
+  },
+  {
+    "id": 182,
+    "question": "What is binary of 8?",
+    "options": [
+      "1000",
+      "111",
+      "1010",
+      "1001"
+    ],
+    "answer": "1000"
+  },
+  {
+    "id": 183,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n^2)",
+      "O(log n)",
+      "O(n)",
+      "O(1)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 184,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Array",
+      "Stack",
+      "Graph",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 185,
+    "question": "Find next: 20, 40, 80, ?",
+    "options": [
+      "240",
+      "200",
+      "160",
+      "120"
+    ],
+    "answer": "160"
+  },
+  {
+    "id": 186,
+    "question": "What is the output?\nlet x = 16; let y = 4; console.log(x % y);",
+    "options": [
+      "1",
+      "109",
+      "0",
+      "4"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 187,
+    "question": "What is the output?\nlet x = 2; console.log(++x + x++);",
+    "options": [
+      "4",
+      "6",
+      "5",
+      "7"
+    ],
+    "answer": "6"
+  },
+  {
+    "id": 188,
+    "question": "What is binary of 19?",
+    "options": [
+      "10011",
+      "10010",
+      "10100",
+      "10101"
+    ],
+    "answer": "10011"
+  },
+  {
+    "id": 189,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(log n)",
+      "O(1)",
+      "O(n^2)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 190,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Array",
+      "Stack",
+      "Graph",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 191,
+    "question": "Find next: 20, 40, 80, ?",
+    "options": [
+      "120",
+      "240",
+      "200",
+      "160"
+    ],
+    "answer": "160"
+  },
+  {
+    "id": 192,
+    "question": "What is the output?\nlet x = 15; let y = 5; console.log(x % y);",
+    "options": [
+      "3",
+      "5",
+      "0",
+      "191"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 193,
+    "question": "What is the output?\nlet x = 3; console.log(++x + x++);",
+    "options": [
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "answer": "8"
+  },
+  {
+    "id": 194,
+    "question": "What is binary of 7?",
+    "options": [
+      "110",
+      "111",
+      "1001",
+      "1000"
+    ],
+    "answer": "111"
+  },
+  {
+    "id": 195,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(1)",
+      "O(n^2)",
+      "O(log n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 196,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Stack",
+      "Array",
+      "Queue",
+      "Graph"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 197,
+    "question": "Find next: 11, 22, 44, ?",
+    "options": [
+      "88",
+      "66",
+      "132",
+      "110"
+    ],
+    "answer": "88"
+  },
+  {
+    "id": 198,
+    "question": "What is the output?\nlet x = 9; let y = 2; console.log(x % y);",
+    "options": [
+      "2",
+      "1",
+      "0",
+      "192"
+    ],
+    "answer": "1"
+  },
+  {
+    "id": 199,
+    "question": "What is the output?\nlet x = 4; console.log(++x + x++);",
+    "options": [
+      "11",
+      "9",
+      "8",
+      "10"
+    ],
+    "answer": "10"
+  },
+  {
+    "id": 200,
+    "question": "What is binary of 7?",
+    "options": [
+      "1000",
+      "1001",
+      "111",
+      "110"
+    ],
+    "answer": "111"
+  },
+  {
+    "id": 201,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n^2)",
+      "O(1)",
+      "O(log n)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 202,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Array",
+      "Stack",
+      "Graph"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 203,
+    "question": "Find next: 9, 18, 36, ?",
+    "options": [
+      "108",
+      "90",
+      "54",
+      "72"
+    ],
+    "answer": "72"
+  },
+  {
+    "id": 204,
+    "question": "What is the output?\nlet x = 2; let y = 9; console.log(x % y);",
+    "options": [
+      "2",
+      "168",
+      "185",
+      "1"
+    ],
+    "answer": "2"
+  },
+  {
+    "id": 205,
+    "question": "What is the output?\nlet x = 8; console.log(++x + x++);",
+    "options": [
+      "19",
+      "18",
+      "16",
+      "17"
+    ],
+    "answer": "18"
+  },
+  {
+    "id": 206,
+    "question": "What is binary of 5?",
+    "options": [
+      "100",
+      "111",
+      "101",
+      "110"
+    ],
+    "answer": "101"
+  },
+  {
+    "id": 207,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(log n)",
+      "O(n)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 208,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Stack",
+      "Array",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 209,
+    "question": "Find next: 17, 34, 68, ?",
+    "options": [
+      "204",
+      "136",
+      "102",
+      "170"
+    ],
+    "answer": "136"
+  },
+  {
+    "id": 210,
+    "question": "What is the output?\nlet x = 4; let y = 7; console.log(x % y);",
+    "options": [
+      "100",
+      "4",
+      "45",
+      "3"
+    ],
+    "answer": "4"
+  },
+  {
+    "id": 211,
+    "question": "What is the output?\nlet x = 16; console.log(++x + x++);",
+    "options": [
+      "34",
+      "35",
+      "32",
+      "33"
+    ],
+    "answer": "34"
+  },
+  {
+    "id": 212,
+    "question": "What is binary of 11?",
+    "options": [
+      "1101",
+      "1011",
+      "1010",
+      "1100"
+    ],
+    "answer": "1011"
+  },
+  {
+    "id": 213,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(log n)",
+      "O(n^2)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 214,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Stack",
+      "Graph",
+      "Queue",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 215,
+    "question": "Find next: 18, 36, 72, ?",
+    "options": [
+      "216",
+      "180",
+      "144",
+      "108"
+    ],
+    "answer": "144"
+  },
+  {
+    "id": 216,
+    "question": "What is the output?\nlet x = 12; let y = 1; console.log(x % y);",
+    "options": [
+      "99",
+      "83",
+      "1",
+      "0"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 217,
+    "question": "What is the output?\nlet x = 10; console.log(++x + x++);",
+    "options": [
+      "22",
+      "23",
+      "20",
+      "21"
+    ],
+    "answer": "22"
+  },
+  {
+    "id": 218,
+    "question": "What is binary of 5?",
+    "options": [
+      "101",
+      "111",
+      "110",
+      "100"
+    ],
+    "answer": "101"
+  },
+  {
+    "id": 219,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(1)",
+      "O(n^2)",
+      "O(log n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 220,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Array",
+      "Graph",
+      "Stack"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 221,
+    "question": "Find next: 4, 8, 16, ?",
+    "options": [
+      "48",
+      "40",
+      "24",
+      "32"
+    ],
+    "answer": "32"
+  },
+  {
+    "id": 222,
+    "question": "What is the output?\nlet x = 2; let y = 4; console.log(x % y);",
+    "options": [
+      "2",
+      "90",
+      "0",
+      "164"
+    ],
+    "answer": "2"
+  },
+  {
+    "id": 223,
+    "question": "What is the output?\nlet x = 19; console.log(++x + x++);",
+    "options": [
+      "39",
+      "38",
+      "40",
+      "41"
+    ],
+    "answer": "40"
+  },
+  {
+    "id": 224,
+    "question": "What is binary of 17?",
+    "options": [
+      "10000",
+      "10010",
+      "10011",
+      "10001"
+    ],
+    "answer": "10001"
+  },
+  {
+    "id": 225,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(1)",
+      "O(log n)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 226,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Array",
+      "Queue",
+      "Graph",
+      "Stack"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 227,
+    "question": "Find next: 8, 16, 32, ?",
+    "options": [
+      "80",
+      "64",
+      "96",
+      "48"
+    ],
+    "answer": "64"
+  },
+  {
+    "id": 228,
+    "question": "What is the output?\nlet x = 16; let y = 7; console.log(x % y);",
+    "options": [
+      "150",
+      "7",
+      "0",
+      "2"
+    ],
+    "answer": "2"
+  },
+  {
+    "id": 229,
+    "question": "What is the output?\nlet x = 5; console.log(++x + x++);",
+    "options": [
+      "11",
+      "10",
+      "12",
+      "13"
+    ],
+    "answer": "12"
+  },
+  {
+    "id": 230,
+    "question": "What is binary of 10?",
+    "options": [
+      "1011",
+      "1100",
+      "1010",
+      "1001"
+    ],
+    "answer": "1010"
+  },
+  {
+    "id": 231,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(n)",
+      "O(log n)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 232,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Stack",
+      "Array",
+      "Queue",
+      "Graph"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 233,
+    "question": "Find next: 9, 18, 36, ?",
+    "options": [
+      "54",
+      "72",
+      "108",
+      "90"
+    ],
+    "answer": "72"
+  },
+  {
+    "id": 234,
+    "question": "What is the output?\nlet x = 8; let y = 6; console.log(x % y);",
+    "options": [
+      "1",
+      "2",
+      "179",
+      "6"
+    ],
+    "answer": "2"
+  },
+  {
+    "id": 235,
+    "question": "What is the output?\nlet x = 10; console.log(++x + x++);",
+    "options": [
+      "20",
+      "21",
+      "23",
+      "22"
+    ],
+    "answer": "22"
+  },
+  {
+    "id": 236,
+    "question": "What is binary of 16?",
+    "options": [
+      "1111",
+      "10010",
+      "10001",
+      "10000"
+    ],
+    "answer": "10000"
+  },
+  {
+    "id": 237,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(log n)",
+      "O(1)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 238,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Stack",
+      "Graph",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 239,
+    "question": "Find next: 13, 26, 52, ?",
+    "options": [
+      "104",
+      "130",
+      "78",
+      "156"
+    ],
+    "answer": "104"
+  },
+  {
+    "id": 240,
+    "question": "What is the output?\nlet x = 18; let y = 1; console.log(x % y);",
+    "options": [
+      "107",
+      "0",
+      "108",
+      "1"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 241,
+    "question": "What is the output?\nlet x = 15; console.log(++x + x++);",
+    "options": [
+      "33",
+      "31",
+      "32",
+      "30"
+    ],
+    "answer": "32"
+  },
+  {
+    "id": 242,
+    "question": "What is binary of 12?",
+    "options": [
+      "1101",
+      "1100",
+      "1110",
+      "1011"
+    ],
+    "answer": "1100"
+  },
+  {
+    "id": 243,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(log n)",
+      "O(1)",
+      "O(n^2)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 244,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Array",
+      "Stack",
+      "Graph",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 245,
+    "question": "Find next: 5, 10, 20, ?",
+    "options": [
+      "30",
+      "40",
+      "50",
+      "60"
+    ],
+    "answer": "40"
+  },
+  {
+    "id": 246,
+    "question": "What is the output?\nlet x = 19; let y = 5; console.log(x % y);",
+    "options": [
+      "1",
+      "4",
+      "5",
+      "167"
+    ],
+    "answer": "4"
+  },
+  {
+    "id": 247,
+    "question": "What is the output?\nlet x = 15; console.log(++x + x++);",
+    "options": [
+      "30",
+      "31",
+      "32",
+      "33"
+    ],
+    "answer": "32"
+  },
+  {
+    "id": 248,
+    "question": "What is binary of 4?",
+    "options": [
+      "101",
+      "11",
+      "110",
+      "100"
+    ],
+    "answer": "100"
+  },
+  {
+    "id": 249,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(log n)",
+      "O(n)",
+      "O(1)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 250,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Array",
+      "Stack",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 251,
+    "question": "Find next: 14, 28, 56, ?",
+    "options": [
+      "84",
+      "168",
+      "112",
+      "140"
+    ],
+    "answer": "112"
+  },
+  {
+    "id": 252,
+    "question": "What is the output?\nlet x = 5; let y = 9; console.log(x % y);",
+    "options": [
+      "32",
+      "26",
+      "4",
+      "5"
+    ],
+    "answer": "5"
+  },
+  {
+    "id": 253,
+    "question": "What is the output?\nlet x = 19; console.log(++x + x++);",
+    "options": [
+      "38",
+      "39",
+      "40",
+      "41"
+    ],
+    "answer": "40"
+  },
+  {
+    "id": 254,
+    "question": "What is binary of 6?",
+    "options": [
+      "111",
+      "110",
+      "101",
+      "1000"
+    ],
+    "answer": "110"
+  },
+  {
+    "id": 255,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(log n)",
+      "O(n^2)",
+      "O(n)",
+      "O(1)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 256,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Array",
+      "Stack",
+      "Queue",
+      "Graph"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 257,
+    "question": "Find next: 15, 30, 60, ?",
+    "options": [
+      "90",
+      "180",
+      "150",
+      "120"
+    ],
+    "answer": "120"
+  },
+  {
+    "id": 258,
+    "question": "What is the output?\nlet x = 17; let y = 9; console.log(x % y);",
+    "options": [
+      "115",
+      "8",
+      "7",
+      "9"
+    ],
+    "answer": "8"
+  },
+  {
+    "id": 259,
+    "question": "What is the output?\nlet x = 8; console.log(++x + x++);",
+    "options": [
+      "17",
+      "16",
+      "18",
+      "19"
+    ],
+    "answer": "18"
+  },
+  {
+    "id": 260,
+    "question": "What is binary of 13?",
+    "options": [
+      "1100",
+      "1110",
+      "1101",
+      "1111"
+    ],
+    "answer": "1101"
+  },
+  {
+    "id": 261,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(n^2)",
+      "O(log n)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 262,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Stack",
+      "Graph",
+      "Array",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 263,
+    "question": "Find next: 15, 30, 60, ?",
+    "options": [
+      "150",
+      "120",
+      "180",
+      "90"
+    ],
+    "answer": "120"
+  },
+  {
+    "id": 264,
+    "question": "What is the output?\nlet x = 10; let y = 5; console.log(x % y);",
+    "options": [
+      "5",
+      "0",
+      "79",
+      "4"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 265,
+    "question": "What is the output?\nlet x = 18; console.log(++x + x++);",
+    "options": [
+      "39",
+      "37",
+      "36",
+      "38"
+    ],
+    "answer": "38"
+  },
+  {
+    "id": 266,
+    "question": "What is binary of 7?",
+    "options": [
+      "1001",
+      "110",
+      "1000",
+      "111"
+    ],
+    "answer": "111"
+  },
+  {
+    "id": 267,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(1)",
+      "O(log n)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 268,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Array",
+      "Stack",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 269,
+    "question": "Find next: 6, 12, 24, ?",
+    "options": [
+      "60",
+      "48",
+      "36",
+      "72"
+    ],
+    "answer": "48"
+  },
+  {
+    "id": 270,
+    "question": "What is the output?\nlet x = 18; let y = 10; console.log(x % y);",
+    "options": [
+      "119",
+      "7",
+      "10",
+      "8"
+    ],
+    "answer": "8"
+  },
+  {
+    "id": 271,
+    "question": "What is the output?\nlet x = 15; console.log(++x + x++);",
+    "options": [
+      "30",
+      "33",
+      "32",
+      "31"
+    ],
+    "answer": "32"
+  },
+  {
+    "id": 272,
+    "question": "What is binary of 6?",
+    "options": [
+      "110",
+      "101",
+      "1000",
+      "111"
+    ],
+    "answer": "110"
+  },
+  {
+    "id": 273,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(n)",
+      "O(log n)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 274,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Queue",
+      "Stack",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 275,
+    "question": "Find next: 11, 22, 44, ?",
+    "options": [
+      "66",
+      "132",
+      "110",
+      "88"
+    ],
+    "answer": "88"
+  },
+  {
+    "id": 276,
+    "question": "What is the output?\nlet x = 5; let y = 8; console.log(x % y);",
+    "options": [
+      "167",
+      "5",
+      "3",
+      "102"
+    ],
+    "answer": "5"
+  },
+  {
+    "id": 277,
+    "question": "What is the output?\nlet x = 11; console.log(++x + x++);",
+    "options": [
+      "23",
+      "25",
+      "22",
+      "24"
+    ],
+    "answer": "24"
+  },
+  {
+    "id": 278,
+    "question": "What is binary of 5?",
+    "options": [
+      "101",
+      "111",
+      "100",
+      "110"
+    ],
+    "answer": "101"
+  },
+  {
+    "id": 279,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(log n)",
+      "O(1)",
+      "O(n^2)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 280,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Stack",
+      "Graph",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 281,
+    "question": "Find next: 13, 26, 52, ?",
+    "options": [
+      "78",
+      "130",
+      "104",
+      "156"
+    ],
+    "answer": "104"
+  },
+  {
+    "id": 282,
+    "question": "What is the output?\nlet x = 9; let y = 3; console.log(x % y);",
+    "options": [
+      "57",
+      "1",
+      "0",
+      "3"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 283,
+    "question": "What is the output?\nlet x = 14; console.log(++x + x++);",
+    "options": [
+      "30",
+      "29",
+      "28",
+      "31"
+    ],
+    "answer": "30"
+  },
+  {
+    "id": 284,
+    "question": "What is binary of 9?",
+    "options": [
+      "1011",
+      "1000",
+      "1010",
+      "1001"
+    ],
+    "answer": "1001"
+  },
+  {
+    "id": 285,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(n^2)",
+      "O(1)",
+      "O(log n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 286,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Array",
+      "Graph",
+      "Queue",
+      "Stack"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 287,
+    "question": "Find next: 18, 36, 72, ?",
+    "options": [
+      "216",
+      "144",
+      "108",
+      "180"
+    ],
+    "answer": "144"
+  },
+  {
+    "id": 288,
+    "question": "What is the output?\nlet x = 14; let y = 3; console.log(x % y);",
+    "options": [
+      "3",
+      "2",
+      "117",
+      "191"
+    ],
+    "answer": "2"
+  },
+  {
+    "id": 289,
+    "question": "What is the output?\nlet x = 11; console.log(++x + x++);",
+    "options": [
+      "22",
+      "25",
+      "24",
+      "23"
+    ],
+    "answer": "24"
+  },
+  {
+    "id": 290,
+    "question": "What is binary of 14?",
+    "options": [
+      "10000",
+      "1111",
+      "1110",
+      "1101"
+    ],
+    "answer": "1110"
+  },
+  {
+    "id": 291,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(n^2)",
+      "O(log n)",
+      "O(1)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 292,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Stack",
+      "Graph",
+      "Array",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 293,
+    "question": "Find next: 20, 40, 80, ?",
+    "options": [
+      "200",
+      "240",
+      "120",
+      "160"
+    ],
+    "answer": "160"
+  },
+  {
+    "id": 294,
+    "question": "What is the output?\nlet x = 16; let y = 5; console.log(x % y);",
+    "options": [
+      "1",
+      "126",
+      "5",
+      "4"
+    ],
+    "answer": "1"
+  },
+  {
+    "id": 295,
+    "question": "What is the output?\nlet x = 10; console.log(++x + x++);",
+    "options": [
+      "22",
+      "23",
+      "20",
+      "21"
+    ],
+    "answer": "22"
+  },
+  {
+    "id": 296,
+    "question": "What is binary of 19?",
+    "options": [
+      "10100",
+      "10010",
+      "10011",
+      "10101"
+    ],
+    "answer": "10011"
+  },
+  {
+    "id": 297,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(log n)",
+      "O(n)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 298,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Stack",
+      "Queue",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 299,
+    "question": "Find next: 3, 6, 12, ?",
+    "options": [
+      "36",
+      "24",
+      "18",
+      "30"
+    ],
+    "answer": "24"
+  },
+  {
+    "id": 300,
+    "question": "What is the output?\nlet x = 4; let y = 1; console.log(x % y);",
+    "options": [
+      "34",
+      "1",
+      "0",
+      "117"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 301,
+    "question": "What is the output?\nlet x = 4; console.log(++x + x++);",
+    "options": [
+      "10",
+      "11",
+      "9",
+      "8"
+    ],
+    "answer": "10"
+  },
+  {
+    "id": 302,
+    "question": "What is binary of 13?",
+    "options": [
+      "1100",
+      "1110",
+      "1101",
+      "1111"
+    ],
+    "answer": "1101"
+  },
+  {
+    "id": 303,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(n^2)",
+      "O(log n)",
+      "O(1)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 304,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Array",
+      "Queue",
+      "Stack"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 305,
+    "question": "Find next: 5, 10, 20, ?",
+    "options": [
+      "30",
+      "40",
+      "50",
+      "60"
+    ],
+    "answer": "40"
+  },
+  {
+    "id": 306,
+    "question": "What is the output?\nlet x = 2; let y = 10; console.log(x % y);",
+    "options": [
+      "0",
+      "88",
+      "2",
+      "185"
+    ],
+    "answer": "2"
+  },
+  {
+    "id": 307,
+    "question": "What is the output?\nlet x = 8; console.log(++x + x++);",
+    "options": [
+      "19",
+      "17",
+      "16",
+      "18"
+    ],
+    "answer": "18"
+  },
+  {
+    "id": 308,
+    "question": "What is binary of 13?",
+    "options": [
+      "1111",
+      "1110",
+      "1100",
+      "1101"
+    ],
+    "answer": "1101"
+  },
+  {
+    "id": 309,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(n^2)",
+      "O(log n)",
+      "O(1)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 310,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Queue",
+      "Stack",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 311,
+    "question": "Find next: 7, 14, 28, ?",
+    "options": [
+      "42",
+      "56",
+      "84",
+      "70"
+    ],
+    "answer": "56"
+  },
+  {
+    "id": 312,
+    "question": "What is the output?\nlet x = 13; let y = 9; console.log(x % y);",
+    "options": [
+      "9",
+      "3",
+      "44",
+      "4"
+    ],
+    "answer": "4"
+  },
+  {
+    "id": 313,
+    "question": "What is the output?\nlet x = 16; console.log(++x + x++);",
+    "options": [
+      "34",
+      "32",
+      "33",
+      "35"
+    ],
+    "answer": "34"
+  },
+  {
+    "id": 314,
+    "question": "What is binary of 6?",
+    "options": [
+      "111",
+      "1000",
+      "101",
+      "110"
+    ],
+    "answer": "110"
+  },
+  {
+    "id": 315,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(log n)",
+      "O(n)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 316,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Graph",
+      "Stack",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 317,
+    "question": "Find next: 10, 20, 40, ?",
+    "options": [
+      "60",
+      "100",
+      "80",
+      "120"
+    ],
+    "answer": "80"
+  },
+  {
+    "id": 318,
+    "question": "What is the output?\nlet x = 18; let y = 6; console.log(x % y);",
+    "options": [
+      "0",
+      "4",
+      "6",
+      "102"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 319,
+    "question": "What is the output?\nlet x = 12; console.log(++x + x++);",
+    "options": [
+      "26",
+      "27",
+      "24",
+      "25"
+    ],
+    "answer": "26"
+  },
+  {
+    "id": 320,
+    "question": "What is binary of 6?",
+    "options": [
+      "101",
+      "111",
+      "110",
+      "1000"
+    ],
+    "answer": "110"
+  },
+  {
+    "id": 321,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(log n)",
+      "O(n)",
+      "O(1)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 322,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Array",
+      "Stack",
+      "Graph",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 323,
+    "question": "Find next: 9, 18, 36, ?",
+    "options": [
+      "90",
+      "72",
+      "108",
+      "54"
+    ],
+    "answer": "72"
+  },
+  {
+    "id": 324,
+    "question": "What is the output?\nlet x = 10; let y = 4; console.log(x % y);",
+    "options": [
+      "4",
+      "2",
+      "0",
+      "55"
+    ],
+    "answer": "2"
+  },
+  {
+    "id": 325,
+    "question": "What is the output?\nlet x = 19; console.log(++x + x++);",
+    "options": [
+      "39",
+      "40",
+      "38",
+      "41"
+    ],
+    "answer": "40"
+  },
+  {
+    "id": 326,
+    "question": "What is binary of 20?",
+    "options": [
+      "10011",
+      "10110",
+      "10100",
+      "10101"
+    ],
+    "answer": "10100"
+  },
+  {
+    "id": 327,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(log n)",
+      "O(1)",
+      "O(n)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 328,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Array",
+      "Graph",
+      "Stack",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 329,
+    "question": "Find next: 6, 12, 24, ?",
+    "options": [
+      "36",
+      "60",
+      "48",
+      "72"
+    ],
+    "answer": "48"
+  },
+  {
+    "id": 330,
+    "question": "What is the output?\nlet x = 5; let y = 6; console.log(x % y);",
+    "options": [
+      "141",
+      "1",
+      "199",
+      "5"
+    ],
+    "answer": "5"
+  },
+  {
+    "id": 331,
+    "question": "What is the output?\nlet x = 20; console.log(++x + x++);",
+    "options": [
+      "40",
+      "42",
+      "43",
+      "41"
+    ],
+    "answer": "42"
+  },
+  {
+    "id": 332,
+    "question": "What is binary of 8?",
+    "options": [
+      "1001",
+      "1010",
+      "111",
+      "1000"
+    ],
+    "answer": "1000"
+  },
+  {
+    "id": 333,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(log n)",
+      "O(n^2)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 334,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Stack",
+      "Queue",
+      "Graph",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 335,
+    "question": "Find next: 16, 32, 64, ?",
+    "options": [
+      "192",
+      "96",
+      "128",
+      "160"
+    ],
+    "answer": "128"
+  },
+  {
+    "id": 336,
+    "question": "What is the output?\nlet x = 7; let y = 3; console.log(x % y);",
+    "options": [
+      "3",
+      "1",
+      "10",
+      "112"
+    ],
+    "answer": "1"
+  },
+  {
+    "id": 337,
+    "question": "What is the output?\nlet x = 5; console.log(++x + x++);",
+    "options": [
+      "11",
+      "10",
+      "12",
+      "13"
+    ],
+    "answer": "12"
+  },
+  {
+    "id": 338,
+    "question": "What is binary of 14?",
+    "options": [
+      "1111",
+      "10000",
+      "1101",
+      "1110"
+    ],
+    "answer": "1110"
+  },
+  {
+    "id": 339,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(1)",
+      "O(log n)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 340,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Queue",
+      "Stack",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 341,
+    "question": "Find next: 9, 18, 36, ?",
+    "options": [
+      "72",
+      "90",
+      "54",
+      "108"
+    ],
+    "answer": "72"
+  },
+  {
+    "id": 342,
+    "question": "What is the output?\nlet x = 14; let y = 3; console.log(x % y);",
+    "options": [
+      "3",
+      "186",
+      "2",
+      "90"
+    ],
+    "answer": "2"
+  },
+  {
+    "id": 343,
+    "question": "What is the output?\nlet x = 20; console.log(++x + x++);",
+    "options": [
+      "43",
+      "40",
+      "41",
+      "42"
+    ],
+    "answer": "42"
+  },
+  {
+    "id": 344,
+    "question": "What is binary of 2?",
+    "options": [
+      "1",
+      "10",
+      "100",
+      "11"
+    ],
+    "answer": "10"
+  },
+  {
+    "id": 345,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(log n)",
+      "O(n^2)",
+      "O(n)",
+      "O(1)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 346,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Stack",
+      "Queue",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 347,
+    "question": "Find next: 18, 36, 72, ?",
+    "options": [
+      "108",
+      "216",
+      "144",
+      "180"
+    ],
+    "answer": "144"
+  },
+  {
+    "id": 348,
+    "question": "What is the output?\nlet x = 14; let y = 10; console.log(x % y);",
+    "options": [
+      "16",
+      "10",
+      "3",
+      "4"
+    ],
+    "answer": "4"
+  },
+  {
+    "id": 349,
+    "question": "What is the output?\nlet x = 10; console.log(++x + x++);",
+    "options": [
+      "22",
+      "21",
+      "23",
+      "20"
+    ],
+    "answer": "22"
+  },
+  {
+    "id": 350,
+    "question": "What is binary of 19?",
+    "options": [
+      "10101",
+      "10010",
+      "10011",
+      "10100"
+    ],
+    "answer": "10011"
+  },
+  {
+    "id": 351,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(n)",
+      "O(n^2)",
+      "O(log n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 352,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Array",
+      "Graph",
+      "Stack"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 353,
+    "question": "Find next: 9, 18, 36, ?",
+    "options": [
+      "72",
+      "54",
+      "108",
+      "90"
+    ],
+    "answer": "72"
+  },
+  {
+    "id": 354,
+    "question": "What is the output?\nlet x = 5; let y = 2; console.log(x % y);",
+    "options": [
+      "2",
+      "29",
+      "1",
+      "77"
+    ],
+    "answer": "1"
+  },
+  {
+    "id": 355,
+    "question": "What is the output?\nlet x = 20; console.log(++x + x++);",
+    "options": [
+      "40",
+      "41",
+      "43",
+      "42"
+    ],
+    "answer": "42"
+  },
+  {
+    "id": 356,
+    "question": "What is binary of 6?",
+    "options": [
+      "101",
+      "111",
+      "1000",
+      "110"
+    ],
+    "answer": "110"
+  },
+  {
+    "id": 357,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(n^2)",
+      "O(1)",
+      "O(log n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 358,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Array",
+      "Queue",
+      "Stack"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 359,
+    "question": "Find next: 20, 40, 80, ?",
+    "options": [
+      "160",
+      "120",
+      "240",
+      "200"
+    ],
+    "answer": "160"
+  },
+  {
+    "id": 360,
+    "question": "What is the output?\nlet x = 12; let y = 3; console.log(x % y);",
+    "options": [
+      "0",
+      "64",
+      "144",
+      "3"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 361,
+    "question": "What is the output?\nlet x = 7; console.log(++x + x++);",
+    "options": [
+      "16",
+      "17",
+      "14",
+      "15"
+    ],
+    "answer": "16"
+  },
+  {
+    "id": 362,
+    "question": "What is binary of 19?",
+    "options": [
+      "10100",
+      "10101",
+      "10010",
+      "10011"
+    ],
+    "answer": "10011"
+  },
+  {
+    "id": 363,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n^2)",
+      "O(1)",
+      "O(n)",
+      "O(log n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 364,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Stack",
+      "Queue",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 365,
+    "question": "Find next: 4, 8, 16, ?",
+    "options": [
+      "40",
+      "32",
+      "48",
+      "24"
+    ],
+    "answer": "32"
+  },
+  {
+    "id": 366,
+    "question": "What is the output?\nlet x = 3; let y = 8; console.log(x % y);",
+    "options": [
+      "109",
+      "2",
+      "3",
+      "78"
+    ],
+    "answer": "3"
+  },
+  {
+    "id": 367,
+    "question": "What is the output?\nlet x = 11; console.log(++x + x++);",
+    "options": [
+      "23",
+      "25",
+      "22",
+      "24"
+    ],
+    "answer": "24"
+  },
+  {
+    "id": 368,
+    "question": "What is binary of 20?",
+    "options": [
+      "10101",
+      "10100",
+      "10011",
+      "10110"
+    ],
+    "answer": "10100"
+  },
+  {
+    "id": 369,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(n^2)",
+      "O(1)",
+      "O(log n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 370,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Stack",
+      "Queue",
+      "Graph",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 371,
+    "question": "Find next: 2, 4, 8, ?",
+    "options": [
+      "24",
+      "12",
+      "16",
+      "20"
+    ],
+    "answer": "16"
+  },
+  {
+    "id": 372,
+    "question": "What is the output?\nlet x = 3; let y = 2; console.log(x % y);",
+    "options": [
+      "2",
+      "0",
+      "17",
+      "1"
+    ],
+    "answer": "1"
+  },
+  {
+    "id": 373,
+    "question": "What is the output?\nlet x = 12; console.log(++x + x++);",
+    "options": [
+      "26",
+      "27",
+      "25",
+      "24"
+    ],
+    "answer": "26"
+  },
+  {
+    "id": 374,
+    "question": "What is binary of 16?",
+    "options": [
+      "1111",
+      "10010",
+      "10001",
+      "10000"
+    ],
+    "answer": "10000"
+  },
+  {
+    "id": 375,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(n^2)",
+      "O(log n)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 376,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Array",
+      "Graph",
+      "Queue",
+      "Stack"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 377,
+    "question": "Find next: 16, 32, 64, ?",
+    "options": [
+      "96",
+      "192",
+      "128",
+      "160"
+    ],
+    "answer": "128"
+  },
+  {
+    "id": 378,
+    "question": "What is the output?\nlet x = 4; let y = 4; console.log(x % y);",
+    "options": [
+      "4",
+      "196",
+      "0",
+      "1"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 379,
+    "question": "What is the output?\nlet x = 15; console.log(++x + x++);",
+    "options": [
+      "33",
+      "31",
+      "32",
+      "30"
+    ],
+    "answer": "32"
+  },
+  {
+    "id": 380,
+    "question": "What is binary of 20?",
+    "options": [
+      "10110",
+      "10011",
+      "10100",
+      "10101"
+    ],
+    "answer": "10100"
+  },
+  {
+    "id": 381,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n^2)",
+      "O(log n)",
+      "O(1)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 382,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Array",
+      "Queue",
+      "Stack",
+      "Graph"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 383,
+    "question": "Find next: 20, 40, 80, ?",
+    "options": [
+      "160",
+      "120",
+      "240",
+      "200"
+    ],
+    "answer": "160"
+  },
+  {
+    "id": 384,
+    "question": "What is the output?\nlet x = 6; let y = 9; console.log(x % y);",
+    "options": [
+      "6",
+      "143",
+      "76",
+      "3"
+    ],
+    "answer": "6"
+  },
+  {
+    "id": 385,
+    "question": "What is the output?\nlet x = 2; console.log(++x + x++);",
+    "options": [
+      "7",
+      "6",
+      "5",
+      "4"
+    ],
+    "answer": "6"
+  },
+  {
+    "id": 386,
+    "question": "What is binary of 19?",
+    "options": [
+      "10010",
+      "10100",
+      "10101",
+      "10011"
+    ],
+    "answer": "10011"
+  },
+  {
+    "id": 387,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(log n)",
+      "O(n)",
+      "O(1)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 388,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Graph",
+      "Array",
+      "Stack"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 389,
+    "question": "Find next: 11, 22, 44, ?",
+    "options": [
+      "110",
+      "66",
+      "132",
+      "88"
+    ],
+    "answer": "88"
+  },
+  {
+    "id": 390,
+    "question": "What is the output?\nlet x = 5; let y = 2; console.log(x % y);",
+    "options": [
+      "1",
+      "37",
+      "64",
+      "2"
+    ],
+    "answer": "1"
+  },
+  {
+    "id": 391,
+    "question": "What is the output?\nlet x = 5; console.log(++x + x++);",
+    "options": [
+      "11",
+      "13",
+      "10",
+      "12"
+    ],
+    "answer": "12"
+  },
+  {
+    "id": 392,
+    "question": "What is binary of 5?",
+    "options": [
+      "101",
+      "111",
+      "110",
+      "100"
+    ],
+    "answer": "101"
+  },
+  {
+    "id": 393,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(log n)",
+      "O(1)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 394,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Stack",
+      "Queue",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 395,
+    "question": "Find next: 18, 36, 72, ?",
+    "options": [
+      "216",
+      "108",
+      "144",
+      "180"
+    ],
+    "answer": "144"
+  },
+  {
+    "id": 396,
+    "question": "What is the output?\nlet x = 19; let y = 4; console.log(x % y);",
+    "options": [
+      "3",
+      "129",
+      "4",
+      "119"
+    ],
+    "answer": "3"
+  },
+  {
+    "id": 397,
+    "question": "What is the output?\nlet x = 4; console.log(++x + x++);",
+    "options": [
+      "9",
+      "8",
+      "11",
+      "10"
+    ],
+    "answer": "10"
+  },
+  {
+    "id": 398,
+    "question": "What is binary of 10?",
+    "options": [
+      "1010",
+      "1011",
+      "1001",
+      "1100"
+    ],
+    "answer": "1010"
+  },
+  {
+    "id": 399,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(log n)",
+      "O(n^2)",
+      "O(1)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 400,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Stack",
+      "Graph",
+      "Array",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 401,
+    "question": "Find next: 11, 22, 44, ?",
+    "options": [
+      "132",
+      "110",
+      "88",
+      "66"
+    ],
+    "answer": "88"
+  },
+  {
+    "id": 402,
+    "question": "What is the output?\nlet x = 13; let y = 7; console.log(x % y);",
+    "options": [
+      "5",
+      "7",
+      "5",
+      "6"
+    ],
+    "answer": "6"
+  },
+  {
+    "id": 403,
+    "question": "What is the output?\nlet x = 14; console.log(++x + x++);",
+    "options": [
+      "28",
+      "31",
+      "29",
+      "30"
+    ],
+    "answer": "30"
+  },
+  {
+    "id": 404,
+    "question": "What is binary of 3?",
+    "options": [
+      "11",
+      "101",
+      "10",
+      "100"
+    ],
+    "answer": "11"
+  },
+  {
+    "id": 405,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(log n)",
+      "O(n^2)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 406,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Array",
+      "Stack",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 407,
+    "question": "Find next: 2, 4, 8, ?",
+    "options": [
+      "20",
+      "16",
+      "12",
+      "24"
+    ],
+    "answer": "16"
+  },
+  {
+    "id": 408,
+    "question": "What is the output?\nlet x = 19; let y = 4; console.log(x % y);",
+    "options": [
+      "3",
+      "188",
+      "8",
+      "4"
+    ],
+    "answer": "3"
+  },
+  {
+    "id": 409,
+    "question": "What is the output?\nlet x = 12; console.log(++x + x++);",
+    "options": [
+      "26",
+      "25",
+      "24",
+      "27"
+    ],
+    "answer": "26"
+  },
+  {
+    "id": 410,
+    "question": "What is binary of 20?",
+    "options": [
+      "10011",
+      "10100",
+      "10110",
+      "10101"
+    ],
+    "answer": "10100"
+  },
+  {
+    "id": 411,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(log n)",
+      "O(n^2)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 412,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Array",
+      "Queue",
+      "Stack"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 413,
+    "question": "Find next: 18, 36, 72, ?",
+    "options": [
+      "216",
+      "144",
+      "180",
+      "108"
+    ],
+    "answer": "144"
+  },
+  {
+    "id": 414,
+    "question": "What is the output?\nlet x = 13; let y = 6; console.log(x % y);",
+    "options": [
+      "6",
+      "53",
+      "4",
+      "1"
+    ],
+    "answer": "1"
+  },
+  {
+    "id": 415,
+    "question": "What is the output?\nlet x = 9; console.log(++x + x++);",
+    "options": [
+      "20",
+      "19",
+      "18",
+      "21"
+    ],
+    "answer": "20"
+  },
+  {
+    "id": 416,
+    "question": "What is binary of 7?",
+    "options": [
+      "110",
+      "111",
+      "1000",
+      "1001"
+    ],
+    "answer": "111"
+  },
+  {
+    "id": 417,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(log n)",
+      "O(n^2)",
+      "O(1)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 418,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Array",
+      "Stack",
+      "Graph"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 419,
+    "question": "Find next: 20, 40, 80, ?",
+    "options": [
+      "120",
+      "240",
+      "200",
+      "160"
+    ],
+    "answer": "160"
+  },
+  {
+    "id": 420,
+    "question": "What is the output?\nlet x = 12; let y = 1; console.log(x % y);",
+    "options": [
+      "171",
+      "0",
+      "156",
+      "1"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 421,
+    "question": "What is the output?\nlet x = 15; console.log(++x + x++);",
+    "options": [
+      "33",
+      "32",
+      "31",
+      "30"
+    ],
+    "answer": "32"
+  },
+  {
+    "id": 422,
+    "question": "What is binary of 2?",
+    "options": [
+      "10",
+      "100",
+      "11",
+      "1"
+    ],
+    "answer": "10"
+  },
+  {
+    "id": 423,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(n^2)",
+      "O(log n)",
+      "O(1)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 424,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Stack",
+      "Array",
+      "Graph"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 425,
+    "question": "Find next: 2, 4, 8, ?",
+    "options": [
+      "16",
+      "24",
+      "20",
+      "12"
+    ],
+    "answer": "16"
+  },
+  {
+    "id": 426,
+    "question": "What is the output?\nlet x = 4; let y = 2; console.log(x % y);",
+    "options": [
+      "109",
+      "2",
+      "1",
+      "0"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 427,
+    "question": "What is the output?\nlet x = 20; console.log(++x + x++);",
+    "options": [
+      "41",
+      "40",
+      "42",
+      "43"
+    ],
+    "answer": "42"
+  },
+  {
+    "id": 428,
+    "question": "What is binary of 6?",
+    "options": [
+      "110",
+      "1000",
+      "111",
+      "101"
+    ],
+    "answer": "110"
+  },
+  {
+    "id": 429,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n^2)",
+      "O(log n)",
+      "O(1)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 430,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Stack",
+      "Graph",
+      "Array",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 431,
+    "question": "Find next: 16, 32, 64, ?",
+    "options": [
+      "96",
+      "128",
+      "192",
+      "160"
+    ],
+    "answer": "128"
+  },
+  {
+    "id": 432,
+    "question": "What is the output?\nlet x = 7; let y = 4; console.log(x % y);",
+    "options": [
+      "4",
+      "2",
+      "71",
+      "3"
+    ],
+    "answer": "3"
+  },
+  {
+    "id": 433,
+    "question": "What is the output?\nlet x = 9; console.log(++x + x++);",
+    "options": [
+      "21",
+      "19",
+      "18",
+      "20"
+    ],
+    "answer": "20"
+  },
+  {
+    "id": 434,
+    "question": "What is binary of 13?",
+    "options": [
+      "1101",
+      "1111",
+      "1110",
+      "1100"
+    ],
+    "answer": "1101"
+  },
+  {
+    "id": 435,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(n^2)",
+      "O(log n)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 436,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Queue",
+      "Stack",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 437,
+    "question": "Find next: 18, 36, 72, ?",
+    "options": [
+      "144",
+      "180",
+      "216",
+      "108"
+    ],
+    "answer": "144"
+  },
+  {
+    "id": 438,
+    "question": "What is the output?\nlet x = 12; let y = 6; console.log(x % y);",
+    "options": [
+      "5",
+      "6",
+      "0",
+      "4"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 439,
+    "question": "What is the output?\nlet x = 18; console.log(++x + x++);",
+    "options": [
+      "38",
+      "37",
+      "36",
+      "39"
+    ],
+    "answer": "38"
+  },
+  {
+    "id": 440,
+    "question": "What is binary of 10?",
+    "options": [
+      "1001",
+      "1010",
+      "1011",
+      "1100"
+    ],
+    "answer": "1010"
+  },
+  {
+    "id": 441,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(log n)",
+      "O(1)",
+      "O(n^2)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 442,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Stack",
+      "Array",
+      "Graph",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 443,
+    "question": "Find next: 3, 6, 12, ?",
+    "options": [
+      "30",
+      "18",
+      "24",
+      "36"
+    ],
+    "answer": "24"
+  },
+  {
+    "id": 444,
+    "question": "What is the output?\nlet x = 16; let y = 6; console.log(x % y);",
+    "options": [
+      "2",
+      "4",
+      "6",
+      "11"
+    ],
+    "answer": "4"
+  },
+  {
+    "id": 445,
+    "question": "What is the output?\nlet x = 7; console.log(++x + x++);",
+    "options": [
+      "17",
+      "15",
+      "16",
+      "14"
+    ],
+    "answer": "16"
+  },
+  {
+    "id": 446,
+    "question": "What is binary of 11?",
+    "options": [
+      "1100",
+      "1011",
+      "1010",
+      "1101"
+    ],
+    "answer": "1011"
+  },
+  {
+    "id": 447,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n)",
+      "O(1)",
+      "O(n^2)",
+      "O(log n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 448,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Stack",
+      "Array",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 449,
+    "question": "Find next: 5, 10, 20, ?",
+    "options": [
+      "40",
+      "30",
+      "50",
+      "60"
+    ],
+    "answer": "40"
+  },
+  {
+    "id": 450,
+    "question": "What is the output?\nlet x = 9; let y = 5; console.log(x % y);",
+    "options": [
+      "3",
+      "142",
+      "4",
+      "5"
+    ],
+    "answer": "4"
+  },
+  {
+    "id": 451,
+    "question": "What is the output?\nlet x = 12; console.log(++x + x++);",
+    "options": [
+      "26",
+      "24",
+      "25",
+      "27"
+    ],
+    "answer": "26"
+  },
+  {
+    "id": 452,
+    "question": "What is binary of 17?",
+    "options": [
+      "10011",
+      "10010",
+      "10000",
+      "10001"
+    ],
+    "answer": "10001"
+  },
+  {
+    "id": 453,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(log n)",
+      "O(n^2)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 454,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Stack",
+      "Graph",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 455,
+    "question": "Find next: 19, 38, 76, ?",
+    "options": [
+      "152",
+      "190",
+      "228",
+      "114"
+    ],
+    "answer": "152"
+  },
+  {
+    "id": 456,
+    "question": "What is the output?\nlet x = 6; let y = 5; console.log(x % y);",
+    "options": [
+      "5",
+      "61",
+      "1",
+      "0"
+    ],
+    "answer": "1"
+  },
+  {
+    "id": 457,
+    "question": "What is the output?\nlet x = 13; console.log(++x + x++);",
+    "options": [
+      "29",
+      "27",
+      "26",
+      "28"
+    ],
+    "answer": "28"
+  },
+  {
+    "id": 458,
+    "question": "What is binary of 15?",
+    "options": [
+      "1111",
+      "10001",
+      "1110",
+      "10000"
+    ],
+    "answer": "1111"
+  },
+  {
+    "id": 459,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(log n)",
+      "O(n)",
+      "O(n^2)",
+      "O(1)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 460,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Stack",
+      "Queue",
+      "Graph",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 461,
+    "question": "Find next: 15, 30, 60, ?",
+    "options": [
+      "120",
+      "90",
+      "180",
+      "150"
+    ],
+    "answer": "120"
+  },
+  {
+    "id": 462,
+    "question": "What is the output?\nlet x = 17; let y = 6; console.log(x % y);",
+    "options": [
+      "3",
+      "5",
+      "6",
+      "18"
+    ],
+    "answer": "5"
+  },
+  {
+    "id": 463,
+    "question": "What is the output?\nlet x = 9; console.log(++x + x++);",
+    "options": [
+      "21",
+      "20",
+      "19",
+      "18"
+    ],
+    "answer": "20"
+  },
+  {
+    "id": 464,
+    "question": "What is binary of 5?",
+    "options": [
+      "111",
+      "101",
+      "110",
+      "100"
+    ],
+    "answer": "101"
+  },
+  {
+    "id": 465,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(log n)",
+      "O(n)",
+      "O(1)",
+      "O(n^2)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 466,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Array",
+      "Queue",
+      "Graph",
+      "Stack"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 467,
+    "question": "Find next: 4, 8, 16, ?",
+    "options": [
+      "40",
+      "24",
+      "32",
+      "48"
+    ],
+    "answer": "32"
+  },
+  {
+    "id": 468,
+    "question": "What is the output?\nlet x = 20; let y = 6; console.log(x % y);",
+    "options": [
+      "115",
+      "2",
+      "6",
+      "27"
+    ],
+    "answer": "2"
+  },
+  {
+    "id": 469,
+    "question": "What is the output?\nlet x = 16; console.log(++x + x++);",
+    "options": [
+      "34",
+      "35",
+      "32",
+      "33"
+    ],
+    "answer": "34"
+  },
+  {
+    "id": 470,
+    "question": "What is binary of 2?",
+    "options": [
+      "10",
+      "100",
+      "1",
+      "11"
+    ],
+    "answer": "10"
+  },
+  {
+    "id": 471,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(log n)",
+      "O(n^2)",
+      "O(1)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 472,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Array",
+      "Stack",
+      "Graph"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 473,
+    "question": "Find next: 20, 40, 80, ?",
+    "options": [
+      "120",
+      "160",
+      "200",
+      "240"
+    ],
+    "answer": "160"
+  },
+  {
+    "id": 474,
+    "question": "What is the output?\nlet x = 20; let y = 3; console.log(x % y);",
+    "options": [
+      "3",
+      "0",
+      "176",
+      "2"
+    ],
+    "answer": "2"
+  },
+  {
+    "id": 475,
+    "question": "What is the output?\nlet x = 14; console.log(++x + x++);",
+    "options": [
+      "28",
+      "29",
+      "31",
+      "30"
+    ],
+    "answer": "30"
+  },
+  {
+    "id": 476,
+    "question": "What is binary of 6?",
+    "options": [
+      "110",
+      "101",
+      "111",
+      "1000"
+    ],
+    "answer": "110"
+  },
+  {
+    "id": 477,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(log n)",
+      "O(n^2)",
+      "O(n)",
+      "O(1)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 478,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Stack",
+      "Graph",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 479,
+    "question": "Find next: 16, 32, 64, ?",
+    "options": [
+      "128",
+      "96",
+      "160",
+      "192"
+    ],
+    "answer": "128"
+  },
+  {
+    "id": 480,
+    "question": "What is the output?\nlet x = 16; let y = 4; console.log(x % y);",
+    "options": [
+      "32",
+      "1",
+      "4",
+      "0"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 481,
+    "question": "What is the output?\nlet x = 16; console.log(++x + x++);",
+    "options": [
+      "32",
+      "35",
+      "33",
+      "34"
+    ],
+    "answer": "34"
+  },
+  {
+    "id": 482,
+    "question": "What is binary of 10?",
+    "options": [
+      "1010",
+      "1100",
+      "1011",
+      "1001"
+    ],
+    "answer": "1010"
+  },
+  {
+    "id": 483,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(1)",
+      "O(n^2)",
+      "O(log n)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 484,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Graph",
+      "Stack",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 485,
+    "question": "Find next: 5, 10, 20, ?",
+    "options": [
+      "40",
+      "60",
+      "50",
+      "30"
+    ],
+    "answer": "40"
+  },
+  {
+    "id": 486,
+    "question": "What is the output?\nlet x = 6; let y = 4; console.log(x % y);",
+    "options": [
+      "4",
+      "1",
+      "43",
+      "2"
+    ],
+    "answer": "2"
+  },
+  {
+    "id": 487,
+    "question": "What is the output?\nlet x = 6; console.log(++x + x++);",
+    "options": [
+      "13",
+      "14",
+      "15",
+      "12"
+    ],
+    "answer": "14"
+  },
+  {
+    "id": 488,
+    "question": "What is binary of 15?",
+    "options": [
+      "1110",
+      "10001",
+      "10000",
+      "1111"
+    ],
+    "answer": "1111"
+  },
+  {
+    "id": 489,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n^2)",
+      "O(1)",
+      "O(log n)",
+      "O(n)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 490,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Graph",
+      "Array",
+      "Stack",
+      "Queue"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 491,
+    "question": "Find next: 20, 40, 80, ?",
+    "options": [
+      "120",
+      "160",
+      "240",
+      "200"
+    ],
+    "answer": "160"
+  },
+  {
+    "id": 492,
+    "question": "What is the output?\nlet x = 3; let y = 4; console.log(x % y);",
+    "options": [
+      "3",
+      "1",
+      "74",
+      "192"
+    ],
+    "answer": "3"
+  },
+  {
+    "id": 493,
+    "question": "What is the output?\nlet x = 8; console.log(++x + x++);",
+    "options": [
+      "16",
+      "17",
+      "18",
+      "19"
+    ],
+    "answer": "18"
+  },
+  {
+    "id": 494,
+    "question": "What is binary of 6?",
+    "options": [
+      "110",
+      "101",
+      "1000",
+      "111"
+    ],
+    "answer": "110"
+  },
+  {
+    "id": 495,
+    "question": "What is time complexity of binary search?",
+    "options": [
+      "O(n^2)",
+      "O(log n)",
+      "O(n)",
+      "O(1)"
+    ],
+    "answer": "O(log n)"
+  },
+  {
+    "id": 496,
+    "question": "Which data structure uses LIFO?",
+    "options": [
+      "Queue",
+      "Stack",
+      "Graph",
+      "Array"
+    ],
+    "answer": "Stack"
+  },
+  {
+    "id": 497,
+    "question": "Find next: 2, 4, 8, ?",
+    "options": [
+      "20",
+      "24",
+      "16",
+      "12"
+    ],
+    "answer": "16"
+  },
+  {
+    "id": 498,
+    "question": "What is the output?\nlet x = 12; let y = 6; console.log(x % y);",
+    "options": [
+      "0",
+      "6",
+      "139",
+      "5"
+    ],
+    "answer": "0"
+  },
+  {
+    "id": 499,
+    "question": "What is the output?\nlet x = 8; console.log(++x + x++);",
+    "options": [
+      "19",
+      "18",
+      "16",
+      "17"
+    ],
+    "answer": "18"
+  },
+  {
+    "id": 500,
+    "question": "What is binary of 18?",
+    "options": [
+      "10011",
+      "10001",
+      "10100",
+      "10010"
+    ],
+    "answer": "10010"
+  }
+]

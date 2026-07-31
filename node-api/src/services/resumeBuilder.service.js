@@ -4,6 +4,7 @@ const resumeVersionRepository = require('../repositories/resumeVersion.repositor
 const studentRepository = require('../repositories/student.repository');
 const userRepository = require('../repositories/user.repository');
 const { isGroqConfigured, groqComplete } = require('../utils/groqClient');
+const { buildInstitutionFilter } = require('../utils/authz');
 const ApiError = require('../utils/ApiError');
 const logger = require('../utils/logger');
 
@@ -46,6 +47,13 @@ class ResumeBuilderService extends BaseService {
     super(resumeBuilderRepository, { entityName: 'Resume' });
   }
 
+  // Staff-facing listing (GET /resume/all, /resume/all/:id) — students never
+  // hit this path (they use getOwn below), so no row-level check is needed
+  // beyond the institution scope.
+  async list(queryParams, actor) {
+    return super.list(queryParams, buildInstitutionFilter(actor));
+  }
+
   // Auto-creates a default resume on first access — ported from
   // python-service's GET /resume, which does the same (node-api's version of
   // this used to 404 instead; changed to match the behavior the live
@@ -55,7 +63,11 @@ class ResumeBuilderService extends BaseService {
     let resume = await resumeBuilderRepository.findByStudentId(student.id);
     if (!resume) {
       const user = await userRepository.findById(actor.id);
-      resume = await resumeBuilderRepository.create({ student_id: student.id, ...defaultResume(user) });
+      resume = await resumeBuilderRepository.create({
+        student_id: student.id,
+        institution_id: student.institution_id,
+        ...defaultResume(user),
+      });
     }
     const versions = await resumeVersionRepository.findByStudentId(student.id);
     return { resume, versions };
@@ -72,9 +84,9 @@ class ResumeBuilderService extends BaseService {
     const existing = await resumeBuilderRepository.findByStudentId(student.id);
     const resume = existing
       ? await resumeBuilderRepository.updateById(existing.id, payload)
-      : await resumeBuilderRepository.create({ student_id: student.id, ...payload });
+      : await resumeBuilderRepository.create({ student_id: student.id, institution_id: student.institution_id, ...payload });
 
-    return { success: true, updated_at: resume.updated_at };
+    return { updated_at: resume.updated_at };
   }
 
   async addVersion(actor, name) {
@@ -84,8 +96,8 @@ class ResumeBuilderService extends BaseService {
 
     const snapshot = {};
     for (const field of RESUME_SECTION_FIELDS) snapshot[field] = resume[field];
-    await resumeVersionRepository.create({ student_id: student.id, name, ...snapshot });
-    return { success: true, message: `Version '${name}' saved successfully` };
+    const version = await resumeVersionRepository.create({ student_id: student.id, name, ...snapshot });
+    return version;
   }
 
   async restoreVersion(actor, versionId) {
@@ -97,12 +109,10 @@ class ResumeBuilderService extends BaseService {
     for (const field of RESUME_SECTION_FIELDS) snapshot[field] = version[field];
 
     const existing = await resumeBuilderRepository.findByStudentId(student.id);
-    if (existing) {
-      await resumeBuilderRepository.updateById(existing.id, snapshot);
-    } else {
-      await resumeBuilderRepository.create({ student_id: student.id, ...snapshot });
-    }
-    return { success: true, message: 'Resume restored to selected version' };
+    const resume = existing
+      ? await resumeBuilderRepository.updateById(existing.id, snapshot)
+      : await resumeBuilderRepository.create({ student_id: student.id, institution_id: student.institution_id, ...snapshot });
+    return resume;
   }
 
   async deleteVersion(actor, versionId) {
@@ -111,7 +121,7 @@ class ResumeBuilderService extends BaseService {
     if (!version || version.student_id !== student.id) throw ApiError.notFound('Version not found');
 
     await resumeVersionRepository.deleteById(versionId);
-    return { success: true, message: 'Version deleted' };
+    return null;
   }
 
   async analyze(actor) {

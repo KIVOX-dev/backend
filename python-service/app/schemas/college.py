@@ -1,5 +1,5 @@
 """
-Skillovate V2 — College Pydantic Schemas
+UpScaler-AI V2 — College Pydantic Schemas
 """
 from datetime import datetime
 from typing import Optional

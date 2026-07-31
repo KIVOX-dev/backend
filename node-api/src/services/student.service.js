@@ -11,10 +11,22 @@ const { applyTestResult } = require('../utils/studentStats');
 const { findOrCreateStudentUser } = require('../utils/studentOnboarding');
 const { ROLES } = require('../config/constants');
 const ApiError = require('../utils/ApiError');
+const logger = require('../utils/logger');
 
 const RECENT_LIMIT = 5;
 const HISTORY_LIMIT = 100;
 const STAFF_ROLES = [ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY];
+
+// The self-service learner routes (/students/:id/dashboard, /:id/tests, etc.)
+// are all called by the frontend with the logged-in user's own `user.id`
+// (the only id it has from authStore) rather than the separate `students`
+// collection's own row id — the two are different uuids. Every one of these
+// lookups used to be a bare findById(studentId), which 404'd for every real
+// caller. Falling back to findByUserId keeps any hypothetical caller that
+// already has the real student id working too.
+async function resolveStudent(id) {
+  return (await studentRepository.findById(id)) || (await studentRepository.findByUserId(id));
+}
 
 function canActOnStudent(actor, student) {
   if (actor.role === ROLES.SUPER_ADMIN) return true;
@@ -48,58 +60,61 @@ class StudentService extends BaseService {
 
   // Kiosk/verification lookup by human-typed college name + roll number —
   // ported from python-service's POST /students/identify. Intentionally
-  // unauthenticated in python (a check-in kiosk has no login) — preserved
-  // here, but note this leaks a student's stats to anyone who can guess a
-  // valid college+roll pair; worth revisiting in the Phase 5 security pass.
-  async identify({ collegeName, rollNumber }) {
+  // unauthenticated (a check-in kiosk has no login), but the response is
+  // deliberately minimal (name + college + a verified flag only) and the
+  // route is rate-limited — see routes/student.routes.js#/identify. Never
+  // return internal ids, department, batch year, or performance stats here.
+  async identify({ collegeName, rollNumber }, context = {}) {
     const institution = await institutionRepository.findByNameRegex(String(collegeName || '').trim());
-    if (!institution) throw ApiError.notFound('College not found');
+    if (!institution) {
+      logger.info('Student identify lookup: college not found', { collegeName, rollNumber, ip: context.ip });
+      throw ApiError.notFound('Student not found');
+    }
 
     const student = await studentRepository.findByRollNumber(String(rollNumber || '').trim().toUpperCase());
-    if (!student || student.institution_id !== institution.id) throw ApiError.notFound('Student not found');
+    if (!student || student.institution_id !== institution.id) {
+      logger.info('Student identify lookup: no match', { collegeName, rollNumber, ip: context.ip });
+      throw ApiError.notFound('Student not found');
+    }
 
     const user = await userRepository.findById(student.user_id);
-    if (!user) throw ApiError.notFound('Student not found');
+    if (!user) {
+      logger.info('Student identify lookup: no match', { collegeName, rollNumber, ip: context.ip });
+      throw ApiError.notFound('Student not found');
+    }
 
+    logger.info('Student identify lookup: matched', { collegeName, rollNumber, ip: context.ip });
     return {
-      internal_id: user.id,
-      id: student.roll_number,
       name: user.full_name,
       college: institution.name,
-      college_id: institution.id,
-      department: user.department,
-      year: student.batch_year,
-      stats: {
-        tests_completed: student.tests_completed || 0,
-        avg_accuracy: student.avg_accuracy || 0,
-        interviews_completed: student.interviews_completed || 0,
-        streak: student.streak_days || 0,
-      },
+      verified: true,
     };
   }
 
   async dashboard(studentId) {
-    const student = await studentRepository.findById(studentId);
+    const student = await resolveStudent(studentId);
     if (!student) throw ApiError.notFound('Student not found');
 
     const { rows: attempts } = await assessmentAttemptRepository.findAll({
       page: 1,
       limit: RECENT_LIMIT,
-      filters: { student_id: studentId },
+      filters: { student_id: student.id },
     });
-    const recentActivity = await Promise.all(
-      attempts.map(async (a) => {
-        const test = await testRepository.findById(a.test_id);
-        return {
-          id: a.id,
-          title: test ? test.title : 'Practice Test',
-          score: a.score || 0,
-          max_score: a.max_score || 100,
-          percentage: a.percentage || 0,
-          date: a.completed_at,
-        };
-      })
-    );
+    // One $in query instead of one findById per attempt (RECENT_LIMIT is
+    // small today, but this scales flat regardless of how large it grows).
+    const tests = await testRepository.findByIds(attempts.map((a) => a.test_id));
+    const testById = new Map(tests.map((t) => [t.id, t]));
+    const recentActivity = attempts.map((a) => {
+      const test = testById.get(a.test_id);
+      return {
+        id: a.id,
+        title: test ? test.title : 'Practice Test',
+        score: a.score || 0,
+        max_score: a.max_score || 100,
+        percentage: a.percentage || 0,
+        date: a.completed_at,
+      };
+    });
 
     return {
       tests_completed: student.tests_completed || 0,
@@ -113,14 +128,14 @@ class StudentService extends BaseService {
   }
 
   async listTests(studentId, actor) {
-    const student = await studentRepository.findById(studentId);
+    const student = await resolveStudent(studentId);
     if (!student) throw ApiError.notFound('Student not found');
     if (!canActOnStudent(actor, student)) throw ApiError.forbidden('Not authorized');
 
     const { rows } = await assessmentAttemptRepository.findAll({
       page: 1,
       limit: HISTORY_LIMIT,
-      filters: { student_id: studentId },
+      filters: { student_id: student.id },
     });
     return rows;
   }
@@ -131,7 +146,7 @@ class StudentService extends BaseService {
   // Restricted here to the student themself or staff in the same institution
   // — same "fix immediately" call as placementRecord.service.js#create.
   async logTest(studentId, data, actor) {
-    const student = await studentRepository.findById(studentId);
+    const student = await resolveStudent(studentId);
     if (!student) throw ApiError.notFound('Student not found');
     if (actor.role !== ROLES.STUDENT && !STAFF_ROLES.includes(actor.role)) {
       throw ApiError.forbidden('Not authorized');
@@ -154,10 +169,10 @@ class StudentService extends BaseService {
       });
     }
 
-    const attemptNumber = (await assessmentAttemptRepository.countForStudentAndTest(studentId, test.id)) + 1;
+    const attemptNumber = (await assessmentAttemptRepository.countForStudentAndTest(student.id, test.id)) + 1;
     await assessmentAttemptRepository.create({
       test_id: test.id,
-      student_id: studentId,
+      student_id: student.id,
       institution_id: student.institution_id,
       attempt_number: attemptNumber,
       score,
@@ -167,14 +182,17 @@ class StudentService extends BaseService {
       completed_at: new Date(),
     });
 
-    await applyTestResult(studentId, percentage);
+    await applyTestResult(student.id, percentage);
   }
 
   async testAnalytics(studentId) {
+    const student = await resolveStudent(studentId);
+    if (!student) throw ApiError.notFound('Student not found');
+
     const { rows: attempts, total } = await assessmentAttemptRepository.findAll({
       page: 1,
       limit: HISTORY_LIMIT,
-      filters: { student_id: studentId },
+      filters: { student_id: student.id },
     });
     const average = attempts.length
       ? Math.round((attempts.reduce((sum, a) => sum + (a.percentage || 0), 0) / attempts.length) * 100) / 100
@@ -183,25 +201,25 @@ class StudentService extends BaseService {
   }
 
   async listInterviews(studentId, actor) {
-    const student = await studentRepository.findById(studentId);
+    const student = await resolveStudent(studentId);
     if (!student) throw ApiError.notFound('Student not found');
     if (!canActOnStudent(actor, student)) throw ApiError.forbidden('Not authorized');
 
     const { rows } = await interviewAttemptRepository.findAll({
       page: 1,
       limit: HISTORY_LIMIT,
-      filters: { student_id: studentId },
+      filters: { student_id: student.id },
     });
     return rows;
   }
 
   async logInterview(studentId, data) {
-    const student = await studentRepository.findById(studentId);
+    const student = await resolveStudent(studentId);
     if (!student) throw ApiError.notFound('Student not found');
 
-    const attemptNumber = (await interviewAttemptRepository.countForStudent(studentId)) + 1;
+    const attemptNumber = (await interviewAttemptRepository.countForStudent(student.id)) + 1;
     const attempt = await interviewAttemptRepository.create({
-      student_id: studentId,
+      student_id: student.id,
       institution_id: student.institution_id,
       role: data.role,
       category: data.category || 'technical',
@@ -227,7 +245,7 @@ class StudentService extends BaseService {
       )
     );
 
-    await studentRepository.updateById(studentId, {
+    await studentRepository.updateById(student.id, {
       interviews_completed: (student.interviews_completed || 0) + 1,
     });
     return attempt;
@@ -237,22 +255,27 @@ class StudentService extends BaseService {
   // batches.py migration checkpoint) — just onboards users + student rows,
   // no batch/batch_students tracking docs. Ported from python-service's
   // POST /students/batch.
-  async batchCreate({ students = [], department, year }, actor) {
+  async batchCreate({ students = [], department, department_id: departmentId, year }, actor) {
     const defaultStatus = actor.role === ROLES.FACULTY ? 'pending' : 'approved';
     let created = 0;
+    const createdStudents = [];
 
     for (const item of students) {
-      const { created: wasCreated } = await findOrCreateStudentUser({
+      const { user, created: wasCreated, tempPassword } = await findOrCreateStudentUser({
         item,
         institutionId: actor.institutionId,
         department,
+        departmentId,
         year,
         status: defaultStatus,
       });
-      if (wasCreated) created += 1;
+      if (wasCreated) {
+        created += 1;
+        if (tempPassword) createdStudents.push({ id: user.id, email: user.email, name: user.full_name, tempPassword });
+      }
     }
 
-    return { created, status: defaultStatus };
+    return { created, status: defaultStatus, students: createdStudents };
   }
 
   // Delegates to the users merge's tiered pending-list logic (see

@@ -12,22 +12,22 @@ const getOwn = asyncHandler(async (req, res) => {
 
 const saveOwn = asyncHandler(async (req, res) => {
   const result = await resumeBuilderService.upsertOwn(req.user, req.body);
-  ApiResponse.ok(res, result);
+  ApiResponse.ok(res, result, 'Resume saved');
 });
 
 const addVersion = asyncHandler(async (req, res) => {
   const result = await resumeBuilderService.addVersion(req.user, req.body.name);
-  ApiResponse.ok(res, result);
+  ApiResponse.ok(res, result, `Version '${req.body.name}' saved successfully`);
 });
 
 const restoreVersion = asyncHandler(async (req, res) => {
   const result = await resumeBuilderService.restoreVersion(req.user, req.params.versionId);
-  ApiResponse.ok(res, result);
+  ApiResponse.ok(res, result, 'Resume restored to selected version');
 });
 
 const deleteVersion = asyncHandler(async (req, res) => {
   const result = await resumeBuilderService.deleteVersion(req.user, req.params.versionId);
-  ApiResponse.ok(res, result);
+  ApiResponse.ok(res, result, 'Version deleted');
 });
 
 const analyze = asyncHandler(async (req, res) => {

@@ -1,5 +1,5 @@
 """
-Skillovate V2 — Auth Router
+UpScaler-AI V2 — Auth Router
 """
 from urllib.parse import urlencode, parse_qs
 

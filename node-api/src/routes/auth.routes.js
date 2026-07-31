@@ -1,9 +1,9 @@
 const express = require('express');
-const authController = require('../controllers/authController');
+const authController = require('../controllers/auth.controller');
 const validate = require('../middlewares/validate');
 const authenticate = require('../middlewares/authenticate');
 const { authLimiter } = require('../middlewares/rateLimiter');
-const schema = require('../validations/authValidation');
+const schema = require('../validations/auth.validation');
 
 const router = express.Router();
 
@@ -17,6 +17,12 @@ router.get('/me', authenticate, authController.me);
 // endpoint credential-stuffing/enumeration tooling targets.
 router.post('/forgot-password', authLimiter, validate(schema.forgotPassword), authController.forgotPassword);
 router.post('/reset-password', authLimiter, validate(schema.resetPassword), authController.resetPassword);
+router.post(
+  '/change-initial-password',
+  authLimiter,
+  validate(schema.changeInitialPassword),
+  authController.changeInitialPassword
+);
 router.get('/verify-email', authLimiter, validate(schema.verifyEmail, 'query'), authController.verifyEmail);
 
 module.exports = router;

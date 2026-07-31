@@ -1,5 +1,5 @@
 """
-Skillovate V2 — Models Package
+UpScaler-AI V2 — Models Package
 Central import point for all SQLAlchemy models.
 Import all models here so Alembic can detect them.
 """

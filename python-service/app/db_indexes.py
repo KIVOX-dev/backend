@@ -1,5 +1,5 @@
 """
-Skillovate V2 — MongoDB index definitions.
+UpScaler-AI V2 — MongoDB index definitions.
 
 Every query the API issues filters on one of the fields below. Without these
 indexes MongoDB performs a full collection scan for each request, which is the
@@ -14,7 +14,7 @@ import logging
 from pymongo import ASCENDING, DESCENDING, TEXT
 from pymongo.errors import OperationFailure, PyMongoError
 
-logger = logging.getLogger("skillovate")
+logger = logging.getLogger("upscaler_ai")
 
 
 # (collection, keys, options)

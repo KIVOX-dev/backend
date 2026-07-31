@@ -1,5 +1,5 @@
 """
-Skillovate V2 — User Pydantic Schemas
+UpScaler-AI V2 — User Pydantic Schemas
 """
 from datetime import datetime, timezone
 from typing import Optional

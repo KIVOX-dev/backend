@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════
-# Skillovate V2 — Backend Dependencies
+# UpScaler-AI V2 — Backend Dependencies
 # ═══════════════════════════════════════════
 #
 # Python: 3.12. Python 3.14 currently forces pydantic-core to build

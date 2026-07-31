@@ -8,7 +8,7 @@ const list = asyncHandler(async (req, res) => {
 });
 
 const getById = asyncHandler(async (req, res) => {
-  const result = await resultService.getById(req.params.id);
+  const result = await resultService.getById(req.params.id, req.user);
   ApiResponse.ok(res, result);
 });
 

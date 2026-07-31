@@ -11,11 +11,15 @@ module.exports = {
     'reset_password_token_hash', 'reset_password_expires',
     // Bumped on password reset; embedded in every issued JWT (`tv` claim) and
     // checked on refresh, so a password reset invalidates every refresh token
-    // issued before it — see authService.js#refresh.
+    // issued before it — see auth.service.js#refresh.
     'token_version',
+    // Set on bulk-onboarded student accounts given a generated temp password
+    // (see utils/studentOnboarding.js); gates login until changed via
+    // auth.service.js#changeInitialPassword.
+    'must_change_password',
   ],
   // status: pending|approved|rejected — mirrors python-service. Admin-provisioned
   // users are approved immediately (self-registration's default is Phase 4 scope,
   // where the rest of the auth system gets rebuilt).
-  defaults: { is_active: true, status: 'approved', is_email_verified: false, token_version: 0 },
+  defaults: { is_active: true, status: 'approved', is_email_verified: false, token_version: 0, must_change_password: false },
 };

@@ -1,5 +1,5 @@
 """
-Skillovate V2 — Authentication Service
+UpScaler-AI V2 — Authentication Service
 Business logic for registration, login, and token management.
 """
 from datetime import datetime, timezone, timedelta

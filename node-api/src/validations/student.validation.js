@@ -63,12 +63,14 @@ const batchStudent = Joi.object({
   name: Joi.string().max(255).required(),
   password: Joi.string().min(8).max(128),
   department: Joi.string().max(255),
+  department_id: Joi.string().uuid(),
   year: Joi.number().integer(),
 }).or('roll', 'studentId');
 
 const batchCreate = Joi.object({
   students: Joi.array().items(batchStudent).min(1).required(),
   department: Joi.string().max(255),
+  department_id: Joi.string().uuid(),
   year: Joi.number().integer(),
 });
 

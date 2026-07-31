@@ -66,6 +66,16 @@ class BaseRepository {
     return this._toEntity(doc);
   }
 
+  // Batches what would otherwise be N sequential findById calls (e.g.
+  // resolving a list of foreign-key references) into a single $in query —
+  // see student.service.js#dashboard for the call site this was added for.
+  async findByIds(ids) {
+    const uniqueIds = [...new Set(ids)].filter(Boolean);
+    if (uniqueIds.length === 0) return [];
+    const docs = await this.collection.find({ _id: { $in: uniqueIds } }).toArray();
+    return docs.map((d) => this._toEntity(d));
+  }
+
   async findOne(filters) {
     const filter = this._buildFilter(filters);
     if (Object.keys(filter).length === 0) return null; // never return an arbitrary unfiltered row

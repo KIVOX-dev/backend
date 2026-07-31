@@ -1,4 +1,4 @@
-# Skillovate Node API — Reference
+# UpScaler-AI Node API — Reference
 
 Base URL (dev): `http://localhost:5000/api/v1`
 

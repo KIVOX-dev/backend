@@ -45,7 +45,7 @@ def create_batch(data: BatchCreateRequest, current_user = Depends(get_current_us
     db["batches"].insert_one(batch)
 
     for student_data in data.students:
-        email = (student_data.email or f"{student_data.roll or student_data.student_id}@skillovate.local").lower()
+        email = (student_data.email or f"{student_data.roll or student_data.student_id}@upscaler-ai.local").lower()
         student = db["users"].find_one({"email": email})
         if not student:
             user_id = _next_id(db, "users")

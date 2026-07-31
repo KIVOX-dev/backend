@@ -1,15 +1,20 @@
 {
-  "name": "skillovate-node-api",
+  "name": "upscaler-ai-node-api",
   "version": "1.0.0",
   "private": true,
-  "description": "Node.js/Express REST API backend for Skillovate, backed by MongoDB.",
+  "description": "Node.js/Express REST API backend for UpScaler-AI, backed by MongoDB.",
   "main": "src/server.js",
   "type": "commonjs",
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "db:test": "node scripts/testConnection.js",
-    "db:setup-indexes": "node scripts/setupIndexes.js"
+    "db:setup-indexes": "node scripts/setupIndexes.js",
+    "db:seed-colleges": "node scripts/seedColleges.js",
+    "db:backfill-institution-id": "node scripts/backfillInstitutionId.js",
+    "db:seed-practice-tests": "node scripts/seedPracticeTests.js",
+    "db:seed-question-bank": "node scripts/seedQuestionBank.js",
+    "db:seed-departments": "node scripts/seedDepartments.js"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -35,6 +40,9 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0"
+    "jest": "^30.4.2",
+    "mongodb-memory-server": "^11.2.0",
+    "nodemon": "^3.1.0",
+    "supertest": "^7.2.2"
   }
 }

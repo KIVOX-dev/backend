@@ -1,5 +1,5 @@
 """
-Skillovate V2 — User Models
+UpScaler-AI V2 — User Models
 Core user table + role-specific profile tables (Student, Faculty, Recruiter).
 Uses table-per-type pattern: shared fields in `users`, role-specific fields in profile tables.
 """

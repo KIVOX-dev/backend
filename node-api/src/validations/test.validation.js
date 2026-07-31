@@ -3,7 +3,7 @@ const Joi = require('joi');
 const create = Joi.object({
   institution_id: Joi.string().uuid().required(),
   title: Joi.string().min(2).max(255).required(),
-  description: Joi.string().max(5000).allow('', null),
+  description: Joi.string().max(200000).allow('', null),
   test_type: Joi.string().valid('mcq', 'coding', 'mixed'),
   duration_minutes: Joi.number().integer().min(1).required(),
   total_marks: Joi.number().integer().min(1).required(),
@@ -11,6 +11,16 @@ const create = Joi.object({
   pass_percentage: Joi.number().min(0).max(100),
   negative_marking: Joi.boolean(),
   status: Joi.string().valid('draft', 'active', 'closed'),
+  // Only ever set by the practice-bank seed script — an admin-authored test
+  // never sets this, which is exactly what keeps it assignment-gated.
+  category: Joi.string().valid('quantitative', 'logical', 'verbal', 'data_interpretation'),
+  // Which question-bank category to randomly draw from when this test gets
+  // assigned to a student (see testAssignment.service.js#create) — distinct
+  // from `category` above.
+  source_category: Joi.string().valid('quantitative', 'logical', 'verbal', 'data_interpretation').allow(null),
+  question_count: Joi.number().integer().min(1).max(200).allow(null),
+  start_at: Joi.date().iso().allow(null),
+  end_at: Joi.date().iso().allow(null),
 });
 
 const update = create.fork(['institution_id', 'title', 'duration_minutes', 'total_marks'], (s) => s.optional());
