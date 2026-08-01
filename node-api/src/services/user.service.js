@@ -111,19 +111,41 @@ class UserService extends BaseService {
     return sanitize(user);
   }
 
+  // Two distinct authorization paths, not one role list: an admin (scoped to
+  // their own institution) editing anyone, OR any authenticated user editing
+  // their own account (self-service — e.g. Subscription.tsx's "Upgrade to
+  // Pro" does PUT /users/:id on the caller's own id to update `preferences`).
+  // Route-level authorize(super_admin, institution_admin) used to block that
+  // second path entirely, 403ing every self-service update including the
+  // student upgrade flow — see H-4.
   async update(id, data, actor) {
     const target = await userRepository.findById(id);
     if (!target) throw ApiError.notFound('User not found');
-    if (actor.role !== ROLES.SUPER_ADMIN && actor.role !== ROLES.INSTITUTION_ADMIN) {
+
+    const isAdmin = actor.role === ROLES.SUPER_ADMIN || actor.role === ROLES.INSTITUTION_ADMIN;
+    const isSelf = target.id === actor.id;
+    if (!isAdmin && !isSelf) {
       throw ApiError.forbidden('Not authorized');
     }
-    assertSameInstitution(actor, target);
 
-    const payload = { ...data };
-    if (actor.role === ROLES.INSTITUTION_ADMIN) {
-      delete payload.role;
-      delete payload.institution_id;
+    let payload = { ...data };
+    if (isAdmin) {
+      assertSameInstitution(actor, target);
+      if (actor.role === ROLES.INSTITUTION_ADMIN) {
+        delete payload.role;
+        delete payload.institution_id;
+      }
+    } else {
+      // Self-service: whitelisted (not blacklisted) so role, institution_id,
+      // status, is_active, is_email_verified — anything privilege- or
+      // approval-related — always stays admin-only, even on your own
+      // record, and any sensitive field added later is excluded by default.
+      const SELF_EDITABLE_FIELDS = ['full_name', 'phone', 'avatar_url', 'preferences', 'password'];
+      payload = Object.fromEntries(
+        Object.entries(payload).filter(([key]) => SELF_EDITABLE_FIELDS.includes(key))
+      );
     }
+
     if (payload.password) {
       payload.password_hash = await hashPassword(payload.password);
       delete payload.password;
@@ -141,11 +163,33 @@ class UserService extends BaseService {
     return super.remove(id);
   }
 
-  async approve(id) {
+  // institution_admin may approve/reject pending signups within their own
+  // institution (the actual, common case — see InstitutionalApproval.tsx,
+  // rendered on the institution-admin portal, not a super_admin-only
+  // screen); route used to be super_admin-only, 403ing every institution
+  // admin's approval, which is the H-3 "blocks valid Institution Admin
+  // operations" bug. super_admin accounts can never legitimately be
+  // pending here (self-registration never creates one — see
+  // authService.js#SELF_REGISTERABLE_ROLES) but the check stays as
+  // defense-in-depth against a role an institution_admin should never touch.
+  async assertCanReview(id, actor) {
+    const target = await userRepository.findById(id);
+    if (!target) throw ApiError.notFound('User not found');
+    if (actor.role === ROLES.SUPER_ADMIN) return target;
+    if (actor.role !== ROLES.INSTITUTION_ADMIN || target.role === ROLES.SUPER_ADMIN) {
+      throw ApiError.forbidden('Not authorized');
+    }
+    assertSameInstitution(actor, target);
+    return target;
+  }
+
+  async approve(id, actor) {
+    await this.assertCanReview(id, actor);
     return sanitize(await super.update(id, { status: 'approved' }));
   }
 
-  async reject(id) {
+  async reject(id, actor) {
+    await this.assertCanReview(id, actor);
     return sanitize(await super.update(id, { status: 'rejected' }));
   }
 }

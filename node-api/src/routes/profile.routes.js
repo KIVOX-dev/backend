@@ -1,7 +1,7 @@
 const express = require('express');
 const controller = require('../controllers/profile.controller');
 const authenticate = require('../middlewares/authenticate');
-const { upload } = require('../middlewares/upload');
+const { upload, verifyAndPersist } = require('../middlewares/upload');
 
 const router = express.Router();
 router.use(authenticate);
@@ -15,7 +15,7 @@ router.get('/me', controller.getOwn);
 // No schema validation of `values` — ported as-is from python-service's
 // profile.py, which never validated submitted values against the onboarding
 // schema either (the schema is a client-rendering contract only).
-router.post('/', upload.any(), controller.saveOwn);
-router.put('/', upload.any(), controller.saveOwn);
+router.post('/', upload.any(), verifyAndPersist, controller.saveOwn);
+router.put('/', upload.any(), verifyAndPersist, controller.saveOwn);
 
 module.exports = router;

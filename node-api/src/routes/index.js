@@ -16,6 +16,11 @@ router.use('/faculty', require('./faculty.routes'));
 router.use('/students/profile', require('./studentProfile.routes'));
 router.use('/students', require('./student.routes'));
 router.use('/placements', require('./placement.routes'));
+// Alias for the live frontend's HR module, which still calls /jobs (its
+// original python-service path) rather than /placements — same router
+// instance, so /me, /drives, /applications/me and CRUD all work identically
+// under both prefixes with zero duplicated controller/service logic.
+router.use('/jobs', require('./placement.routes'));
 router.use('/placement-applications', require('./placementApplication.routes'));
 router.use('/tests', require('./test.routes'));
 router.use('/test-assignments', require('./testAssignment.routes'));

@@ -17,7 +17,10 @@ module.exports = asyncHandler(async (req, res, next) => {
     const payload = verifyAccessToken(token);
     req.user = { id: payload.sub, role: payload.role, institutionId: payload.institutionId };
     next();
-  } catch (err) {
+  } catch {
+    // Deliberately generic — never echo back jwt.verify's own error message
+    // (expired vs malformed vs bad signature), which would hand an attacker
+    // a free oracle for probing token validity.
     throw ApiError.unauthorized('Invalid or expired access token');
   }
 });

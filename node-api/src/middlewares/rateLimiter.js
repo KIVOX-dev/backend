@@ -10,10 +10,15 @@ const apiLimiter = rateLimit({
   message: { success: false, message: 'Too many requests, please try again later.' },
 });
 
-// Stricter limiter for login/register/OAuth to blunt credential-stuffing and brute force.
+// Stricter limiter for login/register/OAuth to blunt credential-stuffing and
+// brute force. Configurable the same way apiLimiter is above — defaults to
+// the same 20/15min in every real deployment; only overridden in the
+// integration test suite (see __tests__/helpers/testApp.js), where dozens of
+// auth calls in one file would otherwise trip it well before any real
+// brute-force threshold is relevant.
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: parseInt(process.env.AUTH_RATE_LIMIT_MAX, 10) || 20,
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: 'Too many authentication attempts, please try again later.' },

@@ -1,5 +1,6 @@
 const BaseRepository = require('./BaseRepository');
 const { tableName, columns, defaults } = require('../models/institution.model');
+const { escapeRegex } = require('../utils/regex');
 
 class InstitutionRepository extends BaseRepository {
   constructor() {
@@ -15,9 +16,12 @@ class InstitutionRepository extends BaseRepository {
 
   // Backs the kiosk/verification "identify student" lookup (see
   // student.service.js#identify) — a caller supplies a human-typed college
-  // name, not an id, so this needs a case-insensitive partial match.
+  // name, not an id, so this needs a case-insensitive partial match. This
+  // route is unauthenticated (kiosk has no login — see student.routes.js),
+  // so the input is fully untrusted: escapeRegex is the only thing standing
+  // between a public endpoint and a hand-crafted $regex/ReDoS payload.
   async findByNameRegex(name) {
-    const doc = await this.collection.findOne({ name: { $regex: name, $options: 'i' } });
+    const doc = await this.collection.findOne({ name: { $regex: escapeRegex(name), $options: 'i' } });
     return this._toEntity(doc);
   }
 }

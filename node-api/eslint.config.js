@@ -27,7 +27,13 @@ module.exports = [
       },
     },
     rules: {
-      'no-unused-vars': ['warn', { args: 'none' }],
+      // ignoreRestSiblings: true — this codebase's standard way to omit
+      // fields from an entity before returning it is destructuring them out
+      // (`const { password_hash, ...safe } = user; return safe;`, see
+      // auth.service.js#sanitizeUser and friends). `password_hash` etc. are
+      // deliberately unused bindings, not dead code — this option is exactly
+      // for that pattern, not a suppression of real issues.
+      'no-unused-vars': ['error', { args: 'none', ignoreRestSiblings: true }],
     },
   },
   {
@@ -42,6 +48,7 @@ module.exports = [
         afterAll: 'readonly',
         beforeEach: 'readonly',
         afterEach: 'readonly',
+        jest: 'readonly',
       },
     },
   },

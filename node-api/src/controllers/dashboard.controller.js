@@ -4,7 +4,9 @@ const ApiResponse = require('../utils/ApiResponse');
 
 const student = asyncHandler(async (req, res) => {
   const result = await dashboardService.studentDashboard(req.params.studentId);
-  ApiResponse.ok(res, result);
+  // See ApiResponse.okDoubleWrapped — StudentTracking.tsx's "insights" panel
+  // reads res.data.success/res.data.data off the already-unwrapped response.
+  ApiResponse.okDoubleWrapped(res, result);
 });
 
 const admin = asyncHandler(async (req, res) => {

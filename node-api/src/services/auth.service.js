@@ -208,7 +208,7 @@ async function refresh(refreshToken) {
   let payload;
   try {
     payload = verifyRefreshToken(refreshToken);
-  } catch (err) {
+  } catch {
     throw ApiError.unauthorized('Invalid or expired refresh token');
   }
 
@@ -281,6 +281,34 @@ async function resetPassword(rawToken, newPassword) {
   logger.info('Password reset completed', { userId: user.id });
 }
 
+// Authenticated password change (as opposed to the token-based reset flow
+// above). Requires proving knowledge of the current password rather than a
+// mailed token. Bumps token_version like resetPassword/changeInitialPassword
+// — any refresh token issued before this point (e.g. a stolen or forgotten
+// logged-in session elsewhere) stops working, which is the point of changing
+// a password. Returns a freshly issued pair for the caller's own session so
+// this endpoint doesn't strand the very session that just changed it.
+async function changePassword(userId, currentPassword, newPassword) {
+  const user = await userRepository.findById(userId);
+  if (!user || !user.is_active) throw ApiError.unauthorized('Account no longer active');
+
+  const valid = await verifyPassword(currentPassword, user.password_hash);
+  if (!valid) throw ApiError.badRequest('Current password is incorrect');
+
+  const samePassword = await verifyPassword(newPassword, user.password_hash);
+  if (samePassword) throw ApiError.badRequest('New password must be different from the current password');
+
+  const passwordHash = await hashPassword(newPassword);
+  const updated = await userRepository.updateById(user.id, {
+    password_hash: passwordHash,
+    token_version: (user.token_version || 0) + 1,
+  });
+  await recordActivity({ userId: user.id, action: 'change_password', entityType: 'user', entityId: user.id });
+  logger.info('Password changed', { userId: user.id });
+
+  return { user: sanitizeUser(updated), ...issueTokens(updated) };
+}
+
 async function verifyEmail(rawToken) {
   const tokenHash = hashToken(rawToken);
   const user = await userRepository.findByVerificationTokenHash(tokenHash);
@@ -306,6 +334,7 @@ module.exports = {
   forgotPassword,
   resetPassword,
   changeInitialPassword,
+  changePassword,
   verifyEmail,
   sanitizeUser,
 };

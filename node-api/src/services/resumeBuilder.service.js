@@ -231,7 +231,7 @@ ${JSON.stringify(forMatch, null, 2)}`;
         if (start !== -1 && end !== 0) {
           try {
             output = JSON.parse(output.slice(start, end));
-          } catch (parseErr) {
+          } catch {
             // fall through with the raw text — same best-effort behavior as python
           }
         }

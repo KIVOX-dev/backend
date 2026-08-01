@@ -82,7 +82,7 @@ function attachChatServer(httpServer) {
       let data;
       try {
         data = JSON.parse(raw.toString());
-      } catch (err) {
+      } catch {
         return; // silently ignored, matches python-service's JSONDecodeError handling
       }
 

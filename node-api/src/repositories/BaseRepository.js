@@ -58,14 +58,32 @@ class BaseRepository {
     return { id: _id, ...rest };
   }
 
-  async findAll({ page = 1, limit = 20, filters = {} } = {}) {
+  async findAll({ page = 1, limit = 20, filters = {}, sort } = {}) {
     const filter = this._buildFilter(filters);
     const skip = (page - 1) * limit;
     const [docs, total] = await Promise.all([
-      this.collection.find(filter).sort(this.defaultSort).skip(skip).limit(limit).toArray(),
+      this.collection
+        .find(filter)
+        .sort(sort || this.defaultSort)
+        .skip(skip)
+        .limit(limit)
+        .toArray(),
       this.collection.countDocuments(filter),
     ]);
     return { rows: docs.map((d) => this._toEntity(d)), total, page, limit };
+  }
+
+  // Whitelist-only: `field` must be a real column (or `id`/`created_at`,
+  // always present) — never pass a caller-supplied key straight into a
+  // MongoDB sort spec (same reasoning as _buildFilter's operator-injection
+  // guard above). Returns undefined (falls back to defaultSort) for anything
+  // not recognized, rather than throwing, so an unrecognized ?sortBy= is a
+  // silent no-op instead of a 400 on an otherwise-valid list request.
+  buildSort(field, order) {
+    if (!field) return undefined;
+    const key = field === 'id' ? '_id' : field;
+    if (key !== '_id' && key !== 'created_at' && !this.columns.includes(key)) return undefined;
+    return { [key]: order === 'desc' ? -1 : 1 };
   }
 
   async findById(id) {

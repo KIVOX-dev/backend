@@ -53,8 +53,16 @@ const googleLogin = asyncHandler(async (req, res) => {
 });
 
 const refresh = asyncHandler(async (req, res) => {
-  const result = await authService.refresh(req.body.refreshToken);
-  ApiResponse.ok(res, withLegacyAuthFields(result), 'Token refreshed');
+  const token = req.body.refreshToken || req.body.refresh_token;
+  const result = await authService.refresh(token);
+  const payload = withLegacyAuthFields(result);
+  // /auth/refresh is called from a bare axios instance that deliberately
+  // skips the {success,data} envelope-unwrap interceptor every other call
+  // site relies on (see api.ts — avoids recursing back into itself on 401).
+  // It reads access_token/refresh_token straight off the response body, so
+  // duplicate them at the top level here while keeping the normal envelope
+  // for every other consumer.
+  res.status(200).json({ success: true, message: 'Token refreshed', data: payload, ...payload });
 });
 
 const me = asyncHandler(async (req, res) => {
@@ -79,4 +87,27 @@ const verifyEmail = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, null, 'Email verified successfully.');
 });
 
-module.exports = { register, login, googleLogin, refresh, me, forgotPassword, resetPassword, changeInitialPassword, verifyEmail };
+// Live frontend sends snake_case (current_password/new_password) — see
+// validations/auth.validation.js#changePassword.
+const changePassword = asyncHandler(async (req, res) => {
+  const currentPassword = req.body.currentPassword || req.body.current_password;
+  const newPassword = req.body.newPassword || req.body.new_password;
+  const result = await authService.changePassword(req.user.id, currentPassword, newPassword);
+  // Password change invalidates every other refresh token (see
+  // authService.js#changePassword) — a fresh pair is returned here so the
+  // caller's own session can keep going without a forced re-login.
+  ApiResponse.ok(res, withLegacyAuthFields(result), 'Password changed successfully');
+});
+
+module.exports = {
+  register,
+  login,
+  googleLogin,
+  refresh,
+  me,
+  forgotPassword,
+  resetPassword,
+  changeInitialPassword,
+  changePassword,
+  verifyEmail,
+};

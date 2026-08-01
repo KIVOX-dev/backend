@@ -540,3 +540,58 @@ against the same PyPI/OSV advisory data and passes, `safety` was run **once, man
 independent cross-check (which is how §12a was found) but not wired into the pipeline. The
 security policy was not weakened and no scan was disabled — `pip-audit` still fails the build on
 any advisory.
+
+---
+
+## 13. `python-service/` removed (backend stabilization pass)
+
+**Date:** 2026-08-01. **Scope:** repo-wide — `python-service/`, `.github/workflows/ci.yml`,
+`README.md`, `REQUIREMENTS.md`.
+
+Everything in §1–12 above documents `python-service` as it existed; it is retained as history and
+was **not rewritten**. This section records its removal, done as part of a broader backend
+stabilization pass (token refresh, HR portal routing, change-password, role/pagination/upload
+hardening — see the corresponding commit(s) around this date for the rest of that pass).
+
+**Why:** `node-api` and `python-service` had drifted into two independent implementations of
+largely the same routes (auth, students, placements/jobs, resume, dashboard, etc.) against two
+separate MongoDB databases (`upscaler_ai_node` vs `upscaler_ai`) — duplicated business logic,
+duplicated auth, and duplicated maintenance/deployment surface (two Dockerfiles, two CI matrices)
+for no behavioral benefit, since the live frontend only ever needed one backend to actually answer
+its requests.
+
+**Verification before deletion:** every route prefix the frontend (`D:\Upscaler-Frontend`) calls
+was cross-checked against `node-api/src/routes/index.js` and confirmed present and independently
+functional — auth, users, institutions, departments, college-admins, companies, hr, faculty,
+students(+profile), placements (aliased at `/jobs` too — see the HR portal fix in this same pass),
+placement-applications, tests, test-assignments, results, notifications, resume, activity-logs,
+user-data, placement-records, profile, ai, interviews, leaderboard, dashboard, batches, chat.
+`node-api` already had its own independent MongoDB seed scripts (`db:seed-colleges`,
+`db:seed-departments`, `db:seed-practice-tests`, `db:seed-question-bank`) — it was never dependent
+on `python-service`'s database or `seed_mongo.py`.
+
+**What changed:**
+- Deleted `python-service/` in full (git history preserves it — recoverable with
+  `git log --diff-filter=D -- python-service` if ever needed).
+- `.github/workflows/ci.yml`: removed the `python-lint`/`python-test`/`python-audit` jobs, the
+  `PYTHON_VERSION` env var, the python-service Docker build step, and its Trivy scan. `docker-build`
+  now only builds/scans `node-api` and depends only on the three node-api jobs.
+  See §12e above — `pip-audit`'s CI gate no longer applies to this repo now that there is no
+  `requirements.txt` to check; dependency scanning is `node-audit`'s `npm audit` plus the Trivy
+  scan on the node-api image.
+- `README.md` / `REQUIREMENTS.md`: updated to describe a single-service repo.
+
+**Known follow-ups, not done as part of this removal:**
+- `seed_mongo.py` (deleted with the rest of `python-service/`) contained a hardcoded plaintext
+  MongoDB Atlas password, flagged back in §1 of this audit. Deleting the file does **not** rotate
+  that credential — it is still recoverable from git history. **Rotate it** if that has not already
+  happened.
+- The frontend's `src/lib/api.ts` (`D:\Upscaler-Frontend`, a separate repo, intentionally not
+  modified here) falls back to `http://<host>:8000/api/v1` — python-service's old port — when
+  `NEXT_PUBLIC_API_URL` is unset. This is a documentation/deployment-config gap, not a code gap:
+  wherever the frontend is actually deployed already sets `NEXT_PUBLIC_API_URL` to node-api's URL
+  (confirmed locally via `.env.local` → `http://localhost:5000/api/v1`), so this had no runtime
+  effect at the time of removal. Still worth fixing the fallback value in that repo as a follow-up
+  so it doesn't quietly point at a dead service.
+- The Postgres-era `sql/schema.sql` mentioned in the root `README.md`'s history section was already
+  superseded before this pass (see that README) and needed no further action here.

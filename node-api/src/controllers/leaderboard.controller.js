@@ -4,7 +4,7 @@ const ApiResponse = require('../utils/ApiResponse');
 
 const get = asyncHandler(async (req, res) => {
   const rows = await achievementService.leaderboard(req.user, req.query.scope);
-  ApiResponse.ok(res, rows);
+  ApiResponse.okDoubleWrapped(res, rows);
 });
 
 module.exports = { get };

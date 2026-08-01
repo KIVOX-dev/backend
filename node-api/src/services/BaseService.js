@@ -10,11 +10,12 @@ class BaseService {
   }
 
   async list(queryParams = {}, extraFilters = {}) {
-    const { page: pageParam, limit: limitParam, ...filterParams } = queryParams;
+    const { page: pageParam, limit: limitParam, sortBy, sortOrder, ...filterParams } = queryParams;
     const page = Math.max(parseInt(pageParam, 10) || 1, 1);
     const limit = Math.min(Math.max(parseInt(limitParam, 10) || 20, 1), 100);
     const filters = { ...filterParams, ...extraFilters };
-    const { rows, total } = await this.repository.findAll({ page, limit, filters });
+    const sort = this.repository.buildSort(sortBy, sortOrder);
+    const { rows, total } = await this.repository.findAll({ page, limit, filters, sort });
     return { rows, meta: { page, limit, total } };
   }
 

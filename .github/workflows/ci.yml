@@ -13,7 +13,6 @@ concurrency:
 
 env:
   NODE_VERSION: "22"
-  PYTHON_VERSION: "3.12"
 
 jobs:
   # ── Node.js API ─────────────────────────────────────────────────────────
@@ -73,68 +72,9 @@ jobs:
       - name: npm audit (fail on high/critical)
         run: npm audit --audit-level=high
 
-  # ── Python service ──────────────────────────────────────────────────────
-  python-lint:
-    name: python-service / lint
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: python-service
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: "pip"
-          cache-dependency-path: python-service/requirements-dev.txt
-      - run: pip install -r requirements-dev.txt
-      - name: Lint (ruff)
-        run: ruff check .
-      # Formatting is checked separately from ruff so a failure says clearly
-      # which of the two is unhappy. Both are pinned to line-length 100 in
-      # pyproject.toml, so they cannot disagree about wrapping.
-      - name: Format check (black)
-        run: black --check .
-
-  python-test:
-    name: python-service / test
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: python-service
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: "pip"
-          cache-dependency-path: python-service/requirements-dev.txt
-      - run: pip install -r requirements-dev.txt
-      - name: Test (pytest)
-        run: pytest -v
-
-  python-audit:
-    name: python-service / dependency audit
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: python-service
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: "pip"
-          cache-dependency-path: python-service/requirements.txt
-      - run: pip install -r requirements.txt
-      - name: pip-audit (dependency vulnerability scan)
-        run: |
-          pip install pip-audit
-          pip-audit -r requirements.txt
-
   docker-build:
-    name: Docker build (both services)
-    needs: [node-lint, node-test, node-audit, python-lint, python-test, python-audit]
+    name: Docker build (node-api)
+    needs: [node-lint, node-test, node-audit]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -146,14 +86,7 @@ jobs:
           push: false
           tags: node-api:ci
 
-      - name: Build python-service image
-        uses: docker/build-push-action@v5
-        with:
-          context: python-service
-          push: false
-          tags: python-service:ci
-
-      # Scan built images for known CVEs before they ever reach a registry.
+      # Scan the built image for known CVEs before it ever reaches a registry.
       # Pinned to a commit SHA (not a mutable tag/branch like `@master`) —
       # third-party actions should be pinned the same way a dependency would
       # be, since an unpinned ref can start running different code with no
@@ -162,13 +95,6 @@ jobs:
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: node-api:ci
-          severity: CRITICAL,HIGH
-          exit-code: "1"
-
-      - name: Trivy scan — python-service
-        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
-        with:
-          image-ref: python-service:ci
           severity: CRITICAL,HIGH
           exit-code: "1"
 

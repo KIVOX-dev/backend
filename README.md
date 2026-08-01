@@ -1,15 +1,23 @@
 # UpScaler-AI Backend
 
-This repository hosts **two independent backend services**, each in its own folder with its own
-dependency manifest, env files, and `Dockerfile`:
+This repository hosts a single backend service:
 
 | Folder | Stack | Purpose |
 |---|---|---|
-| [`python-service/`](python-service/README.md) | Python 3.12 / FastAPI / MongoDB | The original UpScaler-AI V2 API |
-| [`node-api/`](node-api/README.md) | Node.js / Express / MongoDB | Clean-architecture REST API, RBAC, JWT + Google OAuth |
+| [`node-api/`](node-api/README.md) | Node.js / Express / MongoDB | Clean-architecture REST API, RBAC, JWT + Google OAuth — sole source of truth for every route the frontend calls |
 
-Neither service's code was touched by the other's setup — see each folder's own `README.md` for
-architecture and `REQUIREMENTS.md` for prerequisites.
+See `node-api/README.md` for architecture and `node-api/REQUIREMENTS.md` for prerequisites.
+
+## Python service removal
+
+The original `python-service/` (Python 3.12 / FastAPI / MongoDB) has been removed. It predated
+`node-api` and the two had drifted into duplicate, inconsistently-behaving implementations of the
+same routes (auth, students, placements, etc.) against separate MongoDB databases. `node-api` had
+already reached full functional parity with every endpoint the live frontend actually calls (see
+`SECURITY_AUDIT.md` for the migration history), so keeping both running was pure duplicated
+maintenance and deployment surface with no remaining benefit. Its history is preserved in git; see
+the commit that removed it for the full file list. Full migration/removal notes are appended to
+`SECURITY_AUDIT.md`.
 
 ## Recent updates
 
@@ -48,4 +56,9 @@ architecture and `REQUIREMENTS.md` for prerequisites.
 |---|---|
 | Frontend | http://localhost:5173 (or 3000 for the existing Next.js app) |
 | Node API | http://localhost:5000 |
-| Python service | http://localhost:8000 |
+
+The frontend's `NEXT_PUBLIC_API_URL` should point at `http://localhost:5000/api/v1`. Its
+unset-env-var fallback (`src/lib/api.ts`, `D:\Upscaler-Frontend`) still defaults to port 8000 — a
+leftover from when python-service owned that port. That fallback only matters if
+`NEXT_PUBLIC_API_URL` is unset; update it to 5000 (or set the env var everywhere it's deployed) as
+a follow-up.

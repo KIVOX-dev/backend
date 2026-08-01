@@ -1,8 +1,10 @@
 # Requirements — Index
 
-This repo has two independent stacks, each with its own requirements doc:
+This repo hosts a single backend stack:
 
-- [`python-service/REQUIREMENTS.md`](python-service/REQUIREMENTS.md) — Python 3.12, MongoDB, `pip install -r requirements.txt`
-- [`node-api/REQUIREMENTS.md`](node-api/REQUIREMENTS.md) — Node.js 18+, MongoDB, `npm install`
+- [`node-api/REQUIREMENTS.md`](node-api/REQUIREMENTS.md) — Node.js 20+, MongoDB, `npm install`
+
+The legacy `python-service/` (FastAPI) has been removed — node-api is now the sole backend and
+single source of truth for every API route the frontend calls. See `README.md` for details.
 
 Frontend requirements live in the frontend's own repo: `D:\Upscaler-Frontend\REQUIREMENTS.md`.

@@ -26,10 +26,17 @@ router.post(
   controller.create
 );
 
-router.put('/:id/approve', authorize(ROLES.SUPER_ADMIN), controller.approve);
-router.put('/:id/reject', authorize(ROLES.SUPER_ADMIN), controller.reject);
+// institution_admin may review pending users in their own institution — see
+// user.service.js#assertCanReview for the actual scoping/role check.
+router.put('/:id/approve', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN), controller.approve);
+router.put('/:id/reject', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN), controller.reject);
 
-router.put('/:id', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN), validate(schema.update), controller.update);
+// No role gate here — self-service updates (a user editing their own
+// account, e.g. the student "Upgrade to Pro" flow) are a valid caller too;
+// see user.service.js#update for the actual authorization (admin-on-anyone
+// within their institution, or anyone-on-themselves with a restricted field
+// whitelist).
+router.put('/:id', validate(schema.update), controller.update);
 router.delete('/:id', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN), controller.remove);
 
 module.exports = router;
