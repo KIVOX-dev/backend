@@ -2,6 +2,7 @@
 UpScaler-AI V2 — Authentication Service
 Business logic for registration, login, and token management.
 """
+
 from typing import Optional
 
 from pymongo.database import Database
@@ -20,9 +21,19 @@ from app.core.security import (
     verify_refresh_token,
 )
 from app.repositories.base import DotDict
-from app.repositories.user_repo import UserRepository, StudentProfileRepository, RefreshTokenRepository
+from app.repositories.user_repo import (
+    UserRepository,
+    StudentProfileRepository,
+    RefreshTokenRepository,
+)
 from app.repositories.college_repo import CollegeRepository
-from app.schemas.auth import RegisterRequest, LoginRequest, TokenResponse, UserBriefResponse, ChangePasswordRequest
+from app.schemas.auth import (
+    RegisterRequest,
+    LoginRequest,
+    TokenResponse,
+    UserBriefResponse,
+    ChangePasswordRequest,
+)
 
 settings = get_settings()
 
@@ -56,21 +67,22 @@ class AuthService:
             "department": data.department,
             "status": status,
         }
-        
+
         user = self.user_repo.create(user_data)
 
         # Create role-specific profile
         if data.role == "student":
-            self.student_profile_repo.create({
-                "user_id": user.id,
-                "student_id": data.student_id,
-                "year": data.year,
-            })
+            self.student_profile_repo.create(
+                {
+                    "user_id": user.id,
+                    "student_id": data.student_id,
+                    "year": data.year,
+                }
+            )
         elif data.role == "recruiter" and data.company_name:
-            self.db["recruiter_profiles"].insert_one({
-                "user_id": user.id,
-                "company_name": data.company_name
-            })
+            self.db["recruiter_profiles"].insert_one(
+                {"user_id": user.id, "company_name": data.company_name}
+            )
 
         return user
 
@@ -79,6 +91,7 @@ class AuthService:
             raise InvalidCredentialsError()
         if user.status == "pending":
             from app.core.exceptions import AccountPendingError
+
             raise AccountPendingError()
         if user.status != "approved":
             raise InvalidCredentialsError()
@@ -92,12 +105,16 @@ class AuthService:
         refresh_token, jti, expire = create_refresh_token(subject=str(user.id))
 
         # Save refresh token in DB
-        self.refresh_token_repo.create({
-            "user_id": user.id,
-            "jti": jti,
-            "token_hash": hash_password(refresh_token),  # Optional: hash refresh token for extra security
-            "expires_at": expire,
-        })
+        self.refresh_token_repo.create(
+            {
+                "user_id": user.id,
+                "jti": jti,
+                "token_hash": hash_password(
+                    refresh_token
+                ),  # Optional: hash refresh token for extra security
+                "expires_at": expire,
+            }
+        )
 
         return TokenResponse(
             access_token=access_token,
@@ -113,24 +130,26 @@ class AuthService:
             raise InvalidCredentialsError()
         return self._issue_tokens(user)
 
-    def login_with_student_id(self, student_id: str, password: str, college_id: Optional[int] = None) -> TokenResponse:
+    def login_with_student_id(
+        self, student_id: str, password: str, college_id: Optional[int] = None
+    ) -> TokenResponse:
         profile_query = {"student_id": student_id.upper()}
         profile_doc = self.db["student_profiles"].find_one(profile_query)
         if not profile_doc:
             raise InvalidCredentialsError()
-            
+
         user_query = {"id": profile_doc["user_id"], "role": "student"}
         if college_id:
             user_query["college_id"] = int(college_id)
-            
+
         user_doc = self.db["users"].find_one(user_query)
         if not user_doc:
             raise InvalidCredentialsError()
-            
+
         user = self.user_repo._to_obj(user_doc)
         if not verify_password(password, user.password_hash):
             raise InvalidCredentialsError()
-            
+
         return self._issue_tokens(user)
 
     def refresh_token(self, refresh_token: str) -> TokenResponse:
@@ -141,10 +160,10 @@ class AuthService:
 
         jti = payload.get("jti")
         user_id_str = payload.get("sub")
-        
+
         if not jti or not user_id_str:
             raise InvalidTokenError()
-            
+
         user_id = int(user_id_str)
 
         # Check if token is valid in DB
@@ -171,12 +190,14 @@ class AuthService:
         new_refresh_token, new_jti, expire = create_refresh_token(subject=str(user.id))
 
         # Save new refresh token
-        self.refresh_token_repo.create({
-            "user_id": user.id,
-            "jti": new_jti,
-            "token_hash": hash_password(new_refresh_token),
-            "expires_at": expire,
-        })
+        self.refresh_token_repo.create(
+            {
+                "user_id": user.id,
+                "jti": new_jti,
+                "token_hash": hash_password(new_refresh_token),
+                "expires_at": expire,
+            }
+        )
 
         return TokenResponse(
             access_token=access_token,
@@ -185,7 +206,9 @@ class AuthService:
             user=UserBriefResponse.model_validate(user),
         )
 
-    def google_login(self, email: str, name: str, role: str, college_id: Optional[int] = None) -> TokenResponse:
+    def google_login(
+        self, email: str, name: str, role: str, college_id: Optional[int] = None
+    ) -> TokenResponse:
         """Find-or-create a user from a verified Google profile, then issue tokens.
 
         Mirrors register()'s approval rule: student accounts are auto-approved,
@@ -212,7 +235,9 @@ class AuthService:
             }
             user = self.user_repo.create(user_data)
             if role == "student":
-                self.student_profile_repo.create({"user_id": user.id, "student_id": None, "year": None})
+                self.student_profile_repo.create(
+                    {"user_id": user.id, "student_id": None, "year": None}
+                )
 
         return self._issue_tokens(user)
 
@@ -225,6 +250,6 @@ class AuthService:
         user = self.user_repo.get_by_id(user_id)
         if not user or not verify_password(data.current_password, user.password_hash):
             raise InvalidCredentialsError("Incorrect current password")
-        
+
         new_hash = hash_password(data.new_password)
         self.user_repo.update(user_id, {"password_hash": new_hash})

@@ -1,13 +1,20 @@
 """
 UpScaler-AI V2 — Auth Router
 """
+
 from urllib.parse import urlencode, parse_qs
 
 import httpx
 from fastapi import APIRouter, Depends, Response, status, HTTPException
 from fastapi.responses import RedirectResponse
 from app.config import get_settings
-from app.schemas.auth import RegisterRequest, LoginRequest, RefreshTokenRequest, UserBriefResponse, ChangePasswordRequest
+from app.schemas.auth import (
+    RegisterRequest,
+    LoginRequest,
+    RefreshTokenRequest,
+    UserBriefResponse,
+    ChangePasswordRequest,
+)
 from app.schemas.common import MessageResponse
 from app.services.auth_service import AuthService
 from app.dependencies import get_auth_service
@@ -50,11 +57,7 @@ def _set_token_cookie(response: Response, token: str, expires_in: int):
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
-def register(
-    data: dict,
-    response: Response,
-    auth_service: AuthService = Depends(get_auth_service)
-):
+def register(data: dict, response: Response, auth_service: AuthService = Depends(get_auth_service)):
     """Register a new user account."""
     role = data.get("role") or "student"
     if role == "hr":
@@ -72,29 +75,34 @@ def register(
             company_name=data.get("company_name") or data.get("company"),
         )
     except ValueError as e:
-        # Pydantic ValidationError is a subclass of ValueError in v2, 
+        # Pydantic ValidationError is a subclass of ValueError in v2,
         # but let's import it safely if needed. Or just catch Exception
         # We'll use a direct approach since we just want the message.
         from pydantic import ValidationError
+
         if isinstance(e, ValidationError):
-            raise HTTPException(status_code=400, detail=e.errors()[0]["msg"].replace("Value error, ", ""))
+            raise HTTPException(
+                status_code=400, detail=e.errors()[0]["msg"].replace("Value error, ", "")
+            )
         raise HTTPException(status_code=400, detail=str(e))
     user = auth_service.register(request)
-    
+
     if user.status == "pending":
-        return {"success": True, "message": "Registration successful. Please wait for approval.", "data": {"user": {"email": user.email, "status": "pending"}}}
-        
-    token_response = auth_service.login(LoginRequest(email=request.email, password=request.password))
+        return {
+            "success": True,
+            "message": "Registration successful. Please wait for approval.",
+            "data": {"user": {"email": user.email, "status": "pending"}},
+        }
+
+    token_response = auth_service.login(
+        LoginRequest(email=request.email, password=request.password)
+    )
     _set_token_cookie(response, token_response.access_token, token_response.expires_in)
     return _token_payload(token_response)
 
 
 @router.post("/login")
-def login(
-    data: dict,
-    response: Response,
-    auth_service: AuthService = Depends(get_auth_service)
-):
+def login(data: dict, response: Response, auth_service: AuthService = Depends(get_auth_service)):
     """Login and receive access & refresh tokens."""
     if data.get("studentId") and not data.get("email"):
         token_response = auth_service.login_with_student_id(
@@ -103,7 +111,9 @@ def login(
             data.get("collegeId") or data.get("college_id"),
         )
     else:
-        token_response = auth_service.login(LoginRequest(email=data.get("email"), password=data.get("password", "")))
+        token_response = auth_service.login(
+            LoginRequest(email=data.get("email"), password=data.get("password", ""))
+        )
     _set_token_cookie(response, token_response.access_token, token_response.expires_in)
     return _token_payload(token_response)
 
@@ -112,7 +122,7 @@ def login(
 def refresh_token(
     data: RefreshTokenRequest,
     response: Response,
-    auth_service: AuthService = Depends(get_auth_service)
+    auth_service: AuthService = Depends(get_auth_service),
 ):
     """Refresh an access token using a valid refresh token (token rotation enabled)."""
     token_response = auth_service.refresh_token(data.refresh_token)
@@ -123,7 +133,7 @@ def refresh_token(
 @router.post("/logout", response_model=MessageResponse)
 def logout(
     current_user: DotDict = Depends(get_current_user),
-    auth_service: AuthService = Depends(get_auth_service)
+    auth_service: AuthService = Depends(get_auth_service),
 ):
     """Logout the user by revoking all their refresh tokens."""
     auth_service.logout(current_user.id)
@@ -131,9 +141,7 @@ def logout(
 
 
 @router.get("/me", response_model=UserBriefResponse)
-def get_me(
-    current_user: DotDict = Depends(get_current_user)
-):
+def get_me(current_user: DotDict = Depends(get_current_user)):
     """Get the current authenticated user's profile info."""
     return UserBriefResponse.model_validate(current_user)
 
@@ -141,11 +149,12 @@ def get_me(
 from app.database import get_db
 from app.schemas.auth import UpdateProfileRequest
 
+
 @router.put("/update", response_model=UserBriefResponse)
 def update_profile(
     data: UpdateProfileRequest,
     current_user: DotDict = Depends(get_current_user),
-    db = Depends(get_db)
+    db=Depends(get_db),
 ):
     """Update user profile."""
     update_data = {}
@@ -160,18 +169,19 @@ def update_profile(
         current_user.avatar_url = data.avatar_url
 
     if data.company_name is not None and current_user.role == "recruiter":
-        pass # Handle recruiter profile logic if needed
+        pass  # Handle recruiter profile logic if needed
 
     if update_data:
         db["users"].update_one({"id": current_user.id}, {"$set": update_data})
 
     return UserBriefResponse.model_validate(current_user)
 
+
 @router.put("/change-password", response_model=MessageResponse)
 def change_password(
     data: ChangePasswordRequest,
     current_user: DotDict = Depends(get_current_user),
-    auth_service: AuthService = Depends(get_auth_service)
+    auth_service: AuthService = Depends(get_auth_service),
 ):
     """Change user password."""
     auth_service.change_password(current_user.id, data)
@@ -188,7 +198,9 @@ def google_login_redirect(role: str, redirect: str = "/onboarding"):
     if role not in GOOGLE_ALLOWED_ROLES:
         raise HTTPException(status_code=400, detail=f"Invalid role: {role}")
     if not settings.GOOGLE_CLIENT_ID:
-        raise HTTPException(status_code=503, detail="Google sign-in is not configured on this server")
+        raise HTTPException(
+            status_code=503, detail="Google sign-in is not configured on this server"
+        )
 
     params = {
         "client_id": settings.GOOGLE_CLIENT_ID,
@@ -218,13 +230,16 @@ async def google_login_callback(
     redirect_path = parsed_state.get("redirect", "/onboarding")
 
     async with httpx.AsyncClient(timeout=10) as client:
-        token_res = await client.post(GOOGLE_TOKEN_URL, data={
-            "code": code,
-            "client_id": settings.GOOGLE_CLIENT_ID,
-            "client_secret": settings.GOOGLE_CLIENT_SECRET,
-            "redirect_uri": settings.GOOGLE_OAUTH_REDIRECT_URI,
-            "grant_type": "authorization_code",
-        })
+        token_res = await client.post(
+            GOOGLE_TOKEN_URL,
+            data={
+                "code": code,
+                "client_id": settings.GOOGLE_CLIENT_ID,
+                "client_secret": settings.GOOGLE_CLIENT_SECRET,
+                "redirect_uri": settings.GOOGLE_OAUTH_REDIRECT_URI,
+                "grant_type": "authorization_code",
+            },
+        )
         if token_res.status_code >= 400:
             raise HTTPException(status_code=502, detail="Google token exchange failed")
         google_tokens = token_res.json()
@@ -246,9 +261,11 @@ async def google_login_callback(
     except AccountPendingError:
         return RedirectResponse(f"{settings.FRONTEND_URL}{redirect_path}?pending=1")
 
-    query = urlencode({
-        "token": token_response.access_token,
-        "refresh": token_response.refresh_token,
-        "redirect": redirect_path,
-    })
+    query = urlencode(
+        {
+            "token": token_response.access_token,
+            "refresh": token_response.refresh_token,
+            "redirect": redirect_path,
+        }
+    )
     return RedirectResponse(f"{settings.FRONTEND_URL}/oauth/callback?{query}")

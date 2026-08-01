@@ -34,7 +34,7 @@ security_scheme = HTTPBearer(auto_error=False)
 
 async def get_current_user(
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(security_scheme),
-    db = Depends(get_db),
+    db=Depends(get_db),
 ):
     """
     Extract and validate the current user from the JWT bearer token.
@@ -56,6 +56,7 @@ async def get_current_user(
         raise InvalidTokenError()
 
     from app.repositories.base import DotDict
+
     user = DotDict(user_doc)
 
     if not user.is_active:
@@ -69,7 +70,7 @@ async def get_current_user(
 
 async def get_optional_user(
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(security_scheme),
-    db = Depends(get_db),
+    db=Depends(get_db),
 ):
     """Get current user if token is provided, otherwise return None."""
     if credentials is None:
@@ -96,7 +97,7 @@ class RoleChecker:
     def __init__(self, allowed_roles: list[UserRole]):
         self.allowed_roles = allowed_roles
 
-    async def __call__(self, current_user = Depends(get_current_user)):
+    async def __call__(self, current_user=Depends(get_current_user)):
         if current_user.role not in [role.value for role in self.allowed_roles]:
             raise InsufficientPermissionsError(role=current_user.role)
         return current_user
@@ -111,7 +112,9 @@ def require_roles(*roles: UserRole):
 # Predefined role checkers for common patterns
 require_super_admin = Depends(RoleChecker([UserRole.SUPER_ADMIN]))
 require_college_admin = Depends(RoleChecker([UserRole.COLLEGE_ADMIN, UserRole.SUPER_ADMIN]))
-require_faculty = Depends(RoleChecker([UserRole.FACULTY, UserRole.COLLEGE_ADMIN, UserRole.SUPER_ADMIN]))
+require_faculty = Depends(
+    RoleChecker([UserRole.FACULTY, UserRole.COLLEGE_ADMIN, UserRole.SUPER_ADMIN])
+)
 require_recruiter = Depends(RoleChecker([UserRole.RECRUITER, UserRole.SUPER_ADMIN]))
 require_student = Depends(RoleChecker([UserRole.STUDENT]))
 require_any_authenticated = Depends(get_current_user)
@@ -128,7 +131,7 @@ class CollegeScope:
 
     async def __call__(
         self,
-        current_user = Depends(get_current_user),
+        current_user=Depends(get_current_user),
     ) -> Optional[int]:
         if current_user.role == UserRole.SUPER_ADMIN.value:
             return None  # Super admin sees everything

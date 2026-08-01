@@ -8,11 +8,13 @@ from app.repositories.base import DotDict
 
 router = APIRouter(prefix="/ai", tags=["AI"])
 
+
 class ResumeData(BaseModel):
     objective: str
     education: str
     skills: str
     experience: str
+
 
 @router.post("/resume/improve")
 def improve_resume(data: ResumeData, current_user: DotDict = Depends(get_current_user)):
@@ -27,12 +29,12 @@ def improve_resume(data: ResumeData, current_user: DotDict = Depends(get_current
             "education": data.education,
             "skills": data.skills,
             "experience": data.experience,
-            "message": "GROQ_API_KEY not configured. Returning original text."
+            "message": "GROQ_API_KEY not configured. Returning original text.",
         }
 
     try:
         client = Groq(api_key=groq_api_key)
-        
+
         prompt = f"""
         You are an expert Resume Writer and Career Coach. 
         Improve the following resume sections to make them sound professional, impactful, and ATS-friendly.
@@ -51,13 +53,14 @@ def improve_resume(data: ResumeData, current_user: DotDict = Depends(get_current
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
             max_tokens=1024,
-            response_format={"type": "json_object"}
+            response_format={"type": "json_object"},
         )
 
         import json
+
         result_text = completion.choices[0].message.content
         improved_data = json.loads(result_text)
-        
+
         return improved_data
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to improve resume: {str(e)}")

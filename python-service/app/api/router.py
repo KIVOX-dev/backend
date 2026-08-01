@@ -1,6 +1,7 @@
 """
 UpScaler-AI V2 — Main API Router
 """
+
 from fastapi import APIRouter
 from app.api.v1.router import api_router as v1_router
 from app.config import get_settings

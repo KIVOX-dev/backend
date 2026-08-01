@@ -9,12 +9,12 @@ router = APIRouter(prefix="/tests", tags=["Tests"])
 
 
 @router.post("/submit", response_model=AttemptResponse)
-def submit(data: TestSubmitRequest, current_user = Depends(get_current_user), db = Depends(get_db)):
+def submit(data: TestSubmitRequest, current_user=Depends(get_current_user), db=Depends(get_db)):
     return submit_test(data, current_user, db)
 
 
 @router.get("/college/results", response_model=list[AttemptResponse])
-def college_results(db = Depends(get_db), college_scope: int | None = get_college_scope):
+def college_results(db=Depends(get_db), college_scope: int | None = get_college_scope):
     query = {}
     if college_scope:
         query["college_id"] = int(college_scope)

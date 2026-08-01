@@ -4,7 +4,11 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.rbac import get_college_scope, get_current_user
 from app.database import get_db
-from app.schemas.placement import JobPostingCreateRequest, JobPostingResponse, JobApplicationResponse
+from app.schemas.placement import (
+    JobPostingCreateRequest,
+    JobPostingResponse,
+    JobApplicationResponse,
+)
 
 router = APIRouter(prefix="/jobs", tags=["Jobs"])
 
@@ -25,14 +29,14 @@ def _now():
 
 
 @router.get("", response_model=list[JobPostingResponse])
-def get_jobs(db = Depends(get_db)):
+def get_jobs(db=Depends(get_db)):
     """Get all active job postings."""
     cursor = db["job_postings"].find({"is_active": True}).sort("created_at", -1)
     return [_clean(doc) for doc in cursor]
 
 
 @router.get("/me", response_model=list[JobPostingResponse])
-def get_my_jobs(db = Depends(get_db), current_user = Depends(get_current_user)):
+def get_my_jobs(db=Depends(get_db), current_user=Depends(get_current_user)):
     """Get jobs posted by the current HR/Recruiter."""
     cursor = db["job_postings"].find({"recruiter_id": current_user.id}).sort("created_at", -1)
     return [_clean(doc) for doc in cursor]
@@ -41,8 +45,8 @@ def get_my_jobs(db = Depends(get_db), current_user = Depends(get_current_user)):
 @router.post("", response_model=JobPostingResponse)
 def create_job(
     job_data: JobPostingCreateRequest,
-    db = Depends(get_db),
-    current_user = Depends(get_current_user),
+    db=Depends(get_db),
+    current_user=Depends(get_current_user),
 ):
     """Post a new job vacancy — a recruiter's open role, or a college's own placement drive."""
     allowed_roles = ["hr", "recruiter", "college_admin", "super_admin"]
@@ -81,7 +85,7 @@ def create_job(
 
 
 @router.get("/drives")
-def college_drives(db = Depends(get_db), college_scope: int | None = get_college_scope):
+def college_drives(db=Depends(get_db), college_scope: int | None = get_college_scope):
     """Placement drives (job postings) for the caller's college, with applicant counts.
 
     Used by the college-admin placements dashboard — 'drive' is just the
@@ -96,10 +100,12 @@ def college_drives(db = Depends(get_db), college_scope: int | None = get_college
 
     posting_ids = [p["id"] for p in postings]
     counts: dict[int, int] = {}
-    for row in db["job_applications"].aggregate([
-        {"$match": {"job_posting_id": {"$in": posting_ids}}},
-        {"$group": {"_id": "$job_posting_id", "count": {"$sum": 1}}},
-    ]):
+    for row in db["job_applications"].aggregate(
+        [
+            {"$match": {"job_posting_id": {"$in": posting_ids}}},
+            {"$group": {"_id": "$job_posting_id", "count": {"$sum": 1}}},
+        ]
+    ):
         counts[row["_id"]] = row["count"]
 
     return [
@@ -119,7 +125,7 @@ def college_drives(db = Depends(get_db), college_scope: int | None = get_college
 
 
 @router.get("/applications/me", response_model=list[JobApplicationResponse])
-def get_my_job_applications(db = Depends(get_db), current_user = Depends(get_current_user)):
+def get_my_job_applications(db=Depends(get_db), current_user=Depends(get_current_user)):
     """Get all applications for jobs posted by the current HR/Recruiter."""
     if current_user.role not in ["hr", "recruiter"]:
         raise HTTPException(status_code=403, detail="Only recruiters can view applications")
@@ -134,17 +140,19 @@ def get_my_job_applications(db = Depends(get_db), current_user = Depends(get_cur
     result = []
     for app in applications:
         student = db["users"].find_one({"id": app.get("student_id")}, {"name": 1, "email": 1})
-        result.append({
-            "id": app.get("id"),
-            "job_posting_id": app.get("job_posting_id"),
-            "student_id": app.get("student_id"),
-            "status": app.get("status"),
-            "applied_at": app.get("applied_at"),
-            "updated_at": app.get("updated_at"),
-            "notes": app.get("notes"),
-            "interview_scheduled_at": app.get("interview_scheduled_at"),
-            "student_name": student.get("name") if student else None,
-            "student_email": student.get("email") if student else None,
-            "job_title": job_titles.get(app.get("job_posting_id")),
-        })
+        result.append(
+            {
+                "id": app.get("id"),
+                "job_posting_id": app.get("job_posting_id"),
+                "student_id": app.get("student_id"),
+                "status": app.get("status"),
+                "applied_at": app.get("applied_at"),
+                "updated_at": app.get("updated_at"),
+                "notes": app.get("notes"),
+                "interview_scheduled_at": app.get("interview_scheduled_at"),
+                "student_name": student.get("name") if student else None,
+                "student_email": student.get("email") if student else None,
+                "job_title": job_titles.get(app.get("job_posting_id")),
+            }
+        )
     return result

@@ -1,5 +1,11 @@
 from fastapi import APIRouter, Depends
-from app.core.rbac import UserRole, get_college_scope, require_roles, get_current_user, assert_can_act_on_student
+from app.core.rbac import (
+    UserRole,
+    get_college_scope,
+    require_roles,
+    get_current_user,
+    assert_can_act_on_student,
+)
 from app.database import get_db
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
@@ -20,7 +26,7 @@ def to_dict(obj):
 
 
 @router.get("/student/{student_id}")
-def student_dashboard(student_id: int, db = Depends(get_db), current_user = Depends(get_current_user)):
+def student_dashboard(student_id: int, db=Depends(get_db), current_user=Depends(get_current_user)):
     """Per-student summary.
 
     Totals are computed by the database in a single aggregation rather than
@@ -31,14 +37,18 @@ def student_dashboard(student_id: int, db = Depends(get_db), current_user = Depe
     attempt_filter = {"student_id": student_id, "status": "completed"}
 
     summary = list(
-        db["assessment_attempts"].aggregate([
-            {"$match": attempt_filter},
-            {"$group": {
-                "_id": None,
-                "tests_completed": {"$sum": 1},
-                "avg_accuracy": {"$avg": {"$ifNull": ["$percentage", 0]}},
-            }},
-        ])
+        db["assessment_attempts"].aggregate(
+            [
+                {"$match": attempt_filter},
+                {
+                    "$group": {
+                        "_id": None,
+                        "tests_completed": {"$sum": 1},
+                        "avg_accuracy": {"$avg": {"$ifNull": ["$percentage", 0]}},
+                    }
+                },
+            ]
+        )
     )
 
     tests_completed = summary[0]["tests_completed"] if summary else 0
@@ -47,10 +57,7 @@ def student_dashboard(student_id: int, db = Depends(get_db), current_user = Depe
     # Newest first off the index, capped. `history` is reversed back into
     # chronological order so existing chart code keeps working unchanged.
     history_desc = list(
-        db["assessment_attempts"]
-        .find(attempt_filter)
-        .sort("created_at", -1)
-        .limit(HISTORY_LIMIT)
+        db["assessment_attempts"].find(attempt_filter).sort("created_at", -1).limit(HISTORY_LIMIT)
     )
     history = [to_dict(a) for a in reversed(history_desc)]
 
@@ -70,8 +77,11 @@ def student_dashboard(student_id: int, db = Depends(get_db), current_user = Depe
     }
 
 
-@router.get("/admin", dependencies=[require_roles(UserRole.FACULTY, UserRole.COLLEGE_ADMIN, UserRole.SUPER_ADMIN)])
-def admin_dashboard(db = Depends(get_db), college_scope: int | None = get_college_scope):
+@router.get(
+    "/admin",
+    dependencies=[require_roles(UserRole.FACULTY, UserRole.COLLEGE_ADMIN, UserRole.SUPER_ADMIN)],
+)
+def admin_dashboard(db=Depends(get_db), college_scope: int | None = get_college_scope):
     """Institution-wide counters.
 
     Previously this pulled every attempt row for the college into memory purely
@@ -85,14 +95,18 @@ def admin_dashboard(db = Depends(get_db), college_scope: int | None = get_colleg
         base_query["college_id"] = int(college_scope)
 
     attempt_summary = list(
-        db["assessment_attempts"].aggregate([
-            {"$match": base_query},
-            {"$group": {
-                "_id": None,
-                "attempts": {"$sum": 1},
-                "avg_score": {"$avg": {"$ifNull": ["$percentage", 0]}},
-            }},
-        ])
+        db["assessment_attempts"].aggregate(
+            [
+                {"$match": base_query},
+                {
+                    "$group": {
+                        "_id": None,
+                        "attempts": {"$sum": 1},
+                        "avg_score": {"$avg": {"$ifNull": ["$percentage", 0]}},
+                    }
+                },
+            ]
+        )
     )
 
     attempts = attempt_summary[0]["attempts"] if attempt_summary else 0
@@ -115,17 +129,19 @@ def admin_dashboard(db = Depends(get_db), college_scope: int | None = get_colleg
 
 
 @router.get("/super", dependencies=[require_roles(UserRole.SUPER_ADMIN)])
-def super_dashboard(db = Depends(get_db)):
+def super_dashboard(db=Depends(get_db)):
     """Platform-wide role counts.
 
     One grouped pass over `users` replaces four separate count queries, each of
     which was its own round trip to the cluster.
     """
     rows = list(
-        db["users"].aggregate([
-            {"$match": {"role": {"$in": ["student", "faculty", "college_admin", "recruiter"]}}},
-            {"$group": {"_id": "$role", "count": {"$sum": 1}}},
-        ])
+        db["users"].aggregate(
+            [
+                {"$match": {"role": {"$in": ["student", "faculty", "college_admin", "recruiter"]}}},
+                {"$group": {"_id": "$role", "count": {"$sum": 1}}},
+            ]
+        )
     )
     by_role = {row["_id"]: row["count"] for row in rows}
 

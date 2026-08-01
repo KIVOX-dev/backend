@@ -13,6 +13,7 @@ from app.repositories.base import DotDict
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
 
+
 # Returns a local DummyUser (below), not a full user record — callers only use
 # .id/.name/.role.
 async def get_current_user_ws(token: str, db: Database):
@@ -22,21 +23,22 @@ async def get_current_user_ws(token: str, db: Database):
         user = db["users"].find_one({"id": user_id})
         if not user:
             raise ValueError("User not found")
+
         # create a dummy object so user.id works
         class DummyUser:
             def __init__(self, d):
                 self.id = d["id"]
                 self.name = d.get("name", "")
                 self.role = d.get("role", "")
+
         return DummyUser(user)
     except Exception:
         raise ValueError("Invalid token")
 
+
 @router.websocket("/ws")
 async def websocket_endpoint(
-    websocket: WebSocket,
-    token: str = Query(...),
-    db: Database = Depends(get_db)
+    websocket: WebSocket, token: str = Query(...), db: Database = Depends(get_db)
 ):
     try:
         user = await get_current_user_ws(token, db)
@@ -46,7 +48,7 @@ async def websocket_endpoint(
 
     await manager.connect(websocket, user.id)
     mongo_db = get_mongo_db()
-    
+
     try:
         while True:
             data = await websocket.receive_text()
@@ -54,13 +56,13 @@ async def websocket_endpoint(
                 message_data = json.loads(data)
             except json.JSONDecodeError:
                 continue
-                
+
             receiver_id = message_data.get("receiver_id")
             content = message_data.get("content")
-            
+
             if not receiver_id or not content:
                 continue
-                
+
             # Construct message document for MongoDB
             msg_doc = {
                 "sender_id": user.id,
@@ -69,45 +71,51 @@ async def websocket_endpoint(
                 "receiver_id": int(receiver_id),
                 "content": content,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-                "read": False
+                "read": False,
             }
-            
+
             # Save to MongoDB
             if mongo_db is not None:
                 await mongo_db["messages"].insert_one(msg_doc)
                 msg_doc.pop("_id", None)
-            
+
             # Send to sender for confirmation
             await manager.send_personal_message(msg_doc, user.id)
             # Deliver to receiver in real-time
             await manager.send_personal_message(msg_doc, int(receiver_id))
-            
+
     except WebSocketDisconnect:
         manager.disconnect(websocket, user.id)
 
+
 @router.get("/history/{other_user_id}")
 async def get_chat_history(
-    other_user_id: int,
-    limit: int = 50,
-    current_user: DotDict = Depends(get_current_user)
+    other_user_id: int, limit: int = 50, current_user: DotDict = Depends(get_current_user)
 ):
     """Fetch chat history between the current user and another user."""
     mongo_db = get_mongo_db()
     if mongo_db is None:
         raise HTTPException(status_code=500, detail="MongoDB not connected")
-        
-    cursor = mongo_db["messages"].find({
-        "$or": [
-            {"sender_id": current_user.id, "receiver_id": other_user_id},
-            {"sender_id": other_user_id, "receiver_id": current_user.id}
-        ]
-    }).sort("timestamp", -1).limit(limit)
-    
+
+    cursor = (
+        mongo_db["messages"]
+        .find(
+            {
+                "$or": [
+                    {"sender_id": current_user.id, "receiver_id": other_user_id},
+                    {"sender_id": other_user_id, "receiver_id": current_user.id},
+                ]
+            }
+        )
+        .sort("timestamp", -1)
+        .limit(limit)
+    )
+
     messages = await cursor.to_list(length=limit)
     # MongoDB returns newest first due to sort(-1), we want chronological order for UI
     messages.reverse()
-    
+
     for msg in messages:
         msg["_id"] = str(msg["_id"])
-        
+
     return {"messages": messages}

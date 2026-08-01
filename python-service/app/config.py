@@ -60,7 +60,7 @@ class Settings(BaseSettings):
     # not through this class) — it refuses to run if either is unset.
     SUPER_ADMIN_EMAIL: str = "admin@upscaler-ai.com"
     SUPER_ADMIN_PASSWORD: str = ""
-    
+
     # ── AI Keys ──────────────────────────────────
     GROQ_API_KEY: str | None = None
 

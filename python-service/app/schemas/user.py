@@ -1,6 +1,7 @@
 """
 UpScaler-AI V2 — User Pydantic Schemas
 """
+
 from datetime import datetime, timezone
 from typing import Optional
 from pydantic import BaseModel, EmailStr, Field
@@ -8,6 +9,7 @@ from pydantic import BaseModel, EmailStr, Field
 
 class UserResponse(BaseModel):
     """Full user response."""
+
     id: int
     email: str
     name: str
@@ -29,6 +31,7 @@ class UserResponse(BaseModel):
 
 class StudentProfileResponse(BaseModel):
     """Student profile response."""
+
     id: int
     user_id: int
     student_id: Optional[str] = None
@@ -51,6 +54,7 @@ class StudentProfileResponse(BaseModel):
 
 class UserUpdateRequest(BaseModel):
     """User profile update."""
+
     name: Optional[str] = Field(None, min_length=2, max_length=255)
     phone: Optional[str] = None
     department: Optional[str] = None
@@ -59,11 +63,14 @@ class UserUpdateRequest(BaseModel):
 
 class StudentProfileUpdateRequest(BaseModel):
     """Student profile update."""
+
     student_id: Optional[str] = None
     year: Optional[int] = None
 
+
 class AdminUserCreateRequest(BaseModel):
     """Admin request to create a new user."""
+
     name: str = Field(..., min_length=2, max_length=255)
     email: EmailStr
     role: str
@@ -73,8 +80,10 @@ class AdminUserCreateRequest(BaseModel):
     student_id: Optional[str] = None
     year: Optional[int] = None
 
+
 class AdminUserUpdateRequest(BaseModel):
     """Admin update request to manage user attributes directly."""
+
     name: Optional[str] = Field(None, min_length=2, max_length=255)
     email: Optional[EmailStr] = None
     role: Optional[str] = None
@@ -82,4 +91,3 @@ class AdminUserUpdateRequest(BaseModel):
     department: Optional[str] = None
     college_id: Optional[int] = None
     preferences: Optional[dict] = None
-

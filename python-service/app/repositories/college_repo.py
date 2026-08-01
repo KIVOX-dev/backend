@@ -1,5 +1,6 @@
 from app.repositories.base import BaseRepository
 
+
 class CollegeRepository(BaseRepository):
     def __init__(self, db):
         super().__init__("colleges", db)
@@ -17,5 +18,9 @@ class CollegeRepository(BaseRepository):
         return self._to_obj(doc)
 
     def search(self, query: str, skip: int = 0, limit: int = 100):
-        docs = self.collection.find({"name": {"$regex": query, "$options": "i"}}).skip(skip).limit(limit)
+        docs = (
+            self.collection.find({"name": {"$regex": query, "$options": "i"}})
+            .skip(skip)
+            .limit(limit)
+        )
         return self._to_objs(docs)

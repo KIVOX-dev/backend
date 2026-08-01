@@ -4,6 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class WebSocketManager:
     def __init__(self):
         # Maps user_id (int) to a list of their active WebSocket connections
@@ -14,7 +15,9 @@ class WebSocketManager:
         if user_id not in self.active_connections:
             self.active_connections[user_id] = []
         self.active_connections[user_id].append(websocket)
-        logger.info(f"User {user_id} connected. Active connections: {len(self.active_connections[user_id])}")
+        logger.info(
+            f"User {user_id} connected. Active connections: {len(self.active_connections[user_id])}"
+        )
 
     def disconnect(self, websocket: WebSocket, user_id: int):
         if user_id in self.active_connections:
@@ -39,5 +42,6 @@ class WebSocketManager:
                     await connection.send_json(message)
                 except Exception as e:
                     logger.error(f"Error broadcasting message to user {user_id}: {e}")
+
 
 manager = WebSocketManager()

@@ -7,6 +7,7 @@ that require it after first sign-in: hr, institutional (college_admin /
 super_admin), faculty. Students land straight on their dashboard and never
 hit this router.
 """
+
 import os
 import uuid
 
@@ -30,7 +31,9 @@ UPLOAD_DIR = os.path.join("uploads", "profile")
 def _portal_for(user: DotDict) -> str:
     portal = ROLE_TO_PORTAL.get(user.role)
     if portal is None:
-        raise HTTPException(status_code=400, detail=f"No onboarding profile exists for role '{user.role}'")
+        raise HTTPException(
+            status_code=400, detail=f"No onboarding profile exists for role '{user.role}'"
+        )
     return portal
 
 
@@ -47,22 +50,46 @@ _COMMON_SECTION = {
     "title": "Preferences",
     "description": "General settings for your account",
     "fields": [
-        {"name": "timezone", "label": "Timezone", "type": "select", "required": True, "options": [
-            {"label": "(GMT+5:30) India Standard Time", "value": "Asia/Kolkata"},
-            {"label": "(GMT+0:00) UTC", "value": "UTC"},
-            {"label": "(GMT-5:00) Eastern Time", "value": "America/New_York"},
-            {"label": "(GMT+4:00) Gulf Standard Time", "value": "Asia/Dubai"},
-        ]},
-        {"name": "language", "label": "Language", "type": "select", "required": True, "options": [
-            {"label": "English", "value": "en"},
-            {"label": "Hindi", "value": "hi"},
-            {"label": "Tamil", "value": "ta"},
-            {"label": "Arabic", "value": "ar"},
-        ]},
-        {"name": "profilePhoto", "label": "Profile Photo", "type": "file", "required": False,
-         "accept": "image/*", "helpText": "Optional. PNG or JPG, up to 5MB."},
-        {"name": "signature", "label": "Signature Upload", "type": "file", "required": False,
-         "accept": "image/*", "helpText": "Optional. Used on generated documents."},
+        {
+            "name": "timezone",
+            "label": "Timezone",
+            "type": "select",
+            "required": True,
+            "options": [
+                {"label": "(GMT+5:30) India Standard Time", "value": "Asia/Kolkata"},
+                {"label": "(GMT+0:00) UTC", "value": "UTC"},
+                {"label": "(GMT-5:00) Eastern Time", "value": "America/New_York"},
+                {"label": "(GMT+4:00) Gulf Standard Time", "value": "Asia/Dubai"},
+            ],
+        },
+        {
+            "name": "language",
+            "label": "Language",
+            "type": "select",
+            "required": True,
+            "options": [
+                {"label": "English", "value": "en"},
+                {"label": "Hindi", "value": "hi"},
+                {"label": "Tamil", "value": "ta"},
+                {"label": "Arabic", "value": "ar"},
+            ],
+        },
+        {
+            "name": "profilePhoto",
+            "label": "Profile Photo",
+            "type": "file",
+            "required": False,
+            "accept": "image/*",
+            "helpText": "Optional. PNG or JPG, up to 5MB.",
+        },
+        {
+            "name": "signature",
+            "label": "Signature Upload",
+            "type": "file",
+            "required": False,
+            "accept": "image/*",
+            "helpText": "Optional. Used on generated documents.",
+        },
     ],
 }
 
@@ -76,35 +103,95 @@ _SCHEMAS = {
                 "title": "Employment Details",
                 "description": "Your role within the organization",
                 "fields": [
-                    {"name": "employeeId", "label": "Employee ID", "type": "text", "required": True, "placeholder": "EMP-00123"},
-                    {"name": "department", "label": "Department", "type": "select", "required": True, "options": [
-                        {"label": "Human Resources", "value": "hr"},
-                        {"label": "Talent Acquisition", "value": "talent_acquisition"},
-                        {"label": "Payroll", "value": "payroll"},
-                        {"label": "Operations", "value": "operations"},
-                    ]},
-                    {"name": "designation", "label": "Designation", "type": "text", "required": True, "placeholder": "HR Manager"},
-                    {"name": "yearsOfExperience", "label": "Years of Experience", "type": "number", "required": True, "validation": {"min": 0, "max": 60}},
-                    {"name": "linkedinUrl", "label": "LinkedIn URL", "type": "url", "required": False, "placeholder": "https://linkedin.com/in/yourname"},
+                    {
+                        "name": "employeeId",
+                        "label": "Employee ID",
+                        "type": "text",
+                        "required": True,
+                        "placeholder": "EMP-00123",
+                    },
+                    {
+                        "name": "department",
+                        "label": "Department",
+                        "type": "select",
+                        "required": True,
+                        "options": [
+                            {"label": "Human Resources", "value": "hr"},
+                            {"label": "Talent Acquisition", "value": "talent_acquisition"},
+                            {"label": "Payroll", "value": "payroll"},
+                            {"label": "Operations", "value": "operations"},
+                        ],
+                    },
+                    {
+                        "name": "designation",
+                        "label": "Designation",
+                        "type": "text",
+                        "required": True,
+                        "placeholder": "HR Manager",
+                    },
+                    {
+                        "name": "yearsOfExperience",
+                        "label": "Years of Experience",
+                        "type": "number",
+                        "required": True,
+                        "validation": {"min": 0, "max": 60},
+                    },
+                    {
+                        "name": "linkedinUrl",
+                        "label": "LinkedIn URL",
+                        "type": "url",
+                        "required": False,
+                        "placeholder": "https://linkedin.com/in/yourname",
+                    },
                 ],
             },
             {
                 "id": "contact",
                 "title": "Contact Information",
                 "fields": [
-                    {"name": "officePhone", "label": "Office Phone", "type": "tel", "required": True, "placeholder": "+91 22 1234 5678"},
-                    {"name": "mobileNumber", "label": "Mobile Number", "type": "tel", "required": True, "placeholder": "+91 98765 43210"},
-                    {"name": "emergencyContact", "label": "Emergency Contact", "type": "tel", "required": True, "placeholder": "+91 90000 00000"},
+                    {
+                        "name": "officePhone",
+                        "label": "Office Phone",
+                        "type": "tel",
+                        "required": True,
+                        "placeholder": "+91 22 1234 5678",
+                    },
+                    {
+                        "name": "mobileNumber",
+                        "label": "Mobile Number",
+                        "type": "tel",
+                        "required": True,
+                        "placeholder": "+91 98765 43210",
+                    },
+                    {
+                        "name": "emergencyContact",
+                        "label": "Emergency Contact",
+                        "type": "tel",
+                        "required": True,
+                        "placeholder": "+91 90000 00000",
+                    },
                 ],
             },
             {
                 "id": "location",
                 "title": "Location",
                 "fields": [
-                    {"name": "country", "label": "Country", "type": "select", "required": True, "options": _COUNTRY_OPTIONS},
+                    {
+                        "name": "country",
+                        "label": "Country",
+                        "type": "select",
+                        "required": True,
+                        "options": _COUNTRY_OPTIONS,
+                    },
                     {"name": "state", "label": "State", "type": "text", "required": True},
                     {"name": "city", "label": "City", "type": "text", "required": True},
-                    {"name": "officeLocation", "label": "Office Location", "type": "text", "required": True, "placeholder": "HQ - Tower B, 4th Floor"},
+                    {
+                        "name": "officeLocation",
+                        "label": "Office Location",
+                        "type": "text",
+                        "required": True,
+                        "placeholder": "HQ - Tower B, 4th Floor",
+                    },
                 ],
             },
             _COMMON_SECTION,
@@ -118,30 +205,74 @@ _SCHEMAS = {
                 "id": "institution",
                 "title": "Institution Details",
                 "fields": [
-                    {"name": "institutionName", "label": "Institution Name", "type": "text", "required": True},
-                    {"name": "institutionCode", "label": "Institution Code", "type": "text", "required": True, "placeholder": "INST-4521"},
+                    {
+                        "name": "institutionName",
+                        "label": "Institution Name",
+                        "type": "text",
+                        "required": True,
+                    },
+                    {
+                        "name": "institutionCode",
+                        "label": "Institution Code",
+                        "type": "text",
+                        "required": True,
+                        "placeholder": "INST-4521",
+                    },
                     {"name": "adminId", "label": "Admin ID", "type": "text", "required": True},
-                    {"name": "designation", "label": "Designation", "type": "text", "required": True, "placeholder": "Principal / Registrar"},
-                    {"name": "website", "label": "Website", "type": "url", "required": False, "placeholder": "https://institution.edu"},
+                    {
+                        "name": "designation",
+                        "label": "Designation",
+                        "type": "text",
+                        "required": True,
+                        "placeholder": "Principal / Registrar",
+                    },
+                    {
+                        "name": "website",
+                        "label": "Website",
+                        "type": "url",
+                        "required": False,
+                        "placeholder": "https://institution.edu",
+                    },
                 ],
             },
             {
                 "id": "contact",
                 "title": "Contact Information",
                 "fields": [
-                    {"name": "officePhone", "label": "Office Phone", "type": "tel", "required": True},
-                    {"name": "mobileNumber", "label": "Mobile Number", "type": "tel", "required": True},
+                    {
+                        "name": "officePhone",
+                        "label": "Office Phone",
+                        "type": "tel",
+                        "required": True,
+                    },
+                    {
+                        "name": "mobileNumber",
+                        "label": "Mobile Number",
+                        "type": "tel",
+                        "required": True,
+                    },
                 ],
             },
             {
                 "id": "location",
                 "title": "Location",
                 "fields": [
-                    {"name": "country", "label": "Country", "type": "select", "required": True, "options": _COUNTRY_OPTIONS},
+                    {
+                        "name": "country",
+                        "label": "Country",
+                        "type": "select",
+                        "required": True,
+                        "options": _COUNTRY_OPTIONS,
+                    },
                     {"name": "state", "label": "State", "type": "text", "required": True},
                     {"name": "district", "label": "District", "type": "text", "required": True},
                     {"name": "city", "label": "City", "type": "text", "required": True},
-                    {"name": "officeAddress", "label": "Office Address", "type": "textarea", "required": True},
+                    {
+                        "name": "officeAddress",
+                        "label": "Office Address",
+                        "type": "textarea",
+                        "required": True,
+                    },
                 ],
             },
             _COMMON_SECTION,
@@ -157,26 +288,72 @@ _SCHEMAS = {
                 "fields": [
                     {"name": "facultyId", "label": "Faculty ID", "type": "text", "required": True},
                     {"name": "department", "label": "Department", "type": "text", "required": True},
-                    {"name": "designation", "label": "Designation", "type": "text", "required": True, "placeholder": "Assistant Professor"},
-                    {"name": "qualification", "label": "Qualification", "type": "text", "required": True, "placeholder": "Ph.D. in Computer Science"},
-                    {"name": "experience", "label": "Experience", "type": "number", "required": True, "validation": {"min": 0, "max": 60}},
-                    {"name": "subjectsHandling", "label": "Subjects Handling", "type": "textarea", "required": True, "placeholder": "Data Structures, Algorithms"},
-                    {"name": "officeRoomNumber", "label": "Office Room Number", "type": "text", "required": False, "placeholder": "B-204"},
+                    {
+                        "name": "designation",
+                        "label": "Designation",
+                        "type": "text",
+                        "required": True,
+                        "placeholder": "Assistant Professor",
+                    },
+                    {
+                        "name": "qualification",
+                        "label": "Qualification",
+                        "type": "text",
+                        "required": True,
+                        "placeholder": "Ph.D. in Computer Science",
+                    },
+                    {
+                        "name": "experience",
+                        "label": "Experience",
+                        "type": "number",
+                        "required": True,
+                        "validation": {"min": 0, "max": 60},
+                    },
+                    {
+                        "name": "subjectsHandling",
+                        "label": "Subjects Handling",
+                        "type": "textarea",
+                        "required": True,
+                        "placeholder": "Data Structures, Algorithms",
+                    },
+                    {
+                        "name": "officeRoomNumber",
+                        "label": "Office Room Number",
+                        "type": "text",
+                        "required": False,
+                        "placeholder": "B-204",
+                    },
                 ],
             },
             {
                 "id": "contact",
                 "title": "Contact Information",
                 "fields": [
-                    {"name": "mobileNumber", "label": "Mobile Number", "type": "tel", "required": True},
-                    {"name": "alternateNumber", "label": "Alternate Number", "type": "tel", "required": False},
+                    {
+                        "name": "mobileNumber",
+                        "label": "Mobile Number",
+                        "type": "tel",
+                        "required": True,
+                    },
+                    {
+                        "name": "alternateNumber",
+                        "label": "Alternate Number",
+                        "type": "tel",
+                        "required": False,
+                    },
                 ],
             },
             {
                 "id": "location",
                 "title": "Location",
                 "fields": [
-                    {"name": "country", "label": "Country", "type": "select", "required": True, "options": _COUNTRY_OPTIONS},
+                    {
+                        "name": "country",
+                        "label": "Country",
+                        "type": "select",
+                        "required": True,
+                        "options": _COUNTRY_OPTIONS,
+                    },
                     {"name": "state", "label": "State", "type": "text", "required": True},
                     {"name": "district", "label": "District", "type": "text", "required": True},
                     {"name": "city", "label": "City", "type": "text", "required": True},
@@ -239,10 +416,14 @@ async def _save_profile(request: Request, current_user: DotDict, db) -> dict:
 
 
 @router.post("")
-async def create_profile(request: Request, current_user: DotDict = Depends(get_current_user), db=Depends(get_db)):
+async def create_profile(
+    request: Request, current_user: DotDict = Depends(get_current_user), db=Depends(get_db)
+):
     return await _save_profile(request, current_user, db)
 
 
 @router.put("")
-async def update_profile(request: Request, current_user: DotDict = Depends(get_current_user), db=Depends(get_db)):
+async def update_profile(
+    request: Request, current_user: DotDict = Depends(get_current_user), db=Depends(get_db)
+):
     return await _save_profile(request, current_user, db)

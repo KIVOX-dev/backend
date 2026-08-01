@@ -26,7 +26,7 @@ def _now():
 
 
 @router.get("", response_model=list[PlacementResponse])
-def list_placements(db = Depends(get_db), college_scope: int | None = get_college_scope):
+def list_placements(db=Depends(get_db), college_scope: int | None = get_college_scope):
     query = {}
     if college_scope:
         query["college_id"] = int(college_scope)
@@ -35,7 +35,9 @@ def list_placements(db = Depends(get_db), college_scope: int | None = get_colleg
 
 
 @router.post("", response_model=PlacementResponse)
-def create_placement(data: PlacementCreateRequest, current_user = Depends(get_current_user), db = Depends(get_db)):
+def create_placement(
+    data: PlacementCreateRequest, current_user=Depends(get_current_user), db=Depends(get_db)
+):
     student_id = data.student_id or current_user.id
     student = db["users"].find_one({"id": student_id})
     if not student:
@@ -60,12 +62,16 @@ def create_placement(data: PlacementCreateRequest, current_user = Depends(get_cu
         "updated_at": _now(),
     }
     db["placements"].insert_one(placement)
-    db["student_profiles"].update_one({"user_id": student_id}, {"$set": {"placement_status": "placed"}})
+    db["student_profiles"].update_one(
+        {"user_id": student_id}, {"$set": {"placement_status": "placed"}}
+    )
     return _clean(placement)
 
 
 @router.get("/student/{student_id}", response_model=list[PlacementResponse])
-def student_placements(student_id: int, db = Depends(get_db), college_scope: int | None = get_college_scope):
+def student_placements(
+    student_id: int, db=Depends(get_db), college_scope: int | None = get_college_scope
+):
     query = {"student_id": student_id}
     if college_scope:
         query["college_id"] = int(college_scope)
@@ -73,8 +79,17 @@ def student_placements(student_id: int, db = Depends(get_db), college_scope: int
     return [_clean(doc) for doc in cursor]
 
 
-@router.put("/{placement_id}/verify", response_model=PlacementResponse, dependencies=[require_roles(UserRole.COLLEGE_ADMIN, UserRole.SUPER_ADMIN)])
-def verify_placement(placement_id: int, data: PlacementVerifyRequest, current_user = Depends(get_current_user), db = Depends(get_db)):
+@router.put(
+    "/{placement_id}/verify",
+    response_model=PlacementResponse,
+    dependencies=[require_roles(UserRole.COLLEGE_ADMIN, UserRole.SUPER_ADMIN)],
+)
+def verify_placement(
+    placement_id: int,
+    data: PlacementVerifyRequest,
+    current_user=Depends(get_current_user),
+    db=Depends(get_db),
+):
     placement = db["placements"].find_one({"id": placement_id})
     if not placement:
         raise NotFoundError("Placement", str(placement_id))

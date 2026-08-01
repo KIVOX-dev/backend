@@ -14,6 +14,7 @@ from app.repositories.base import DotDict
 logger = logging.getLogger("upscaler_ai.resume")
 router = APIRouter(prefix="/resume", tags=["Resume"])
 
+
 class ResumeSaveRequest(BaseModel):
     personal: Dict[str, Any]
     objective: str
@@ -34,11 +35,14 @@ class ResumeSaveRequest(BaseModel):
     template: str
     zoom: Optional[float] = 1.0
 
+
 class SaveVersionRequest(BaseModel):
     name: str
 
+
 class JDMatchRequest(BaseModel):
     jd_text: str
+
 
 class AISuggestRequest(BaseModel):
     action: str  # 'summary' | 'bullet' | 'skills' | 'rewrite' | 'grammar' | 'cover_letter' | 'interview_prep'
@@ -46,20 +50,23 @@ class AISuggestRequest(BaseModel):
     content: Optional[str] = None
     jd_text: Optional[str] = None
 
+
 class ResumeParseRequest(BaseModel):
     text: str
+
 
 def get_groq_client():
     groq_api_key = os.getenv("GROQ_API_KEY")
     if not groq_api_key:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="GROQ_API_KEY is not configured in environment variables."
+            detail="GROQ_API_KEY is not configured in environment variables.",
         )
     return Groq(api_key=groq_api_key)
 
+
 @router.get("")
-def get_resume(db = Depends(get_db), current_user: DotDict = Depends(get_current_user)):
+def get_resume(db=Depends(get_db), current_user: DotDict = Depends(get_current_user)):
     """Fetch the active resume and saved versions for the current student."""
     resume = db["resumes"].find_one({"user_id": current_user.id})
     if not resume:
@@ -74,7 +81,7 @@ def get_resume(db = Depends(get_db), current_user: DotDict = Depends(get_current
                 "github": "",
                 "portfolio": "",
                 "address": "",
-                "role": ""
+                "role": "",
             },
             "objective": "",
             "education": [],
@@ -90,10 +97,18 @@ def get_resume(db = Depends(get_db), current_user: DotDict = Depends(get_current
             "volunteer": [],
             "references": [],
             "customSections": [],
-            "sectionOrder": ["personal", "objective", "education", "experience", "projects", "skills", "certifications"],
+            "sectionOrder": [
+                "personal",
+                "objective",
+                "education",
+                "experience",
+                "projects",
+                "skills",
+                "certifications",
+            ],
             "template": "modern",
             "created_at": datetime.now(timezone.utc).isoformat(),
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat(),
         }
         db["resumes"].insert_one(resume)
 
@@ -109,50 +124,57 @@ def get_resume(db = Depends(get_db), current_user: DotDict = Depends(get_current
 
     return {"resume": resume, "versions": versions}
 
+
 @router.post("")
-def save_resume(data: ResumeSaveRequest, db = Depends(get_db), current_user: DotDict = Depends(get_current_user)):
+def save_resume(
+    data: ResumeSaveRequest, db=Depends(get_db), current_user: DotDict = Depends(get_current_user)
+):
     """Save the active resume details (auto-save endpoint)."""
     now = datetime.now(timezone.utc).isoformat()
     update_doc = data.model_dump()
     update_doc["updated_at"] = now
-    
-    db["resumes"].update_one(
-        {"user_id": current_user.id},
-        {"$set": update_doc},
-        upsert=True
-    )
-    
+
+    db["resumes"].update_one({"user_id": current_user.id}, {"$set": update_doc}, upsert=True)
+
     # Also update the user's main profile skills list if present
     skills_list = [s.get("name") for s in data.skills if s.get("name")]
     if skills_list:
         skills_str = ", ".join(skills_list)
         db["student_profiles"].update_one(
-            {"user_id": current_user.id},
-            {"$set": {"skills": skills_str}}
+            {"user_id": current_user.id}, {"$set": {"skills": skills_str}}
         )
 
     return {"success": True, "updated_at": now}
 
+
 @router.post("/version")
-def save_version(payload: SaveVersionRequest, db = Depends(get_db), current_user: DotDict = Depends(get_current_user)):
+def save_version(
+    payload: SaveVersionRequest,
+    db=Depends(get_db),
+    current_user: DotDict = Depends(get_current_user),
+):
     """Save the current resume state as a new version."""
     resume = db["resumes"].find_one({"user_id": current_user.id})
     if not resume:
         raise HTTPException(status_code=404, detail="No active resume found to version")
-    
+
     resume.pop("_id", None)
     version_doc = {
         **resume,
         "name": payload.name,
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": datetime.now(timezone.utc).isoformat(),
     }
     db["resume_versions"].insert_one(version_doc)
     return {"success": True, "message": f"Version '{payload.name}' saved successfully"}
 
+
 @router.post("/version/{version_id}/restore")
-def restore_version(version_id: str, db = Depends(get_db), current_user: DotDict = Depends(get_current_user)):
+def restore_version(
+    version_id: str, db=Depends(get_db), current_user: DotDict = Depends(get_current_user)
+):
     """Restore a previously saved version as the active resume."""
     from bson import ObjectId
+
     try:
         obj_id = ObjectId(version_id)
     except Exception:
@@ -166,17 +188,17 @@ def restore_version(version_id: str, db = Depends(get_db), current_user: DotDict
     version.pop("name", None)
     version["updated_at"] = datetime.now(timezone.utc).isoformat()
 
-    db["resumes"].update_one(
-        {"user_id": current_user.id},
-        {"$set": version},
-        upsert=True
-    )
+    db["resumes"].update_one({"user_id": current_user.id}, {"$set": version}, upsert=True)
     return {"success": True, "message": "Resume restored to selected version"}
 
+
 @router.delete("/version/{version_id}")
-def delete_version(version_id: str, db = Depends(get_db), current_user: DotDict = Depends(get_current_user)):
+def delete_version(
+    version_id: str, db=Depends(get_db), current_user: DotDict = Depends(get_current_user)
+):
     """Delete a saved version."""
     from bson import ObjectId
+
     try:
         obj_id = ObjectId(version_id)
     except Exception:
@@ -187,15 +209,16 @@ def delete_version(version_id: str, db = Depends(get_db), current_user: DotDict 
         raise HTTPException(status_code=404, detail="Version not found")
     return {"success": True, "message": "Version deleted"}
 
+
 @router.post("/analyze")
-def analyze_resume(db = Depends(get_db), current_user: DotDict = Depends(get_current_user)):
+def analyze_resume(db=Depends(get_db), current_user: DotDict = Depends(get_current_user)):
     """Analyze the student's active resume against ATS standards using Groq."""
     resume = db["resumes"].find_one({"user_id": current_user.id})
     if not resume:
         raise HTTPException(status_code=404, detail="Active resume not found")
 
     client = get_groq_client()
-    
+
     # Strip unnecessary fields for lower token usage
     resume.pop("_id", None)
     resume.pop("user_id", None)
@@ -232,22 +255,25 @@ def analyze_resume(db = Depends(get_db), current_user: DotDict = Depends(get_cur
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3,
             max_tokens=2048,
-            response_format={"type": "json_object"}
+            response_format={"type": "json_object"},
         )
         return json.loads(completion.choices[0].message.content)
     except Exception as e:
         logger.error(f"ATS Analysis failed: {e}")
         raise HTTPException(status_code=500, detail=f"ATS Analysis failed: {str(e)}")
 
+
 @router.post("/match-jd")
-def match_job_description(payload: JDMatchRequest, db = Depends(get_db), current_user: DotDict = Depends(get_current_user)):
+def match_job_description(
+    payload: JDMatchRequest, db=Depends(get_db), current_user: DotDict = Depends(get_current_user)
+):
     """Compare student resume with a pasted Job Description using Groq."""
     resume = db["resumes"].find_one({"user_id": current_user.id})
     if not resume:
         raise HTTPException(status_code=404, detail="Active resume not found")
 
     client = get_groq_client()
-    
+
     resume.pop("_id", None)
     resume.pop("user_id", None)
 
@@ -279,20 +305,25 @@ def match_job_description(payload: JDMatchRequest, db = Depends(get_db), current
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3,
             max_tokens=2048,
-            response_format={"type": "json_object"}
+            response_format={"type": "json_object"},
         )
         return json.loads(completion.choices[0].message.content)
     except Exception as e:
         logger.error(f"JD Match failed: {e}")
         raise HTTPException(status_code=500, detail=f"JD Matching failed: {str(e)}")
 
+
 @router.post("/ai-suggest")
-def ai_suggest(payload: AISuggestRequest, db = Depends(get_db), current_user: DotDict = Depends(get_current_user)):
+def ai_suggest(
+    payload: AISuggestRequest, db=Depends(get_db), current_user: DotDict = Depends(get_current_user)
+):
     """Generates summary, cover letters, rewrites experiences, or suggests skills using Groq."""
     client = get_groq_client()
 
-    system_instruction = "You are a professional ATS resume writer. Help the student optimize their profile."
-    
+    system_instruction = (
+        "You are a professional ATS resume writer. Help the student optimize their profile."
+    )
+
     if payload.action == "summary":
         prompt = f"Based on the following content, write a concise, compelling, and professional resume summary (maximum 3 sentences):\n{payload.content}"
     elif payload.action == "rewrite":
@@ -317,13 +348,13 @@ def ai_suggest(payload: AISuggestRequest, db = Depends(get_db), current_user: Do
             model="llama-3.3-70b-versatile",
             messages=[
                 {"role": "system", "content": system_instruction},
-                {"role": "user", "content": prompt}
+                {"role": "user", "content": prompt},
             ],
             temperature=0.5,
-            max_tokens=1500
+            max_tokens=1500,
         )
         output = completion.choices[0].message.content.strip()
-        
+
         # If skills action, try to load JSON
         if payload.action == "skills":
             try:
@@ -334,17 +365,18 @@ def ai_suggest(payload: AISuggestRequest, db = Depends(get_db), current_user: Do
                     output = json.loads(output[start:end])
             except Exception:
                 pass
-                
+
         return {"result": output}
     except Exception as e:
         logger.error(f"AI Suggestion failed: {e}")
         raise HTTPException(status_code=500, detail=f"AI suggestion failed: {str(e)}")
 
+
 @router.post("/parse")
-def parse_resume_text(payload: ResumeParseRequest, current_user = Depends(get_current_user)):
+def parse_resume_text(payload: ResumeParseRequest, current_user=Depends(get_current_user)):
     """Parse raw resume text into structured JSON fields using Groq."""
     client = get_groq_client()
-    
+
     prompt = f"""
     You are an expert resume parsing tool.
     Extract the candidate information from the following text into structured JSON fields matching this exact key structure:
@@ -368,7 +400,7 @@ def parse_resume_text(payload: ResumeParseRequest, current_user = Depends(get_cu
             messages=[{"role": "user", "content": prompt}],
             temperature=0.1,
             max_tokens=2048,
-            response_format={"type": "json_object"}
+            response_format={"type": "json_object"},
         )
         return json.loads(completion.choices[0].message.content)
     except Exception as e:

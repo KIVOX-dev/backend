@@ -1,6 +1,7 @@
 """
 UpScaler-AI V2 — FastAPI Dependencies
 """
+
 from fastapi import Depends
 from pymongo.database import Database
 

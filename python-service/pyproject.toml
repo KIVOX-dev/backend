@@ -6,6 +6,13 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = []
 
+[tool.black]
+# Matches [tool.ruff] line-length below so the two tools don't disagree about
+# where to wrap.
+line-length = 100
+target-version = ["py312"]
+extend-exclude = "/\\.venv/"
+
 [tool.ruff]
 line-length = 100
 target-version = "py312"

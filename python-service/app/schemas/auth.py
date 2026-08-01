@@ -2,6 +2,7 @@
 UpScaler-AI V2 — Auth Pydantic Schemas
 Request/Response models for authentication endpoints.
 """
+
 from typing import Optional
 from pydantic import BaseModel, EmailStr, Field, field_validator
 import re
@@ -9,6 +10,7 @@ import re
 
 class RegisterRequest(BaseModel):
     """User registration request."""
+
     email: EmailStr
     password: str = Field(min_length=6, max_length=128)
     name: str = Field(min_length=2, max_length=255)
@@ -43,12 +45,14 @@ class RegisterRequest(BaseModel):
 
 class LoginRequest(BaseModel):
     """User login request."""
+
     email: EmailStr
     password: str
 
 
 class TokenResponse(BaseModel):
     """JWT token response."""
+
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
@@ -58,11 +62,13 @@ class TokenResponse(BaseModel):
 
 class RefreshTokenRequest(BaseModel):
     """Refresh token request."""
+
     refresh_token: str
 
 
 class ChangePasswordRequest(BaseModel):
     """Change password request."""
+
     current_password: str
     new_password: str = Field(min_length=6, max_length=128)
 
@@ -78,11 +84,13 @@ class ChangePasswordRequest(BaseModel):
 
 class ForgotPasswordRequest(BaseModel):
     """- request."""
+
     email: EmailStr
 
 
 class ResetPasswordRequest(BaseModel):
     """Reset password with token."""
+
     token: str
     new_password: str = Field(min_length=6, max_length=128)
 
@@ -96,6 +104,7 @@ class UpdateProfileRequest(BaseModel):
 
 class UserBriefResponse(BaseModel):
     """Brief user info included in auth responses."""
+
     id: str | int
     email: str
     name: str

@@ -1,6 +1,7 @@
 """
 UpScaler-AI V2 — Main FastAPI Application Entry Point
 """
+
 import logging
 from contextlib import asynccontextmanager
 
@@ -29,6 +30,7 @@ settings = get_settings()
 
 
 from app.mongodb import connect_to_mongo, close_mongo_connection
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -106,4 +108,5 @@ app.include_router(api_router)
 def health_check():
     """System health check endpoint."""
     from datetime import datetime, timezone
+
     return HealthResponse(timestamp=datetime.now(timezone.utc))

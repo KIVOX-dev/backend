@@ -61,7 +61,11 @@ class AccountPendingError(UpScalerAIException):
 # ── Authorization Exceptions ────────────────────
 class InsufficientPermissionsError(UpScalerAIException):
     def __init__(self, role: str = ""):
-        detail = f"Role '{role}' is not authorized for this resource" if role else "Insufficient permissions"
+        detail = (
+            f"Role '{role}' is not authorized for this resource"
+            if role
+            else "Insufficient permissions"
+        )
         super().__init__(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=detail,

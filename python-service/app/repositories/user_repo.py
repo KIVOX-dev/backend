@@ -3,6 +3,7 @@ from typing import Optional
 
 from app.repositories.base import BaseRepository
 
+
 class UserRepository(BaseRepository):
     def __init__(self, db):
         super().__init__("users", db)
@@ -10,7 +11,7 @@ class UserRepository(BaseRepository):
     def get_by_email(self, email: str):
         doc = self.collection.find_one({"email": email.lower()})
         return self._to_obj(doc)
-        
+
     def get_by_id(self, user_id):
         doc = self.collection.find_one({"id": user_id})
         if not doc:
@@ -21,7 +22,9 @@ class UserRepository(BaseRepository):
                 pass
         return self._to_obj(doc)
 
-    def get_by_college(self, college_id: int, role: Optional[str] = None, skip: int = 0, limit: int = 100):
+    def get_by_college(
+        self, college_id: int, role: Optional[str] = None, skip: int = 0, limit: int = 100
+    ):
         query = {"college_id": int(college_id) if college_id else None}
         if role:
             query["role"] = role
@@ -41,16 +44,13 @@ class UserRepository(BaseRepository):
 
     def update_last_login(self, user):
         now = datetime.now(timezone.utc).isoformat()
-        self.collection.update_one(
-            {"id": user.id}, 
-            {"$set": {"last_login_at": now}}
-        )
+        self.collection.update_one({"id": user.id}, {"$set": {"last_login_at": now}})
         user.last_login_at = now
         return user
 
     def email_exists(self, email: str) -> bool:
         return self.collection.count_documents({"email": email.lower()}) > 0
-        
+
     def create(self, data: dict):
         if "id" not in data:
             last_doc = self.collection.find_one(sort=[("id", -1)])
@@ -70,7 +70,7 @@ class StudentProfileRepository(BaseRepository):
     def get_by_user_id(self, user_id: int):
         doc = self.collection.find_one({"user_id": user_id})
         return self._to_obj(doc)
-        
+
     def create(self, data: dict):
         if "id" not in data:
             last_doc = self.collection.find_one(sort=[("id", -1)])
@@ -90,13 +90,13 @@ class RefreshTokenRepository(BaseRepository):
     def revoke_token(self, token):
         self.collection.update_one(
             {"jti": token.jti},
-            {"$set": {"is_revoked": True, "revoked_at": datetime.now(timezone.utc).isoformat()}}
+            {"$set": {"is_revoked": True, "revoked_at": datetime.now(timezone.utc).isoformat()}},
         )
 
     def revoke_all_user_tokens(self, user_id: int) -> int:
         result = self.collection.update_many(
             {"user_id": user_id, "is_revoked": False},
-            {"$set": {"is_revoked": True, "revoked_at": datetime.now(timezone.utc).isoformat()}}
+            {"$set": {"is_revoked": True, "revoked_at": datetime.now(timezone.utc).isoformat()}},
         )
         return result.modified_count
 
@@ -104,7 +104,7 @@ class RefreshTokenRepository(BaseRepository):
         now = datetime.now(timezone.utc).isoformat()
         result = self.collection.delete_many({"expires_at": {"$lt": now}})
         return result.deleted_count
-        
+
     def create(self, data: dict):
         if "id" not in data:
             last_doc = self.collection.find_one(sort=[("id", -1)])

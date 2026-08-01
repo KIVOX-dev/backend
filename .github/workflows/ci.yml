@@ -90,6 +90,11 @@ jobs:
       - run: pip install -r requirements-dev.txt
       - name: Lint (ruff)
         run: ruff check .
+      # Formatting is checked separately from ruff so a failure says clearly
+      # which of the two is unhappy. Both are pinned to line-length 100 in
+      # pyproject.toml, so they cannot disagree about wrapping.
+      - name: Format check (black)
+        run: black --check .
 
   python-test:
     name: python-service / test

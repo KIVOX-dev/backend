@@ -56,6 +56,7 @@ class JobPostingCreateRequest(BaseModel):
     min_cgpa: Optional[float] = None
     application_deadline: Optional[datetime] = None
 
+
 class JobPostingResponse(JobPostingCreateRequest):
     id: int
     recruiter_id: int
@@ -66,6 +67,7 @@ class JobPostingResponse(JobPostingCreateRequest):
 
     model_config = {"from_attributes": True}
 
+
 class JobApplicationResponse(BaseModel):
     id: int
     job_posting_id: int
@@ -75,7 +77,7 @@ class JobApplicationResponse(BaseModel):
     updated_at: datetime
     notes: Optional[str] = None
     interview_scheduled_at: Optional[datetime] = None
-    
+
     # Nested info we might want
     student_name: Optional[str] = None
     student_email: Optional[str] = None
