@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from groq import Groq
 
 from app.core.rbac import get_current_user
-from app.models.user import User
+from app.repositories.base import DotDict
 
 router = APIRouter(prefix="/ai", tags=["AI"])
 
@@ -15,7 +15,7 @@ class ResumeData(BaseModel):
     experience: str
 
 @router.post("/resume/improve")
-def improve_resume(data: ResumeData, current_user: User = Depends(get_current_user)):
+def improve_resume(data: ResumeData, current_user: DotDict = Depends(get_current_user)):
     """
     Improves resume content using Groq LLM to make it more professional and ATS-friendly.
     """

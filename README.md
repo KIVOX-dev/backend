@@ -5,7 +5,7 @@ dependency manifest, env files, and `Dockerfile`:
 
 | Folder | Stack | Purpose |
 |---|---|---|
-| [`python-service/`](python-service/README.md) | Python 3.12 / FastAPI / MongoDB (+ SQLite fallback) | The original UpScaler-AI V2 API |
+| [`python-service/`](python-service/README.md) | Python 3.12 / FastAPI / MongoDB | The original UpScaler-AI V2 API |
 | [`node-api/`](node-api/README.md) | Node.js / Express / MongoDB | Clean-architecture REST API, RBAC, JWT + Google OAuth |
 
 Neither service's code was touched by the other's setup — see each folder's own `README.md` for
@@ -34,6 +34,13 @@ architecture and `REQUIREMENTS.md` for prerequisites.
   uniqueness/query indexes without SQL). Both services now use MongoDB, but **on separate
   database names** (`upscaler_ai` for Python, `upscaler_ai_node` for Node) on the same cluster — they
   do not share collections, and each still owns its own connection string.
+- **Standardized the Python service on MongoDB only.** It still carried a full SQLAlchemy layer
+  (an ORM model package, `alembic.ini`, `sqlalchemy`/`alembic`/`psycopg` dependencies, a
+  `DATABASE_URL` setting, and `Session`/`Query` type hints on functions that were actually being
+  handed a Mongo handle) left over from the Postgres era. All of it was unreachable at runtime and
+  has been removed — see [`SECURITY_AUDIT.md`](SECURITY_AUDIT.md) for the full inventory. The same
+  pass found that the service's real drivers (`motor`, `pymongo`, `certifi`, `groq`) were never
+  declared in `requirements.txt`, which meant the built Docker image crashed on startup.
 
 ## Local development ports
 

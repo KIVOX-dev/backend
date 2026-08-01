@@ -4,7 +4,7 @@ Business logic for registration, login, and token management.
 """
 from typing import Optional
 
-from sqlalchemy.orm import Session
+from pymongo.database import Database
 
 from app.config import get_settings
 from app.core.exceptions import (
@@ -19,7 +19,7 @@ from app.core.security import (
     create_refresh_token,
     verify_refresh_token,
 )
-from app.models.user import User
+from app.repositories.base import DotDict
 from app.repositories.user_repo import UserRepository, StudentProfileRepository, RefreshTokenRepository
 from app.repositories.college_repo import CollegeRepository
 from app.schemas.auth import RegisterRequest, LoginRequest, TokenResponse, UserBriefResponse, ChangePasswordRequest
@@ -28,14 +28,14 @@ settings = get_settings()
 
 
 class AuthService:
-    def __init__(self, db: Session):
+    def __init__(self, db: Database):
         self.db = db
         self.user_repo = UserRepository(db)
         self.student_profile_repo = StudentProfileRepository(db)
         self.refresh_token_repo = RefreshTokenRepository(db)
         self.college_repo = CollegeRepository(db)
 
-    def register(self, data: RegisterRequest) -> User:
+    def register(self, data: RegisterRequest) -> DotDict:
         """Register a new user and return the user object."""
         if self.user_repo.email_exists(data.email):
             raise DuplicateError(resource="User", field="email")
@@ -74,7 +74,7 @@ class AuthService:
 
         return user
 
-    def _issue_tokens(self, user: User) -> TokenResponse:
+    def _issue_tokens(self, user: DotDict) -> TokenResponse:
         if not user.is_active:
             raise InvalidCredentialsError()
         if user.status == "pending":

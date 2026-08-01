@@ -9,7 +9,7 @@ from groq import Groq
 
 from app.database import get_db
 from app.core.rbac import get_current_user
-from app.models.user import User
+from app.repositories.base import DotDict
 
 logger = logging.getLogger("upscaler_ai.resume")
 router = APIRouter(prefix="/resume", tags=["Resume"])
@@ -59,7 +59,7 @@ def get_groq_client():
     return Groq(api_key=groq_api_key)
 
 @router.get("")
-def get_resume(db = Depends(get_db), current_user: User = Depends(get_current_user)):
+def get_resume(db = Depends(get_db), current_user: DotDict = Depends(get_current_user)):
     """Fetch the active resume and saved versions for the current student."""
     resume = db["resumes"].find_one({"user_id": current_user.id})
     if not resume:
@@ -110,7 +110,7 @@ def get_resume(db = Depends(get_db), current_user: User = Depends(get_current_us
     return {"resume": resume, "versions": versions}
 
 @router.post("")
-def save_resume(data: ResumeSaveRequest, db = Depends(get_db), current_user: User = Depends(get_current_user)):
+def save_resume(data: ResumeSaveRequest, db = Depends(get_db), current_user: DotDict = Depends(get_current_user)):
     """Save the active resume details (auto-save endpoint)."""
     now = datetime.now(timezone.utc).isoformat()
     update_doc = data.model_dump()
@@ -134,7 +134,7 @@ def save_resume(data: ResumeSaveRequest, db = Depends(get_db), current_user: Use
     return {"success": True, "updated_at": now}
 
 @router.post("/version")
-def save_version(payload: SaveVersionRequest, db = Depends(get_db), current_user: User = Depends(get_current_user)):
+def save_version(payload: SaveVersionRequest, db = Depends(get_db), current_user: DotDict = Depends(get_current_user)):
     """Save the current resume state as a new version."""
     resume = db["resumes"].find_one({"user_id": current_user.id})
     if not resume:
@@ -150,7 +150,7 @@ def save_version(payload: SaveVersionRequest, db = Depends(get_db), current_user
     return {"success": True, "message": f"Version '{payload.name}' saved successfully"}
 
 @router.post("/version/{version_id}/restore")
-def restore_version(version_id: str, db = Depends(get_db), current_user: User = Depends(get_current_user)):
+def restore_version(version_id: str, db = Depends(get_db), current_user: DotDict = Depends(get_current_user)):
     """Restore a previously saved version as the active resume."""
     from bson import ObjectId
     try:
@@ -174,7 +174,7 @@ def restore_version(version_id: str, db = Depends(get_db), current_user: User = 
     return {"success": True, "message": "Resume restored to selected version"}
 
 @router.delete("/version/{version_id}")
-def delete_version(version_id: str, db = Depends(get_db), current_user: User = Depends(get_current_user)):
+def delete_version(version_id: str, db = Depends(get_db), current_user: DotDict = Depends(get_current_user)):
     """Delete a saved version."""
     from bson import ObjectId
     try:
@@ -188,7 +188,7 @@ def delete_version(version_id: str, db = Depends(get_db), current_user: User = D
     return {"success": True, "message": "Version deleted"}
 
 @router.post("/analyze")
-def analyze_resume(db = Depends(get_db), current_user: User = Depends(get_current_user)):
+def analyze_resume(db = Depends(get_db), current_user: DotDict = Depends(get_current_user)):
     """Analyze the student's active resume against ATS standards using Groq."""
     resume = db["resumes"].find_one({"user_id": current_user.id})
     if not resume:
@@ -240,7 +240,7 @@ def analyze_resume(db = Depends(get_db), current_user: User = Depends(get_curren
         raise HTTPException(status_code=500, detail=f"ATS Analysis failed: {str(e)}")
 
 @router.post("/match-jd")
-def match_job_description(payload: JDMatchRequest, db = Depends(get_db), current_user: User = Depends(get_current_user)):
+def match_job_description(payload: JDMatchRequest, db = Depends(get_db), current_user: DotDict = Depends(get_current_user)):
     """Compare student resume with a pasted Job Description using Groq."""
     resume = db["resumes"].find_one({"user_id": current_user.id})
     if not resume:
@@ -287,7 +287,7 @@ def match_job_description(payload: JDMatchRequest, db = Depends(get_db), current
         raise HTTPException(status_code=500, detail=f"JD Matching failed: {str(e)}")
 
 @router.post("/ai-suggest")
-def ai_suggest(payload: AISuggestRequest, db = Depends(get_db), current_user: User = Depends(get_current_user)):
+def ai_suggest(payload: AISuggestRequest, db = Depends(get_db), current_user: DotDict = Depends(get_current_user)):
     """Generates summary, cover letters, rewrites experiences, or suggests skills using Groq."""
     client = get_groq_client()
 

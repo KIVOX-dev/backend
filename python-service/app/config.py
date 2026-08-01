@@ -29,10 +29,7 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     API_V1_PREFIX: str = "/api/v1"
 
-    # ── Database ─────────────────────────────────
-    DATABASE_URL: str = "sqlite:///./data/upscaler_ai.db"
-
-    # ── MongoDB ──────────────────────────────────
+    # ── MongoDB (the only database engine) ───────
     MONGODB_URI: str = "mongodb://localhost:27017"
     MONGODB_DB_NAME: str = "upscaler_ai"
 
@@ -59,8 +56,8 @@ class Settings(BaseSettings):
 
     # ── Super Admin Seed ─────────────────────────
     # No password default on purpose — set a real one in .env before seeding.
-    # (Note: app/services/seed_service.py, the only reader of these two
-    # settings, is dead/unreachable code — see Phase 6 of the audit roadmap.)
+    # Consumed by seed_mongo.py (which reads them from the environment directly,
+    # not through this class) — it refuses to run if either is unset.
     SUPER_ADMIN_EMAIL: str = "admin@upscaler-ai.com"
     SUPER_ADMIN_PASSWORD: str = ""
     

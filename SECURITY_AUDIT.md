@@ -268,9 +268,128 @@ from this audit.
   `python-service/tests/conftest.py`, `python-service/tests/test_security.py`,
   `python-service/requirements-dev.txt`.
 
+### MongoDB standardization (§9) — `python-service/requirements.txt`
+| Package | Before | After | Reason |
+|---|---|---|---|
+| `motor` | *(undeclared, imported at runtime)* | **3.7.1** | Container crashed on startup without it |
+| `pymongo` | *(undeclared, imported at runtime)* | **4.17.0** | Same |
+| `certifi` | *(undeclared, imported directly)* | **2026.7.22** | Same (was reachable only transitively via `httpx`) |
+| `groq` | *(undeclared, imported at runtime)* | **1.6.0** | Same |
+| `sqlalchemy` | 2.0.41 | *(removed)* | Dead — no SQL executes anywhere |
+| `alembic` | 1.15.2 | *(removed)* | Dead — no `alembic/` directory exists |
+| `psycopg[binary]` | 3.2.9 | *(removed)* | Dead — also drops a bundled libpq from the image |
+
+### MongoDB standardization (§9) — source
+- Deleted: `app/models/` (9 SQLAlchemy ORM files), `app/services/seed_service.py`,
+  `app/core/pagination.py`, `alembic.ini`.
+- `app/database.py` — dropped the SQLAlchemy `Base`; now only exposes the Mongo `get_db`.
+- `app/config.py` — removed the dead `DATABASE_URL` setting; corrected a stale comment that
+  pointed at the deleted `seed_service.py`.
+- `.env.example` — replaced SQLite/Postgres URLs with the `MONGODB_URI`/`MONGODB_DB_NAME` the app
+  actually requires; replaced the `admin123` example password with a placeholder.
+- Type hints corrected to match runtime reality: `Session` → `pymongo.database.Database`,
+  `User` → `DotDict` (across `dependencies.py`, `auth_service.py`, `chat.py`, `ai.py`, `auth.py`,
+  `profile.py`, `resume.py`).
+- `pyproject.toml` — dropped the now-meaningless `alembic` ruff exclude.
+- Docs refreshed to describe a MongoDB-only service: `README.md`, `python-service/README.md`,
+  `python-service/REQUIREMENTS.md`.
+- New file: `python-service/tests/test_routes.py` (route-registration regression tests).
+
 ---
 
-## 9. Verification performed
+## 9. MongoDB standardization pass (added after the security work)
+
+A follow-up pass to standardize the platform on MongoDB and strip the legacy SQL artifacts from
+`python-service/`. This surfaced a production-breaking bug unrelated to (and more urgent than) the
+SQL cleanup itself.
+
+### 9a. CRITICAL — the python-service container could not start
+
+`motor`, `pymongo`, `certifi`, and `groq` are all imported at runtime, but **none of them were
+declared in `requirements.txt`**. The service only ran locally because those packages happened to
+be present in the developer's `.venv` (installed manually at some point, or left behind by a
+removed dependency). `pip show motor` confirmed it had no reverse dependency at all — nothing was
+pulling it in.
+
+The Docker image does `pip install --no-cache-dir -r requirements.txt` into a *clean* venv, so the
+built image contained no Mongo driver. Verified in a clean-room venv:
+
+```
+$ pip install -r requirements.txt && python -c "import app.main"
+  File "app/mongodb_sync.py", line 5, in <module>
+    from pymongo import MongoClient
+ModuleNotFoundError: No module named 'pymongo'
+```
+
+That is every deployed container crash-looping on startup. `certifi` was reachable transitively via
+`httpx`, but the other three were not. Rather than fix these one at a time, every third-party
+top-level import under `app/` and `seed_mongo.py` was extracted with `ast` and checked against a
+clean install; `groq` was the only remaining gap after the Mongo drivers were added. All four are
+now declared and pinned. The same check was run against `node-api` (parsing every `require()`
+against `package.json`): **no undeclared and no unused dependencies** — that service was already
+consistent.
+
+**This is the single most important change in this document.** The CVE fixes hardened a service
+that, as built, would not have started.
+
+### 9b. Legacy SQL artifacts removed
+
+Everything below was dead at runtime — the app never executed a line of SQL. Confirmed by
+uninstalling `sqlalchemy`/`alembic`/`psycopg` outright and watching the app import, route, and
+pass its tests unchanged.
+
+| Removed | What it was | Why it was safe |
+|---|---|---|
+| `app/models/` (9 files) | Full SQLAlchemy ORM layer — `User`, `College`, `Assessment`, `Placement`, … declared against `Base` | Only ever imported for **type annotations**. `get_current_user` actually returns a `DotDict` wrapping a Mongo document, so `current_user: User` was factually wrong wherever it appeared. `models/__init__.py` and `models/question.py` had no importers at all. |
+| `app/services/seed_service.py` | Seeder issuing real `db.query(College)...` ORM calls | Fully orphaned — its only importer was an unused import in `main.py` that Ruff's `F401` fix had already removed. It would have raised `AttributeError` if ever called, since `get_db()` yields a Mongo handle with no `.query()`. |
+| `app/core/pagination.py` | `paginate()` taking a SQLAlchemy `Query`, plus `PaginationParams`/`PaginatedResponse` | Nothing imported it. `PaginatedResponse` was a duplicate of the live one in `schemas/common.py`. |
+| `alembic.ini` | Alembic migration config | No `alembic/` directory or migration scripts exist — config pointing at nothing. |
+| `sqlalchemy`, `alembic`, `psycopg[binary]` | Declared dependencies | Unused after the above. Also shrinks the image: `psycopg[binary]` ships a bundled libpq. |
+| `DATABASE_URL` (in `config.py` and `.env.example`) | `sqlite:///./data/upscaler_ai.db` + commented Postgres/asyncpg URLs | Read by nothing. `.env.example` documented SQL databases while omitting `MONGODB_URI`, the one variable the app genuinely requires. |
+
+Type hints that lied about the runtime type were corrected rather than deleted, so the signatures
+now describe what is actually passed:
+
+- `db: Session` → `db: Database` (`pymongo.database.Database`) in `dependencies.py`,
+  `auth_service.py`, `chat.py`
+- `current_user: User` → `current_user: DotDict` across `ai.py`, `auth.py`, `chat.py`,
+  `profile.py`, `resume.py`
+- `-> User` → `-> DotDict` on `AuthService.register`; the false `-> User` on
+  `chat.get_current_user_ws` (which returns a local `DummyUser`) was dropped
+
+### 9c. Route-registration regression test added
+
+While verifying the FastAPI upgrade, `len(app.routes)` returned only 3 — alarming enough to look
+into. It turned out to be a **measurement artifact, not a bug**: newer FastAPI stores included
+routers lazily as `_IncludedRouter` entries instead of eagerly flattening them, so counting
+`app.routes` proves nothing. Actual HTTP requests confirmed routing works correctly (`/health` →
+200, protected routes → 401, unknown → 404).
+
+Because that failure mode would be silent, `tests/test_routes.py` now asserts it with real
+requests: a protected route must answer **401, never 404**. Public routes (e.g.
+`GET /api/v1/colleges`, used by the registration dropdown) are deliberately excluded — they reach
+the database and would hang without a live MongoDB.
+
+### 9d. Conflict with the requested target stack — `python-jose`
+
+The target stack specifies **`python-jose` (JWT)**, but §3/§4 of this document replaced it with
+`PyJWT` for a security reason: `python-jose` unconditionally requires `ecdsa`, which carries
+**CVE-2024-23342** (Minerva timing attack), and the maintainers have stated they will not fix it —
+no version resolves it. Restoring `python-jose` would reintroduce that permanently-unfixable
+advisory plus 4 `pyasn1` CVEs, and `pip-audit` would fail again in CI.
+
+`PyJWT` is a drop-in for this codebase's usage (HS256 `encode`/`decode`, same call signature) and
+is covered by `tests/test_security.py`. **I've kept `PyJWT` and flagged the deviation rather than
+silently reverting a security fix** — if `python-jose` is required for a reason I'm not aware of,
+that trade-off is worth an explicit decision.
+
+Everything else in the target stack already matches: `node-api` declares exactly the listed
+technologies (Express, native `mongodb` driver, `jsonwebtoken`, `bcrypt`, Joi, Helmet, rate limit,
+CORS, `ws`, Multer, Winston, Morgan, Brevo, Groq SDK) with no unused or undeclared packages, and
+`python-service` now matches its list (FastAPI, Uvicorn, MongoDB via Motor + PyMongo, Pydantic,
+Pydantic Settings, Passlib, bcrypt, SlowAPI, HTTPX, Email Validator).
+
+## 10. Verification performed
 
 Run locally in this environment (Windows; `npm ci` itself hit a transient Windows file-lock on
 `bcrypt`'s native binary — environment-specific, not a dependency issue — `npm install` confirms
@@ -285,19 +404,36 @@ the same resolved tree installs cleanly, and this doesn't occur on the Linux CI 
 | `pip-audit -r requirements.txt` | **0 known vulnerabilities** (was 23 across 5 packages) |
 | `pip install -r requirements.txt` | ✅ succeeds |
 | `ruff check .` | ✅ 0 errors |
-| `pytest -v` | ✅ 5/5 passing |
-| `app.main` / edited modules import | ✅ verified directly |
+| `pytest -q` | ✅ 13/13 passing (5 security + 8 routing) |
+| **Clean-room install + startup** | ✅ fresh venv from `requirements.txt` alone → `app.main` imports, `/health` → 200, `/api/v1/auth/me` → 401. **This is the check that would have caught §9a.** |
+| App runs with zero SQL packages installed | ✅ verified after uninstalling `sqlalchemy`/`alembic`/`psycopg` |
 | JWT round-trip (`python-jose`→`PyJWT` migration) | ✅ verified directly + covered by tests |
+| Undeclared/unused dependency scan (both services) | ✅ AST-based for Python, `require()`-based for Node — both clean |
 | Docker builds | **Not run** — Docker Desktop's engine wasn't running in this environment.
 Both Dockerfiles were reviewed and updated (Node base image bump); recommend confirming the
 `docker-build` CI job on the actual PR before merge. |
 
-## 10. Production-readiness confirmation
+## 11. Production-readiness confirmation
 
-Both services install cleanly, pass their full lint/test/audit gates, and report **zero known
-dependency vulnerabilities** as of 2026-08-01. The one advisory with no upstream fix (`ecdsa`
-Minerva timing attack) was eliminated by removing the dependency, not by accepting the risk — so
-there are no outstanding "accepted risk" items to carry forward. The main follow-ups are hygiene,
-not security: re-run this audit on a cadence (`npm audit` / `pip-audit` catch *known* CVEs only,
-not zero-days), and consider the `passlib` and Express/Joi/MongoDB-driver major-version items in
-§7 as separate, deliberately-tested upgrades.
+Both services install cleanly **from their manifests alone**, pass their full lint/test/audit
+gates, and report **zero known dependency vulnerabilities** as of 2026-08-01. The one advisory with
+no upstream fix (`ecdsa` Minerva timing attack) was eliminated by removing the dependency, not by
+accepting the risk — so there are no outstanding "accepted risk" items to carry forward.
+
+One caveat on the phrase "production-ready": before this work, `python-service` was **not
+deployable at all** — its container crashed on startup because the MongoDB drivers were never
+declared (§9a). That is now fixed and verified in a clean room. Because the bug was invisible to
+every existing CI gate (lint, tests, and `pip-audit` all passed against a dev venv that happened to
+have the packages), the highest-value follow-up is to make CI **build and boot the image**, not
+just install and lint it — the `docker-build` job plus a container healthcheck would have caught it.
+
+Remaining follow-ups are hygiene, not blockers:
+
+- **Motor is on a deprecation path.** MongoDB is folding async support into PyMongo directly;
+  Motor 3.7.1 is still Production/Stable, but a migration is worth planning. Kept as-is here since
+  the target stack names Motor explicitly.
+- `passlib` is unmaintained (§7) — migrate to `bcrypt` directly or `argon2-cffi`.
+- Express 5 / Joi 18 / `mongodb` 7 majors (§7) — no CVEs, so deliberately deferred.
+- `starlette.testclient` warns that `httpx` support is deprecated in favor of `httpx2` — harmless
+  today, but it will need attention when `httpx` is next bumped.
+- Re-run this audit on a cadence: `npm audit` / `pip-audit` catch *known* CVEs only, not zero-days.

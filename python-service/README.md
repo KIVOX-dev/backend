@@ -1,8 +1,8 @@
 # UpScaler-AI Python Service
 
-Existing FastAPI backend (UpScaler-AI V2), using MongoDB as the primary datastore with a SQLite
-fallback (`app/database.py`, `app/mongodb.py`). Lives in its own folder (`python-service/`) as an
-independent deployable from the Node API — see [`REQUIREMENTS.md`](REQUIREMENTS.md) for
+Existing FastAPI backend (UpScaler-AI V2), using MongoDB as its only datastore
+(`app/mongodb.py` async / `app/mongodb_sync.py` sync). Lives in its own folder (`python-service/`)
+as an independent deployable from the Node API — see [`REQUIREMENTS.md`](REQUIREMENTS.md) for
 prerequisites and [`../README.md`](../README.md) for how this fits alongside it.
 
 ## Quick start
@@ -21,15 +21,19 @@ uvicorn app.main:app --reload
 app/
   api/v1/         one router module per feature (auth, students, placements, tests, colleges, ...)
   core/           security, RBAC, middleware, exceptions, websocket manager
-  models/         data models
   schemas/        Pydantic request/response schemas
-  repositories/   data-access layer
-  services/       business logic (auth_service, seed_service)
+  repositories/   data-access layer (documents are wrapped in DotDict for attribute access)
+  services/       business logic (auth_service)
   config.py       settings (pydantic-settings, reads .env)
-  database.py     SQLAlchemy/SQLite setup
-  mongodb.py      MongoDB client (primary datastore)
+  database.py     `get_db` FastAPI dependency — yields the sync MongoDB handle
+  mongodb.py      async MongoDB client (Motor) — used for startup/shutdown
+  mongodb_sync.py sync MongoDB client (PyMongo) — used by routes/repositories
+  db_indexes.py   idempotent index creation, run at startup
   main.py         FastAPI app entrypoint — run via `uvicorn app.main:app`
 ```
+
+There is no ORM layer and no `models/` package: MongoDB documents are read and written directly
+through the repositories, so Pydantic schemas in `schemas/` are the only declared shapes.
 
 ## Note on `seed_mongo.py`
 

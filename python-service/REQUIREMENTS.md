@@ -4,10 +4,11 @@
 |---|---|
 | Python | 3.12 (see `.python-version`) — 3.14 is not supported yet (pydantic-core build issue) |
 | Dependencies | `requirements.txt` (pip) — `pip install -r requirements.txt` (run from inside `python-service/`) |
-| Database | MongoDB (primary, `app/mongodb.py`) with a SQLite fallback (`app/database.py`) |
-| Config | `.env` (copy from `.env.example`) |
+| Database | MongoDB — the only database engine. Async client `app/mongodb.py` (Motor), sync client `app/mongodb_sync.py` (PyMongo); `app/database.py` exposes the `get_db` dependency |
+| Config | `.env` (copy from `.env.example`) — `MONGODB_URI` and `JWT_SECRET_KEY` are required |
 | Run | `uvicorn app.main:app --reload` |
-| Migrations | `alembic.ini` / `alembic upgrade head` (SQLAlchemy side only) |
+| Migrations | None. MongoDB is schemaless; indexes are created idempotently at startup by `app/db_indexes.py`. (The former SQLAlchemy/Alembic setup has been removed — see `../SECURITY_AUDIT.md`.) |
+| Lint / test | `pip install -r requirements-dev.txt` then `ruff check .` / `pytest` |
 | Docker | `Dockerfile` — build context is this folder: `docker build -f Dockerfile .` from inside `python-service/` |
 
 ## Security note

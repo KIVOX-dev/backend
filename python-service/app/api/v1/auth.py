@@ -13,7 +13,7 @@ from app.services.auth_service import AuthService
 from app.dependencies import get_auth_service
 from app.core.rbac import get_current_user
 from app.core.exceptions import AccountPendingError
-from app.models.user import User
+from app.repositories.base import DotDict
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 settings = get_settings()
@@ -122,7 +122,7 @@ def refresh_token(
 
 @router.post("/logout", response_model=MessageResponse)
 def logout(
-    current_user: User = Depends(get_current_user),
+    current_user: DotDict = Depends(get_current_user),
     auth_service: AuthService = Depends(get_auth_service)
 ):
     """Logout the user by revoking all their refresh tokens."""
@@ -132,7 +132,7 @@ def logout(
 
 @router.get("/me", response_model=UserBriefResponse)
 def get_me(
-    current_user: User = Depends(get_current_user)
+    current_user: DotDict = Depends(get_current_user)
 ):
     """Get the current authenticated user's profile info."""
     return UserBriefResponse.model_validate(current_user)
@@ -144,7 +144,7 @@ from app.schemas.auth import UpdateProfileRequest
 @router.put("/update", response_model=UserBriefResponse)
 def update_profile(
     data: UpdateProfileRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: DotDict = Depends(get_current_user),
     db = Depends(get_db)
 ):
     """Update user profile."""
@@ -170,7 +170,7 @@ def update_profile(
 @router.put("/change-password", response_model=MessageResponse)
 def change_password(
     data: ChangePasswordRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: DotDict = Depends(get_current_user),
     auth_service: AuthService = Depends(get_auth_service)
 ):
     """Change user password."""

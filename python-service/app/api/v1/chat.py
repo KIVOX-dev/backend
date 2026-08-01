@@ -2,18 +2,20 @@ import json
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, Query, HTTPException
-from sqlalchemy.orm import Session
+from pymongo.database import Database
 
 from app.core.websocket_manager import manager
 from app.mongodb import get_mongo_db
 from app.database import get_db
 from app.core.security import verify_access_token
 from app.core.rbac import get_current_user
-from app.models.user import User
+from app.repositories.base import DotDict
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
 
-async def get_current_user_ws(token: str, db: Session) -> User:
+# Returns a local DummyUser (below), not a full user record — callers only use
+# .id/.name/.role.
+async def get_current_user_ws(token: str, db: Database):
     try:
         payload = verify_access_token(token)
         user_id = int(payload.get("sub"))
@@ -34,7 +36,7 @@ async def get_current_user_ws(token: str, db: Session) -> User:
 async def websocket_endpoint(
     websocket: WebSocket,
     token: str = Query(...),
-    db: Session = Depends(get_db)
+    db: Database = Depends(get_db)
 ):
     try:
         user = await get_current_user_ws(token, db)
@@ -87,7 +89,7 @@ async def websocket_endpoint(
 async def get_chat_history(
     other_user_id: int,
     limit: int = 50,
-    current_user: User = Depends(get_current_user)
+    current_user: DotDict = Depends(get_current_user)
 ):
     """Fetch chat history between the current user and another user."""
     mongo_db = get_mongo_db()

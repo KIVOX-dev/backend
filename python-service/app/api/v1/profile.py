@@ -13,7 +13,7 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile
 from app.core.rbac import get_current_user
 from app.database import get_db
-from app.models.user import User
+from app.repositories.base import DotDict
 
 router = APIRouter(prefix="/profile", tags=["Profile"])
 
@@ -27,7 +27,7 @@ ROLE_TO_PORTAL = {
 UPLOAD_DIR = os.path.join("uploads", "profile")
 
 
-def _portal_for(user: User) -> str:
+def _portal_for(user: DotDict) -> str:
     portal = ROLE_TO_PORTAL.get(user.role)
     if portal is None:
         raise HTTPException(status_code=400, detail=f"No onboarding profile exists for role '{user.role}'")
@@ -189,12 +189,12 @@ _SCHEMAS = {
 
 
 @router.get("/schema")
-def get_profile_schema(current_user: User = Depends(get_current_user)):
+def get_profile_schema(current_user: DotDict = Depends(get_current_user)):
     return _SCHEMAS[_portal_for(current_user)]
 
 
 @router.get("/me")
-def get_my_profile(current_user: User = Depends(get_current_user), db=Depends(get_db)):
+def get_my_profile(current_user: DotDict = Depends(get_current_user), db=Depends(get_db)):
     portal = _portal_for(current_user)
     record = db["profile_data"].find_one({"user_id": current_user.id})
     return {
@@ -227,7 +227,7 @@ async def _extract_values(request: Request) -> dict:
     return values
 
 
-async def _save_profile(request: Request, current_user: User, db) -> dict:
+async def _save_profile(request: Request, current_user: DotDict, db) -> dict:
     portal = _portal_for(current_user)
     values = await _extract_values(request)
     db["profile_data"].update_one(
@@ -239,10 +239,10 @@ async def _save_profile(request: Request, current_user: User, db) -> dict:
 
 
 @router.post("")
-async def create_profile(request: Request, current_user: User = Depends(get_current_user), db=Depends(get_db)):
+async def create_profile(request: Request, current_user: DotDict = Depends(get_current_user), db=Depends(get_db)):
     return await _save_profile(request, current_user, db)
 
 
 @router.put("")
-async def update_profile(request: Request, current_user: User = Depends(get_current_user), db=Depends(get_db)):
+async def update_profile(request: Request, current_user: DotDict = Depends(get_current_user), db=Depends(get_db)):
     return await _save_profile(request, current_user, db)

@@ -9,7 +9,7 @@ dependencies = []
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-exclude = [".venv", "alembic"]
+exclude = [".venv"]
 
 [tool.ruff.lint]
 # Defaults (pyflakes + a slice of pycodestyle) only — this project predates
