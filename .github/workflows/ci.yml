@@ -211,7 +211,10 @@ jobs:
       # non-root user with no config beyond the image's own defaults.
       - name: Smoke test — container actually starts
         run: |
-          docker run -d --rm --name ai-service-smoke -p 8001:8001 ai-service:ci
+          docker run -d --rm --name ai-service-smoke -p 8001:8001 \
+            -e AI_SERVICE_ENV=production \
+            -e AI_SERVICE_SHARED_SECRET="ci-smoke-not-the-default-secret" \
+            ai-service:ci
           for i in $(seq 1 15); do
             if curl -sf http://127.0.0.1:8001/health; then echo "container is healthy"; exit 0; fi
             sleep 1

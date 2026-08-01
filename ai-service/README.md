@@ -57,6 +57,16 @@ python -m venv .venv-lock && .venv-lock/Scripts/pip install -r requirements.txt
 rm -rf .venv-lock
 ```
 
+## Deployment requirement
+
+`AI_SERVICE_SHARED_SECRET` must be set to a strong random value in any real
+deployment, and to the **same** value in node-api's `AI_SERVICE_SHARED_SECRET`.
+It is the only thing preventing anyone who can reach this service's port from
+forging a token that passes verification on every route. Running with
+`AI_SERVICE_ENV=production` while the secret is still the public default from
+`.env.example` makes the service refuse to start, rather than silently serve in
+that state.
+
 ## Known accepted risk
 
 `pip-audit` flags `PYSEC-2026-1325` (a Minerva timing side-channel in `python-ecdsa`, pulled in

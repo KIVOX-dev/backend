@@ -16,6 +16,22 @@ logger = logging.getLogger("ai-service")
 
 settings = get_settings()
 
+# The shared secret is the ONLY thing standing between this service and
+# anyone who can reach its port — a forged token signed with the publicly
+# known default would pass verification on every route. Fail at boot rather
+# than serve in that state; a log warning alone would be too easy to miss.
+if settings.is_using_default_secret:
+    if settings.is_production:
+        raise RuntimeError(
+            "AI_SERVICE_SHARED_SECRET is still the public default value. Set it to a strong "
+            "random secret (and the same value in node-api's AI_SERVICE_SHARED_SECRET) before "
+            "running with AI_SERVICE_ENV=production."
+        )
+    logger.warning(
+        "Using the default development AI_SERVICE_SHARED_SECRET — fine locally, but set a real "
+        "secret before deploying (AI_SERVICE_ENV=production refuses to start without one)."
+    )
+
 # The only caller of this service is node-api (server-to-server, JWT-authed —
 # see security.py); rate limiting here is defense in depth against a leaked
 # shared secret or a misbehaving node-api instance retrying in a hot loop,

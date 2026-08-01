@@ -2,6 +2,10 @@ from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+# Publicly known — matches .env.example. Never valid in production; see
+# Settings.ai_service_shared_secret and main.py's startup check.
+DEFAULT_DEV_SECRET = "dev-only-shared-secret-change-me"
+
 
 class Settings(BaseSettings):
     """Environment configuration for the AI microservice.
@@ -17,8 +21,16 @@ class Settings(BaseSettings):
     # --- Service identity / internal auth ---
     # Verified against the JWT node-api mints for every proxied call (see
     # node-api's utils/aiServiceClient.js). Must match exactly on both sides.
-    ai_service_shared_secret: str = "dev-only-shared-secret-change-me"
+    # The default below is a publicly-known placeholder — main.py refuses to
+    # start with it when ai_service_env is "production", so a deployment that
+    # forgets to set this fails loudly at boot instead of silently accepting
+    # tokens anyone could forge.
+    ai_service_shared_secret: str = DEFAULT_DEV_SECRET
     service_port: int = 8001
+
+    # Mirrors node-api's NODE_ENV. Only used to decide how strict the
+    # startup checks in main.py are — nothing else branches on it.
+    ai_service_env: str = "development"
 
     # --- Groq (LLM provider) ---
     # Every AI-generation route checks `is_groq_configured` and degrades
@@ -38,6 +50,14 @@ class Settings(BaseSettings):
     # --- CORS: browsers never call this service directly (only node-api
     # does, server-to-server), so this stays empty/closed by default. ---
     cors_origins: str = ""
+
+    @property
+    def is_production(self) -> bool:
+        return self.ai_service_env.lower() == "production"
+
+    @property
+    def is_using_default_secret(self) -> bool:
+        return self.ai_service_shared_secret == DEFAULT_DEV_SECRET
 
     @property
     def is_groq_configured(self) -> bool:
