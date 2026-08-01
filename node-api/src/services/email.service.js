@@ -4,9 +4,8 @@ const logger = require('../utils/logger');
 
 let client = null;
 
-// Not required at boot (mirrors groqClient.js's pattern) — a deployment
-// without email configured should still run; callers check this and degrade
-// gracefully instead of crashing the request.
+// Not required at boot — a deployment without email configured should still
+// run; callers check this and degrade gracefully instead of crashing the request.
 function isEmailConfigured() {
   return Boolean(env.brevo.apiKey && env.brevo.senderEmail);
 }

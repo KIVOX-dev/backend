@@ -1,5 +1,6 @@
 const BaseService = require('./BaseService');
 const departmentRepository = require('../repositories/department.repository');
+const { ROLES } = require('../config/constants');
 
 class DepartmentService extends BaseService {
   constructor() {
@@ -9,10 +10,14 @@ class DepartmentService extends BaseService {
   // Overrides BaseService's paginated default (20/page, 100 cap) — a
   // college can have 150+ real departments, and every consumer of GET
   // /departments wants the complete list (a dropdown or chip display), not
-  // a browsable page. institution_id is already present in queryParams by
-  // the time this runs (scopeInstitution injects it for non-super_admin).
-  async list(queryParams) {
+  // a browsable page. Institution scoping is applied here from `actor`
+  // directly (not from queryParams.institution_id) — matching
+  // student.service.js/user.service.js's established pattern — since
+  // req.query can no longer be relied on as a mutation side-channel under
+  // Express 5 (see middlewares/scopeInstitution.js).
+  async list(queryParams, actor) {
     const { page, limit, ...filters } = queryParams;
+    if (actor.role !== ROLES.SUPER_ADMIN) filters.institution_id = actor.institutionId;
     const rows = await departmentRepository.findAllUnpaginated(filters);
     return { rows, meta: { page: 1, limit: rows.length, total: rows.length } };
   }

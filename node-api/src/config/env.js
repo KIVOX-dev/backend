@@ -38,11 +38,13 @@ module.exports = {
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   },
 
-  // Optional: routes that call Groq must check isGroqConfigured() (see
-  // src/utils/groqClient.js) and degrade gracefully rather than crash — not
-  // required at startup because not every deployment needs AI features.
-  groq: {
-    apiKey: process.env.GROQ_API_KEY || '',
+  // The FastAPI AI microservice (interview generation, resume AI features).
+  // Not required at startup — utils/aiServiceClient.js degrades gracefully
+  // (local fallback) when unset or unreachable, same philosophy as groq above.
+  aiService: {
+    url: process.env.AI_SERVICE_URL || 'http://localhost:8001',
+    sharedSecret: process.env.AI_SERVICE_SHARED_SECRET || '',
+    timeoutMs: parseInt(process.env.AI_SERVICE_TIMEOUT_MS, 10) || 15000,
   },
 
   // Optional, same reasoning as groq above — see email.service.js#isEmailConfigured.

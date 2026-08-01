@@ -4,14 +4,14 @@
 # ---- deps: install production dependencies in an isolated stage ----
 # bcrypt needs a native build toolchain on some platforms/registries; keeping
 # it in its own stage means python3/make/g++ never reach the final image.
-FROM node:22-alpine AS deps
+FROM node:24-alpine AS deps
 WORKDIR /app
 RUN apk add --no-cache python3 make g++
 COPY package.json package-lock.json* ./
 RUN npm ci --omit=dev
 
 # ---- runtime: slim final image — only installed deps + app source ----
-FROM node:22-alpine AS runtime
+FROM node:24-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 

@@ -5,16 +5,11 @@ const studentRepository = require('../repositories/student.repository');
 const userRepository = require('../repositories/user.repository');
 const testAssignmentRepository = require('../repositories/testAssignment.repository');
 const { applyTestResult } = require('../utils/studentStats');
-const { isGroqConfigured, groqComplete } = require('../utils/groqClient');
+const { callAiService, AiServiceUnavailableError } = require('../utils/aiServiceClient');
 const { buildInstitutionFilter } = require('../utils/authz');
 const { ROLES } = require('../config/constants');
 const ApiError = require('../utils/ApiError');
 const logger = require('../utils/logger');
-
-const QUESTION_GEN_SYSTEM_PROMPT = `You are an expert curriculum designer. Generate exactly 10
-multiple-choice questions as a raw JSON object: {"questions": [...]}. Each item must have
-"question" (string), "options" (array of exactly 4 strings), and "correct_answer" (string,
-must match one of the options). No markdown, no text outside the JSON.`;
 
 class TestService extends BaseService {
   constructor() {
@@ -71,32 +66,26 @@ class TestService extends BaseService {
     return { rows: enrichedRows, meta: { page, limit, total } };
   }
 
-  // Ported from python-service's assessments.py#generate_assessment_questions.
-  // Soft-fallback (a single placeholder question) when Groq isn't configured —
-  // matches python exactly, unlike resume.py's endpoints which hard-fail instead.
+  // Proxies to the AI service (ai-service/app/routers/assessment.py), which
+  // owns the "Groq not configured" soft-fallback (a single placeholder
+  // question) itself. Only a genuine failure — the AI service unreachable,
+  // or Groq erroring once configured — reaches this catch block.
   async generateQuestions({ title = 'Assessment', type = 'general', difficulty = 'medium' }) {
-    if (!isGroqConfigured()) {
-      return {
-        questions: [
-          {
-            question: `Sample ${difficulty} ${type} question for ${title}`,
-            options: ['A', 'B', 'C', 'D'],
-            correct_answer: 'A',
-          },
-        ],
-      };
-    }
-
     try {
-      const result = await groqComplete({
-        systemPrompt: QUESTION_GEN_SYSTEM_PROMPT,
-        userPrompt: `Title: "${title}"\nType: ${type}\nDifficulty: ${difficulty}`,
-        temperature: 0.7,
-        maxTokens: 2048,
-        jsonResponse: true,
-      });
-      return { questions: result.questions || [] };
+      return await callAiService('/v1/assessment/generate-questions', { title, type, difficulty });
     } catch (err) {
+      if (err instanceof AiServiceUnavailableError) {
+        logger.error('AI service unreachable, using local fallback question', { error: err.message });
+        return {
+          questions: [
+            {
+              question: `Sample ${difficulty} ${type} question for ${title}`,
+              options: ['A', 'B', 'C', 'D'],
+              correct_answer: 'A',
+            },
+          ],
+        };
+      }
       logger.error('Question generation failed', { error: err.message });
       throw ApiError.internal('Failed to generate questions');
     }
