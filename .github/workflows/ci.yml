@@ -223,31 +223,118 @@ jobs:
           docker logs ai-service-smoke
           exit 1
 
-  # Deploy is intentionally separate from the CI jobs above and gated on `main`
-  # only, so a red build can never reach Cloud Run. It's commented out end-to-end
-  # because no GCP project/Workload Identity Federation is wired up yet — see the
-  # GCP section of the audit for what needs to exist before this can be enabled.
+  # ── Deploy ───────────────────────────────────────────────────────────────
+  # Separate from the CI jobs above and gated on `main`, so a red build can
+  # never reach Cloud Run.
   #
-  # deploy:
-  #   name: Deploy to Cloud Run
-  #   needs: [docker-build]
-  #   if: github.ref == 'refs/heads/main'
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: read
-  #     id-token: write   # for Workload Identity Federation — no long-lived JSON keys
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: google-github-actions/auth@v2
-  #       with:
-  #         workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
-  #         service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
-  #     - uses: google-github-actions/setup-gcloud@v2
-  #     - run: |
-  #         gcloud builds submit node-api --tag ${{ secrets.AR_REPO }}/node-api:${{ github.sha }}
-  #         gcloud run deploy node-api-prod \
-  #           --image ${{ secrets.AR_REPO }}/node-api:${{ github.sha }} \
-  #           --region ${{ secrets.GCP_REGION }} \
-  #           --no-traffic --tag pr-${{ github.sha }}
-  #         # promote traffic only after health check + smoke test pass, e.g.:
-  #         # gcloud run services update-traffic node-api-prod --to-latest
+  # This job is WRITTEN but not yet EXERCISED — no GCP project or Workload
+  # Identity Federation pool exists yet, so it has never actually run. The
+  # `if:` below is what keeps that honest: with the WIF_PROVIDER secret unset
+  # the job is skipped rather than failing every push with a red X. Setting
+  # the five secrets listed below is what turns it on; until then everything
+  # up to and including image build + smoke test still runs on every commit.
+  #
+  # Required repository secrets:
+  #   WIF_PROVIDER         projects/<n>/locations/global/workloadIdentityPools/<pool>/providers/<provider>
+  #   WIF_SERVICE_ACCOUNT  deployer@<project>.iam.gserviceaccount.com
+  #   AR_REPO              <region>-docker.pkg.dev/<project>/<repo>
+  #   GCP_REGION           e.g. asia-south1
+  #   AI_SERVICE_SECRET_ID Secret Manager secret holding AI_SERVICE_SHARED_SECRET
+  deploy:
+    name: Deploy to Cloud Run
+    needs: [docker-build, docker-build-ai]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # Workload Identity Federation — no long-lived JSON keys
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Skip if GCP is not configured
+        id: gate
+        run: |
+          if [ -z "${{ secrets.WIF_PROVIDER }}" ]; then
+            echo "GCP secrets not set — skipping deploy (this is expected until GCP is wired up)."
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: google-github-actions/auth@v2
+        if: steps.gate.outputs.configured == 'true'
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+        if: steps.gate.outputs.configured == 'true'
+
+      - name: Configure Artifact Registry auth
+        if: steps.gate.outputs.configured == 'true'
+        run: gcloud auth configure-docker "${{ secrets.GCP_REGION }}-docker.pkg.dev" --quiet
+
+      # Both images are pushed before either is deployed, so a registry
+      # failure can't leave node-api pointing at an ai-service tag that was
+      # never published.
+      - name: Build & push images
+        if: steps.gate.outputs.configured == 'true'
+        run: |
+          set -euo pipefail
+          docker build -t "${{ secrets.AR_REPO }}/node-api:${{ github.sha }}" node-api
+          docker build -t "${{ secrets.AR_REPO }}/ai-service:${{ github.sha }}" ai-service
+          docker push "${{ secrets.AR_REPO }}/node-api:${{ github.sha }}"
+          docker push "${{ secrets.AR_REPO }}/ai-service:${{ github.sha }}"
+
+      # ai-service first: node-api's AI routes call it, and it holds no state,
+      # so rolling it forward ahead of its only caller is the safe order.
+      # --no-allow-unauthenticated keeps it off the public internet; only
+      # node-api's service account may invoke it.
+      - name: Deploy ai-service
+        if: steps.gate.outputs.configured == 'true'
+        run: |
+          gcloud run deploy ai-service \
+            --image "${{ secrets.AR_REPO }}/ai-service:${{ github.sha }}" \
+            --region "${{ secrets.GCP_REGION }}" \
+            --no-allow-unauthenticated \
+            --set-env-vars "AI_SERVICE_ENV=production" \
+            --set-secrets "AI_SERVICE_SHARED_SECRET=${{ secrets.AI_SERVICE_SECRET_ID }}:latest" \
+            --quiet
+
+      # Deployed with --no-traffic so the new revision receives nothing until
+      # the smoke test below passes against its dedicated tag URL. This is the
+      # step that makes a bad revision a non-event rather than an outage.
+      - name: Deploy node-api (no traffic yet)
+        if: steps.gate.outputs.configured == 'true'
+        run: |
+          gcloud run deploy node-api \
+            --image "${{ secrets.AR_REPO }}/node-api:${{ github.sha }}" \
+            --region "${{ secrets.GCP_REGION }}" \
+            --no-traffic --tag "sha-${GITHUB_SHA::7}" \
+            --quiet
+
+      - name: Smoke test the new revision
+        if: steps.gate.outputs.configured == 'true'
+        run: |
+          set -euo pipefail
+          URL=$(gcloud run services describe node-api \
+            --region "${{ secrets.GCP_REGION }}" \
+            --format="value(status.traffic.filter(tag:sha-${GITHUB_SHA::7}).extract(url))" | tr -d '[]')
+          echo "Probing $URL/health/ready"
+          for i in $(seq 1 20); do
+            if curl -sf "$URL/health/ready" | grep -q '"status":"ready"'; then
+              echo "new revision is ready"; exit 0
+            fi
+            sleep 5
+          done
+          echo "New revision never became ready — traffic NOT promoted."
+          exit 1
+
+      # Only reached if the smoke test passed. Until this runs, 100% of
+      # traffic is still on the previous revision.
+      - name: Promote traffic
+        if: steps.gate.outputs.configured == 'true'
+        run: |
+          gcloud run services update-traffic node-api \
+            --region "${{ secrets.GCP_REGION }}" \
+            --to-latest --quiet
