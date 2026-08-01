@@ -2,7 +2,6 @@
 UpScaler-AI V2 — Auth Pydantic Schemas
 Request/Response models for authentication endpoints.
 """
-from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, EmailStr, Field, field_validator
 import re

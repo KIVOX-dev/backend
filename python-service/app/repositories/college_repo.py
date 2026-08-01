@@ -1,5 +1,4 @@
-from typing import Optional
-from app.repositories.base import BaseRepository, DotDict
+from app.repositories.base import BaseRepository
 
 class CollegeRepository(BaseRepository):
     def __init__(self, db):

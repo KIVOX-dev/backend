@@ -17,7 +17,6 @@ from app.core.exceptions import UpScalerAIException
 from app.core.middleware import setup_middleware
 from app.api.router import api_router
 from app.schemas.common import HealthResponse
-from app.services.seed_service import seed_core_data
 
 # Configure structured logging
 logging.basicConfig(

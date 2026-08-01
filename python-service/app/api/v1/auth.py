@@ -138,7 +138,6 @@ def get_me(
     return UserBriefResponse.model_validate(current_user)
 
 
-from sqlalchemy.orm import Session
 from app.database import get_db
 from app.schemas.auth import UpdateProfileRequest
 

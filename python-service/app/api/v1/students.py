@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 from datetime import datetime, timezone, timedelta
 from app.core.exceptions import NotFoundError
-from app.core.rbac import UserRole, get_college_scope, require_roles, get_current_user, assert_can_act_on_student
+from app.core.rbac import get_college_scope, get_current_user, assert_can_act_on_student
 from app.core.security import hash_password
 from app.database import get_db
 from app.schemas.interview import InterviewSubmitRequest
@@ -11,7 +11,8 @@ from app.schemas.user import StudentProfileUpdateRequest, UserUpdateRequest
 router = APIRouter(prefix="/students", tags=["Students"])
 
 def to_dict(obj):
-    if not obj: return None
+    if not obj:
+        return None
     if isinstance(obj, list):
         return [to_dict(x) for x in obj]
     if isinstance(obj, dict):
@@ -115,7 +116,7 @@ def update_student(
     db = Depends(get_db),
     college_scope: int | None = get_college_scope,
 ):
-    student = get_student(student_id, db, college_scope)
+    get_student(student_id, db, college_scope)  # existence/scope check; raises if not authorized
     update_data = data.model_dump(exclude_unset=True)
     db["users"].update_one({"id": student_id}, {"$set": update_data})
     return to_dict(db["users"].find_one({"id": student_id}))
@@ -254,7 +255,7 @@ def log_student_test(student_id: int, data: dict, db = Depends(get_db), current_
                     streak += 1
                 else:
                     streak = 1
-            except:
+            except (ValueError, TypeError):
                 streak = 1
         else:
             streak = 1

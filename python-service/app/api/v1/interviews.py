@@ -1,16 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException
 from datetime import datetime, timezone
-import os
 import json
 
 from app.core.rbac import get_college_scope, get_current_user
 from app.database import get_db
-from app.schemas.interview import InterviewAttemptResponse, InterviewSubmitRequest
+from app.schemas.interview import InterviewSubmitRequest
 
 router = APIRouter(prefix="/interviews", tags=["Interviews"])
 
 def to_dict(obj):
-    if not obj: return None
+    if not obj:
+        return None
     obj["id"] = obj.get("id", str(obj.get("_id")))
     obj.pop("_id", None)
     return obj

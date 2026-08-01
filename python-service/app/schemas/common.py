@@ -3,8 +3,8 @@ UpScaler-AI V2 — Common Pydantic Schemas
 Shared response models and base schemas.
 """
 from datetime import datetime
-from typing import Optional, Generic, TypeVar
-from pydantic import BaseModel, Field
+from typing import Generic, TypeVar
+from pydantic import BaseModel
 
 T = TypeVar("T")
 

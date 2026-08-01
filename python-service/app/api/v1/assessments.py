@@ -1,5 +1,4 @@
-from datetime import datetime, timezone
-import os
+from datetime import datetime, timedelta, timezone
 import json
 from groq import Groq
 
@@ -10,7 +9,6 @@ from app.core.rbac import UserRole, get_college_scope, get_current_user, require
 from app.database import get_db
 from app.config import get_settings
 from app.schemas.assessment import AssessmentCreateRequest, AssessmentResponse, AssessmentUpdateRequest, AttemptResponse, TestSubmitRequest
-from app.repositories.base import DotDict
 
 router = APIRouter(prefix="/assessments", tags=["Assessments"])
 
@@ -127,8 +125,8 @@ def get_assessment(assessment_id: int, db = Depends(get_db), college_scope: int 
 
 @router.put("/{assessment_id}", response_model=AssessmentResponse, dependencies=[require_roles(UserRole.FACULTY, UserRole.COLLEGE_ADMIN, UserRole.SUPER_ADMIN)])
 def update_assessment(assessment_id: int, data: AssessmentUpdateRequest, db = Depends(get_db), college_scope: int | None = get_college_scope):
-    assessment = get_assessment_internal(assessment_id, db, college_scope)
-    
+    get_assessment_internal(assessment_id, db, college_scope)  # existence/scope check; raises if not authorized
+
     update_data = data.model_dump(exclude_unset=True)
     update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
     
@@ -140,7 +138,7 @@ def update_assessment(assessment_id: int, data: AssessmentUpdateRequest, db = De
 
 @router.delete("/{assessment_id}")
 def delete_assessment(assessment_id: int, db = Depends(get_db), college_scope: int | None = get_college_scope):
-    assessment = get_assessment_internal(assessment_id, db, college_scope)
+    get_assessment_internal(assessment_id, db, college_scope)  # existence/scope check; raises if not authorized
     db["assessments"].delete_one({"id": assessment_id})
     return {"success": True, "message": "Assessment deleted"}
 
@@ -225,7 +223,7 @@ def submit_test(data: TestSubmitRequest, current_user = Depends(get_current_user
                     streak += 1
                 else:
                     streak = 1
-            except:
+            except (ValueError, TypeError):
                 streak = 1
         else:
             streak = 1

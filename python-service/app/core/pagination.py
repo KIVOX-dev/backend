@@ -3,7 +3,7 @@ UpScaler-AI V2 — Pagination Utilities
 Offset-based pagination with consistent response format.
 """
 
-from typing import TypeVar, Generic, Optional, Sequence
+from typing import TypeVar, Generic
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Query
 

@@ -7,7 +7,8 @@ from app.database import get_db
 router = APIRouter(tags=["Achievements"])
 
 def to_dict(obj):
-    if not obj: return None
+    if not obj:
+        return None
     if isinstance(obj, list):
         return [to_dict(x) for x in obj]
     if isinstance(obj, dict):

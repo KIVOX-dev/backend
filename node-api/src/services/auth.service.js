@@ -1,5 +1,6 @@
 const userRepository = require('../repositories/user.repository');
 const institutionRepository = require('../repositories/institution.repository');
+const studentRepository = require('../repositories/student.repository');
 const { hashPassword, verifyPassword } = require('../utils/password');
 const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../utils/jwt');
 const { verifyGoogleIdToken } = require('../utils/googleAuth');
@@ -90,6 +91,21 @@ async function register({ email, password, name, fullName, phone, institutionId,
     email_verification_expires: new Date(Date.now() + VERIFICATION_TOKEN_TTL_MINUTES * 60 * 1000),
   });
 
+  // A `users` row alone doesn't make a student usable — every institution-scoped
+  // feature (tests, placements, dashboard stats) reads through a `students` row
+  // keyed by user_id (see studentRepository.findByUserId). Without this, a
+  // self-registered student silently 404s everywhere until they happen to hit
+  // the separate self-service /students/profile endpoint, which nothing in the
+  // frontend currently prompts them to do. Create it here, atomically with the
+  // account, the same way the admin-provisioned batch-import path already does.
+  if (finalRole === ROLES.STUDENT) {
+    await studentRepository.create({
+      user_id: user.id,
+      institution_id: institutionId || null,
+      profile_completed: false,
+    });
+  }
+
   await recordActivity({ userId: user.id, action: 'register', entityType: 'user', entityId: user.id });
 
   // Best-effort: registration must succeed regardless of whether the
@@ -174,6 +190,10 @@ async function googleLogin(idToken) {
         // Google already verified this address.
         is_email_verified: true,
       });
+      // Same reasoning as register() above — a brand-new student account
+      // needs a `students` row to be usable anywhere, and Google sign-up
+      // never lands in the batch-import path that would otherwise create one.
+      await studentRepository.create({ user_id: user.id, institution_id: null, profile_completed: false });
     }
   }
 

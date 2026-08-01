@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from typing import Optional
 
-from app.repositories.base import BaseRepository, DotDict
+from app.repositories.base import BaseRepository
 
 class UserRepository(BaseRepository):
     def __init__(self, db):
@@ -17,7 +17,7 @@ class UserRepository(BaseRepository):
             # Fallback to int ID lookup just in case
             try:
                 doc = self.collection.find_one({"id": int(user_id)})
-            except:
+            except (ValueError, TypeError):
                 pass
         return self._to_obj(doc)
 

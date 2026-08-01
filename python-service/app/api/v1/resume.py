@@ -10,7 +10,6 @@ from groq import Groq
 from app.database import get_db
 from app.core.rbac import get_current_user
 from app.models.user import User
-from app.schemas.common import MessageResponse
 
 logger = logging.getLogger("upscaler_ai.resume")
 router = APIRouter(prefix="/resume", tags=["Resume"])

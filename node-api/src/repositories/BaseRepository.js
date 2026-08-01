@@ -1,4 +1,4 @@
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('node:crypto');
 const { getCollection } = require('../config/database');
 
 // Generic CRUD repository shared by every entity module.
@@ -92,7 +92,7 @@ class BaseRepository {
 
   async create(data) {
     const now = new Date();
-    const doc = { _id: uuidv4(), ...this.defaults, ...this._pickFields(data), created_at: now, updated_at: now };
+    const doc = { _id: randomUUID(), ...this.defaults, ...this._pickFields(data), created_at: now, updated_at: now };
     await this.collection.insertOne(doc);
     return this._toEntity(doc);
   }

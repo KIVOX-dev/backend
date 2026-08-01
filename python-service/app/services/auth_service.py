@@ -2,7 +2,6 @@
 UpScaler-AI V2 — Authentication Service
 Business logic for registration, login, and token management.
 """
-from datetime import datetime, timezone, timedelta
 from typing import Optional
 
 from sqlalchemy.orm import Session
@@ -20,7 +19,7 @@ from app.core.security import (
     create_refresh_token,
     verify_refresh_token,
 )
-from app.models.user import User, StudentProfile, RecruiterProfile, RefreshToken
+from app.models.user import User
 from app.repositories.user_repo import UserRepository, StudentProfileRepository, RefreshTokenRepository
 from app.repositories.college_repo import CollegeRepository
 from app.schemas.auth import RegisterRequest, LoginRequest, TokenResponse, UserBriefResponse, ChangePasswordRequest

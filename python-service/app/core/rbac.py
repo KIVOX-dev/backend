@@ -6,9 +6,8 @@ FastAPI dependencies for role enforcement and college scoping.
 from enum import Enum
 from typing import Optional
 
-from fastapi import Depends, Request
+from fastapi import Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.core.security import verify_access_token
@@ -18,7 +17,6 @@ from app.core.exceptions import (
     InactiveAccountError,
     AccountPendingError,
 )
-from app.models.user import User
 
 
 # ── Role Enum ────────────────────────────────────

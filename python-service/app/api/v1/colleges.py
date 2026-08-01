@@ -9,7 +9,8 @@ router = APIRouter(prefix="/colleges", tags=["Colleges"])
 
 
 def to_dict(obj):
-    if not obj: return None
+    if not obj:
+        return None
     obj["id"] = obj.get("id", str(obj.get("_id")))
     obj.pop("_id", None)
     return obj

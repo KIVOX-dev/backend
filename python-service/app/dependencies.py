@@ -1,7 +1,6 @@
 """
 UpScaler-AI V2 — FastAPI Dependencies
 """
-from typing import Generator
 from fastapi import Depends
 from sqlalchemy.orm import Session
 

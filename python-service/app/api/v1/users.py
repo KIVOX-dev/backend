@@ -7,7 +7,6 @@ from app.core.rbac import get_current_user, RoleChecker, UserRole
 from app.schemas.user import UserResponse, AdminUserUpdateRequest, AdminUserCreateRequest
 from app.core.exceptions import NotFoundError
 from app.core.security import hash_password
-from app.repositories.base import DotDict
 
 router = APIRouter(prefix="/users", tags=["Users"])
 superadmin_checker = RoleChecker([UserRole.SUPER_ADMIN])
@@ -53,7 +52,8 @@ def _next_id(db, collection: str) -> int:
 
 
 def to_dict(obj):
-    if not obj: return None
+    if not obj:
+        return None
     if isinstance(obj, list):
         return [to_dict(x) for x in obj]
     if isinstance(obj, dict):

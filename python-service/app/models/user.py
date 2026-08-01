@@ -7,7 +7,7 @@ Uses table-per-type pattern: shared fields in `users`, role-specific fields in p
 from datetime import datetime, timezone
 from sqlalchemy import (
     Column, Integer, String, Boolean, DateTime, Text, Float, ForeignKey,
-    Index, UniqueConstraint, CheckConstraint, JSON
+    Index, CheckConstraint, JSON
 )
 from sqlalchemy.orm import relationship
 
