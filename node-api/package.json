@@ -17,7 +17,8 @@
     "db:backfill-student-profiles": "node scripts/backfillMissingStudentProfiles.js",
     "db:seed-practice-tests": "node scripts/seedPracticeTests.js",
     "db:seed-question-bank": "node scripts/seedQuestionBank.js",
-    "db:seed-departments": "node scripts/seedDepartments.js"
+    "db:seed-departments": "node scripts/seedDepartments.js",
+    "loadtest:token": "node scripts/mintLoadTestToken.js"
   },
   "engines": {
     "node": ">=24.0.0"

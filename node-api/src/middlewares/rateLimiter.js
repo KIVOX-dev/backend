@@ -44,7 +44,7 @@ const authLimiter = rateLimit({
 const IDENTIFY_WINDOW_MS = 15 * 60 * 1000;
 const identifyLimiter = rateLimit({
   windowMs: IDENTIFY_WINDOW_MS,
-  max: 10,
+  max: parseInt(process.env.IDENTIFY_RATE_LIMIT_MAX, 10) || 10,
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: 'Too many lookup attempts, please try again later.' },
