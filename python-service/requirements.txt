@@ -28,8 +28,13 @@ certifi==2026.7.22
 
 
 # --- Validation & Serialization ---
-pydantic==2.11.3
-pydantic[email]
+# Single pinned entry with the [email] extra. This was previously two lines —
+# `pydantic==2.11.3` plus a bare, unpinned `pydantic[email]` — a duplicate
+# declaration that `safety` flags: the unpinned specifier nominally admits
+# ancient pydantic 1.x releases that carry known CVEs. pip intersected the two
+# and resolved 2.11.3 anyway, so nothing vulnerable was ever installed, but the
+# range is now closed explicitly rather than relying on that interaction.
+pydantic[email]==2.11.3
 pydantic-settings==2.9.1
 
 # --- Authentication ---
