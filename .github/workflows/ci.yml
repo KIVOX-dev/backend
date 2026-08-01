@@ -11,71 +11,117 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  NODE_VERSION: "22"
+  PYTHON_VERSION: "3.12"
+
 jobs:
-  node-api:
-    name: node-api / lint & test
+  # ── Node.js API ─────────────────────────────────────────────────────────
+  # Lint, test, and dependency-audit run as independent jobs so a failure in
+  # one is reported on its own (one failing check per concern, clear logs)
+  # and the three run in parallel instead of stacking wall-clock time in a
+  # single job.
+  node-lint:
+    name: node-api / lint
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: node-api
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
           cache-dependency-path: node-api/package-lock.json
-
       - run: npm ci
+      - run: npm run lint
 
-      # TODO: no .eslintrc exists yet for node-api — add one, then drop the
-      # `continue-on-error` below so lint failures actually fail the build.
-      - name: Lint
-        continue-on-error: true
-        run: npx eslint . || echo "::warning::no ESLint config in node-api yet"
+  node-test:
+    name: node-api / test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: node-api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: node-api/package-lock.json
+      - run: npm ci
+      - run: npm test
 
-      # TODO: package.json has no "test" script and no test files exist yet.
-      # Add Jest/Vitest + real tests, then change this to a hard `npm test`.
-      - name: Test
-        run: npm test --if-present
-
+  node-audit:
+    name: node-api / dependency audit
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: node-api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: node-api/package-lock.json
+      - run: npm ci
+      # Fails only on Critical/High advisories — Moderate/Low still show up in
+      # the log but don't block the build, so this gates on genuine risk
+      # rather than every transitive advisory that shows up upstream.
       - name: npm audit (fail on high/critical)
         run: npm audit --audit-level=high
 
-  python-service:
-    name: python-service / lint & test
+  # ── Python service ──────────────────────────────────────────────────────
+  python-lint:
+    name: python-service / lint
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: python-service
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+          cache-dependency-path: python-service/requirements-dev.txt
+      - run: pip install -r requirements-dev.txt
+      - name: Lint (ruff)
+        run: ruff check .
+
+  python-test:
+    name: python-service / test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python-service
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+          cache-dependency-path: python-service/requirements-dev.txt
+      - run: pip install -r requirements-dev.txt
+      - name: Test (pytest)
+        run: pytest -v
+
+  python-audit:
+    name: python-service / dependency audit
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python-service
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
           cache: "pip"
           cache-dependency-path: python-service/requirements.txt
-
       - run: pip install -r requirements.txt
-
-      # TODO: no lint tool is declared in requirements.txt yet. Add `ruff` as a
-      # dev dependency, then drop `continue-on-error`.
-      - name: Lint (ruff)
-        continue-on-error: true
-        run: |
-          pip install ruff
-          ruff check .
-
-      # TODO: no test files exist yet (only vendored dependency tests under
-      # .venv, which are irrelevant). Add `pytest` + real tests under `tests/`,
-      # then remove `--co` (collect-only) so this actually executes assertions.
-      - name: Test (pytest)
-        run: |
-          pip install pytest
-          pytest --collect-only || echo "::warning::no test suite in python-service yet"
-
       - name: pip-audit (dependency vulnerability scan)
         run: |
           pip install pip-audit
@@ -83,14 +129,11 @@ jobs:
 
   docker-build:
     name: Docker build (both services)
-    needs: [node-api, python-service]
+    needs: [node-lint, node-test, node-audit, python-lint, python-test, python-audit]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      # NOTE: node-api/Dockerfile currently fails — it COPYs a `sql/` folder
-      # that no longer exists (DB moved from Postgres to Mongo). Fix that
-      # before this job will pass.
       - name: Build node-api image
         uses: docker/build-push-action@v5
         with:
@@ -106,21 +149,25 @@ jobs:
           tags: python-service:ci
 
       # Scan built images for known CVEs before they ever reach a registry.
+      # Pinned to a commit SHA (not a mutable tag/branch like `@master`) —
+      # third-party actions should be pinned the same way a dependency would
+      # be, since an unpinned ref can start running different code with no
+      # change on our side.
       - name: Trivy scan — node-api
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: node-api:ci
           severity: CRITICAL,HIGH
           exit-code: "1"
 
       - name: Trivy scan — python-service
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: python-service:ci
           severity: CRITICAL,HIGH
           exit-code: "1"
 
-  # Deploy is intentionally separate from the CI job above and gated on `main`
+  # Deploy is intentionally separate from the CI jobs above and gated on `main`
   # only, so a red build can never reach Cloud Run. It's commented out end-to-end
   # because no GCP project/Workload Identity Federation is wired up yet — see the
   # GCP section of the audit for what needs to exist before this can be enabled.
