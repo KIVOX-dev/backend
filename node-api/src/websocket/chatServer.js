@@ -4,45 +4,48 @@ const messageRepository = require('../repositories/message.repository');
 const userRepository = require('../repositories/user.repository');
 const env = require('../config/env');
 const logger = require('../utils/logger');
+const { broadcaster } = require('./broadcaster');
 
-// In-memory connection registry: userId -> Set of open sockets (a user can
-// have more than one tab/device open at once). Ported from python-service's
-// core/websocket_manager.py.
-//
-// Single-process only, same as python-service's version — a message to a
-// user connected to a DIFFERENT backend instance would never arrive. This
-// was already today's ceiling (python-service is one process too), so it's
-// not a regression; it's deferred to the Phase 11 performance checkpoint
-// (Redis pub/sub) rather than solved here — see the Phase 3 migration plan's
-// explicit note on this.
-const connections = new Map();
+// ws-level ping/pong (this section) is purely for the SERVER to detect and
+// clean up dead sockets — a client whose TCP connection dropped without a
+// clean close frame (e.g. laptop sleep, wifi drop) never fires 'close' on
+// its own. Distinct from the app-level {type:'ping'/'pong'} messages below,
+// which exist because the browser's native WebSocket API has no JS-visible
+// ping/pong events at all — the client can't tell whether the *server* is
+// still alive without something at the message layer to ask.
+const HEARTBEAT_INTERVAL_MS = 30_000;
 
-function registerConnection(userId, socket) {
-  if (!connections.has(userId)) connections.set(userId, new Set());
-  connections.get(userId).add(socket);
-}
+async function authenticate(request) {
+  // Primary: the token as a WS subprotocol (`new WebSocket(url, [token])` on
+  // the client — see PlatformChat.tsx). Browsers don't allow custom headers
+  // on a WebSocket handshake from JS, so a subprotocol is the only
+  // client-controlled part of the handshake that isn't the URL itself; it
+  // arrives as the standard `Sec-WebSocket-Protocol` header. This is why the
+  // token no longer needs to sit in the URL (and therefore in server access
+  // logs, browser history, and Referer headers on any request the page makes
+  // afterward) the way the old `?token=` query string did.
+  //
+  // Fallback: the old `?token=` query string, kept only so a client that
+  // hasn't picked up the subprotocol change yet still works during rollout.
+  const protocolHeader = request.headers['sec-websocket-protocol'];
+  const subprotocolToken = protocolHeader ? protocolHeader.split(',')[0].trim() : null;
+  const { searchParams } = new URL(request.url, 'http://localhost');
+  const queryToken = searchParams.get('token');
+  const token = subprotocolToken || queryToken;
 
-function removeConnection(userId, socket) {
-  const sockets = connections.get(userId);
-  if (!sockets) return;
-  sockets.delete(socket);
-  if (sockets.size === 0) connections.delete(userId);
-}
-
-function sendToUser(userId, message) {
-  const sockets = connections.get(userId);
-  if (!sockets) return;
-  const payload = JSON.stringify(message);
-  for (const socket of sockets) {
-    if (socket.readyState === socket.OPEN) {
-      socket.send(payload);
-    }
+  // Migration tracking (Phase 1 — see docs/websocket.md): every client is
+  // expected to be on the subprotocol path already (this session's own
+  // frontend switch), so any query-string usage past this point is either a
+  // client that missed the deploy or a caller outside this codebase. Logged,
+  // not blocked — safe to grep/alert on before Phase 3 (deleting the
+  // fallback) actually removes it.
+  if (!subprotocolToken && queryToken) {
+    logger.warn('WebSocket: legacy ?token= query-string auth used', {
+      userAgent: request.headers['user-agent'],
+      origin: request.headers.origin,
+    });
   }
-}
 
-async function authenticate(requestUrl) {
-  const { searchParams } = new URL(requestUrl, 'http://localhost');
-  const token = searchParams.get('token');
   const payload = verifyAccessToken(token); // throws on invalid/missing — caller catches
   const user = await userRepository.findById(payload.sub);
   if (!user) throw new Error('User not found');
@@ -53,6 +56,13 @@ function attachChatServer(httpServer) {
   const wss = new WebSocketServer({
     server: httpServer,
     path: `${env.apiPrefix}/chat/ws`,
+    // Echoes the client's offered subprotocol back — required by the WS spec
+    // whenever the client sends Sec-WebSocket-Protocol at all; some clients
+    // (browsers included) abort the handshake if the server accepts the
+    // upgrade but doesn't select one of the offered protocols. The
+    // subprotocol string itself is the token (see authenticate() above), so
+    // there's nothing to actually choose between — just confirm the first one.
+    handleProtocols: (protocols) => (protocols.size > 0 ? protocols.values().next().value : false),
     // Auth runs during the HTTP upgrade, BEFORE the handshake completes —
     // the client's 'open' event does not fire until this resolves. This is
     // what actually matches python-service's behavior (which calls
@@ -64,7 +74,7 @@ function attachChatServer(httpServer) {
     // own auth check and get silently dropped, caught via a live end-to-end
     // test (two real sockets, a real message, never delivered).
     verifyClient: (info, callback) => {
-      authenticate(info.req.url)
+      authenticate(info.req)
         .then((user) => {
           info.req.chatUser = user;
           callback(true);
@@ -73,9 +83,26 @@ function attachChatServer(httpServer) {
     },
   });
 
+  const heartbeat = setInterval(() => {
+    wss.clients.forEach((socket) => {
+      if (socket.isAlive === false) {
+        logger.info('WebSocket heartbeat timeout — terminating', { userId: socket.user?.id });
+        return socket.terminate();
+      }
+      socket.isAlive = false;
+      socket.ping();
+    });
+  }, HEARTBEAT_INTERVAL_MS);
+  wss.on('close', () => clearInterval(heartbeat));
+
   wss.on('connection', (socket, request) => {
     socket.user = request.chatUser;
-    registerConnection(socket.user.id, socket);
+    socket.isAlive = true;
+    socket.on('pong', () => {
+      socket.isAlive = true;
+    });
+
+    broadcaster.register(socket.user.id, socket);
     logger.info('WebSocket connected', { userId: socket.user.id });
 
     socket.on('message', async (raw) => {
@@ -84,6 +111,13 @@ function attachChatServer(httpServer) {
         data = JSON.parse(raw.toString());
       } catch {
         return; // silently ignored, matches python-service's JSONDecodeError handling
+      }
+
+      // App-level heartbeat reply — see the HEARTBEAT_INTERVAL_MS comment
+      // above for why this exists alongside ws-level ping/pong.
+      if (data.type === 'ping') {
+        if (socket.readyState === socket.OPEN) socket.send(JSON.stringify({ type: 'pong' }));
+        return;
       }
 
       const { receiver_id: receiverId, content } = data;
@@ -106,12 +140,12 @@ function attachChatServer(httpServer) {
       // Echo to the sender (confirmation) and deliver to the receiver in
       // real-time if they're connected — durable either way via the DB write
       // above, so an offline receiver still sees it through /chat/history.
-      sendToUser(socket.user.id, message);
-      sendToUser(receiverId, message);
+      broadcaster.sendToUser(socket.user.id, message);
+      broadcaster.sendToUser(receiverId, message);
     });
 
     socket.on('close', () => {
-      removeConnection(socket.user.id, socket);
+      broadcaster.remove(socket.user.id, socket);
       logger.info('WebSocket disconnected', { userId: socket.user.id });
     });
   });

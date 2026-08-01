@@ -20,6 +20,16 @@ COPY package.json ./
 COPY src ./src
 COPY scripts ./scripts
 
+# middlewares/upload.js creates uploads/profile itself at module load time
+# (mkdirSync, not inside a request handler) — but as the non-root `node`
+# user below, it has no permission to create a new directory under /app
+# (owned by root from the COPY steps above). Create it here, as root, with
+# the right ownership, before dropping privileges. Without this the process
+# crashes on startup (routes/index.js requires every route file, including
+# profile.routes.js, before the server ever binds a port) — verified by
+# actually building and running this image; it never got past `docker run`.
+RUN mkdir -p uploads/profile && chown -R node:node uploads
+
 EXPOSE 5000
 USER node
 

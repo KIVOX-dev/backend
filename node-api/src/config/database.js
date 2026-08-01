@@ -52,6 +52,15 @@ function getCollection(name) {
   return getDb().collection(name);
 }
 
+// Used by the /health/ready check (routes/health.routes.js) — a real
+// round-trip to Mongo, not just "is the client object connected", so
+// readiness reflects whether Mongo can actually answer right now.
+async function ping() {
+  const start = process.hrtime.bigint();
+  await getDb().command({ ping: 1 });
+  return Number(process.hrtime.bigint() - start) / 1e6; // ms
+}
+
 async function withTransaction(fn) {
   const session = client.startSession();
   try {
@@ -71,4 +80,4 @@ async function close() {
   connectPromise = null;
 }
 
-module.exports = { connect, getDb, getCollection, withTransaction, close, client };
+module.exports = { connect, getDb, getCollection, withTransaction, close, ping, client };

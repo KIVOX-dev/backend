@@ -76,6 +76,11 @@ jobs:
     name: Docker build (node-api)
     needs: [node-lint, node-test, node-audit]
     runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
     steps:
       - uses: actions/checkout@v4
 
@@ -84,6 +89,7 @@ jobs:
         with:
           context: node-api
           push: false
+          load: true # image must land in the local Docker daemon — the smoke-test step below runs it
           tags: node-api:ci
 
       # Scan the built image for known CVEs before it ever reaches a registry.
@@ -97,6 +103,30 @@ jobs:
           image-ref: node-api:ci
           severity: CRITICAL,HIGH
           exit-code: "1"
+
+      # A clean scan and a successful build both say nothing about whether
+      # the image actually *starts* — this is what would have caught the
+      # uploads/ directory permission bug (see Dockerfile's chown step):
+      # the build succeeded and Trivy was happy, but `docker run` crashed
+      # immediately on every attempt. Boots the real image against a real
+      # (ephemeral, in-CI) MongoDB and hits /health for real.
+      - name: Smoke test — container actually starts
+        run: |
+          docker run -d --rm --name node-api-smoke -p 5000:5000 \
+            --network host \
+            -e MONGODB_URI="mongodb://127.0.0.1:27017" \
+            -e MONGODB_DB_NAME="ci_smoke" \
+            -e JWT_SECRET="ci-smoke-secret" \
+            -e JWT_REFRESH_SECRET="ci-smoke-refresh-secret" \
+            -e CORS_ORIGINS="http://localhost:3000" \
+            node-api:ci
+          for i in $(seq 1 15); do
+            if curl -sf http://127.0.0.1:5000/health; then echo "container is healthy"; exit 0; fi
+            sleep 1
+          done
+          echo "Container never became healthy:"
+          docker logs node-api-smoke
+          exit 1
 
   # Deploy is intentionally separate from the CI jobs above and gated on `main`
   # only, so a red build can never reach Cloud Run. It's commented out end-to-end
