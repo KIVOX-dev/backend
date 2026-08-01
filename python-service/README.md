@@ -35,6 +35,8 @@ app/
 
 This script used to contain a **hardcoded, plaintext MongoDB Atlas connection string with
 credentials**. It now reads `MONGODB_URI`/`SUPER_ADMIN_EMAIL`/`SUPER_ADMIN_PASSWORD` from the
-environment (`.env`) and refuses to run without them — but the credential that was previously
-hardcoded (`KAVI123`) is still compromised (it was committed to git history) and **must be
-rotated in the Atlas console**; removing it from this file does not undo the exposure.
+environment (`.env`) and refuses to run without them. The previously-hardcoded credential has
+been **rotated in the Atlas console** and the old database user is no longer valid. It still
+appears in plaintext in this repo's git history (commits `0274160` and `a53a25d`) — since it's
+now a dead credential that's a lower-urgency cleanup, but if the repo is ever shared or made
+public, purge it from history (e.g. `git filter-repo`) rather than relying on rotation alone.

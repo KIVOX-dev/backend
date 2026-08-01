@@ -12,5 +12,7 @@
 
 ## Security note
 
-`seed_mongo.py` contains a hardcoded plaintext MongoDB Atlas password. Rotate that credential and
-load it from `.env`/Secret Manager instead before relying on this script outside a local machine.
+`seed_mongo.py` previously contained a hardcoded plaintext MongoDB Atlas password. That credential
+has been rotated and the script now loads `MONGODB_URI` from `.env`/Secret Manager instead. The
+old (now-invalid) credential still exists in this repo's git history — see `README.md` for the
+affected commits and cleanup note.
