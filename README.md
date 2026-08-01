@@ -1,23 +1,33 @@
 # UpScaler-AI Backend
 
-This repository hosts a single backend service:
+This repository hosts two backend services:
 
 | Folder | Stack | Purpose |
 |---|---|---|
 | [`node-api/`](node-api/README.md) | Node.js / Express / MongoDB | Clean-architecture REST API, RBAC, JWT + Google OAuth — sole source of truth for every route the frontend calls |
+| [`ai-service/`](ai-service/README.md) | Python 3.12 / FastAPI / MongoDB | Narrow internal AI microservice (interview question generation, resume AI features) — called only by node-api over a JWT-authenticated internal API, never directly by the frontend |
 
 See `node-api/README.md` for architecture and `node-api/REQUIREMENTS.md` for prerequisites.
 
-## Python service removal
+## Python service removal — and why `ai-service/` is not that service coming back
 
-The original `python-service/` (Python 3.12 / FastAPI / MongoDB) has been removed. It predated
+The original `python-service/` (Python 3.12 / FastAPI / MongoDB) was removed. It predated
 `node-api` and the two had drifted into duplicate, inconsistently-behaving implementations of the
 same routes (auth, students, placements, etc.) against separate MongoDB databases. `node-api` had
 already reached full functional parity with every endpoint the live frontend actually calls (see
 `SECURITY_AUDIT.md` for the migration history), so keeping both running was pure duplicated
-maintenance and deployment surface with no remaining benefit. Its history is preserved in git; see
-the commit that removed it for the full file list. Full migration/removal notes are appended to
-`SECURITY_AUDIT.md`.
+maintenance and deployment surface with no remaining benefit. Its git history is preserved; see the
+commit that removed it for the full file list. Full migration/removal notes are appended to
+`SECURITY_AUDIT.md`. Its leftover files on disk (a stale `.venv`, caches, `.env`) were never
+cleaned up after that removal and have since been deleted for real.
+
+`ai-service/` is a deliberately smaller, newly-built replacement for one narrow slice of
+functionality — the Groq-backed AI features (interview question generation, resume analysis/JD
+matching/AI-suggest/parsing, assessment question generation) that used to live directly inside
+node-api via `groq-sdk`. It owns no business data (no students/placements/auth — those stay in
+node-api/MongoDB), is never called directly by the frontend, and every route requires a
+JWT node-api mints per-request (see `ai-service/app/security.py`). It is not a restoration of the
+old full-stack duplicate service described above.
 
 ## Recent updates
 

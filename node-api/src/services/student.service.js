@@ -100,8 +100,11 @@ class StudentService extends BaseService {
       throw ApiError.notFound('Student not found');
     }
 
-    const student = await studentRepository.findByRollNumber(String(rollNumber || '').trim().toUpperCase());
-    if (!student || student.institution_id !== institution.id) {
+    const student = await studentRepository.findByInstitutionAndRollNumber(
+      institution.id,
+      String(rollNumber || '').trim().toUpperCase()
+    );
+    if (!student) {
       logger.info('Student identify lookup: no match', { collegeName, rollNumber, ip: context.ip });
       throw ApiError.notFound('Student not found');
     }

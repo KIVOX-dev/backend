@@ -11,8 +11,15 @@ class StudentRepository extends BaseRepository {
     return this.findOne({ user_id: userId });
   }
 
-  findByRollNumber(rollNumber) {
-    return this.findOne({ roll_number: rollNumber });
+  // Scoped to a single institution, not a bare roll-number lookup — roll
+  // numbers are only unique *within* an institution (see the
+  // {institution_id, roll_number} unique index in scripts/setupIndexes.js),
+  // so two colleges can both have a "101". A global lookup risks returning
+  // the wrong student entirely when that collision happens, not just an
+  // unindexed scan — see student.service.js#identify, the one caller,
+  // which already knows the institution before this is called.
+  findByInstitutionAndRollNumber(institutionId, rollNumber) {
+    return this.findOne({ institution_id: institutionId, roll_number: rollNumber });
   }
 
   // Ported from python-service's students.py list_students, which searches by

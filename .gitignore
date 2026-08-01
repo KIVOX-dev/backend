@@ -6,7 +6,6 @@ __pycache__/
 *.pyc
 *.pyo
 *.db
-python-service/uploads/
 node-api/uploads/
 .pytest_cache/
 .ruff_cache/

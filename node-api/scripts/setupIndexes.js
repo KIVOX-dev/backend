@@ -17,6 +17,12 @@ const INDEX_PLAN = {
     { key: { google_id: 1 }, options: { unique: true, sparse: true } },
     { key: { role: 1 }, options: {} },
     { key: { institution_id: 1 }, options: {} },
+    // Sparse — set on only a small fraction of users at any time (an
+    // in-flight reset/verification link) — see user.repository.js's
+    // findByResetToken/findByEmailVerificationToken, both unindexed full
+    // collection scans before this.
+    { key: { reset_password_token_hash: 1 }, options: { sparse: true } },
+    { key: { email_verification_token_hash: 1 }, options: { sparse: true } },
   ],
   institutions: [
     { key: { code: 1 }, options: { unique: true } },
@@ -119,6 +125,13 @@ const INDEX_PLAN = {
   messages: [
     { key: { sender_id: 1, receiver_id: 1, created_at: -1 }, options: {} },
     { key: { receiver_id: 1, sender_id: 1, created_at: -1 }, options: {} },
+  ],
+  // Institution-agnostic practice-bank content — see models/question.model.js.
+  // question.repository.js#sampleRandom always $matches on category before
+  // $sample-ing; without this, every assigned-test draw was a full
+  // collection scan of the entire question bank before the random sample.
+  questions: [
+    { key: { category: 1 }, options: {} },
   ],
 };
 
