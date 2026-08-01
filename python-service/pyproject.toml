@@ -6,6 +6,15 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = []
 
+[tool.pytest.ini_options]
+# `pythonpath = ["."]` is required, not cosmetic: the tests import `app.*`, and
+# a bare `pytest` (what CI runs) does not put the working directory on
+# sys.path — only `python -m pytest` does. Without this the suite collects
+# fine locally via `python -m pytest` but fails in CI with
+# "ModuleNotFoundError: No module named 'app'".
+pythonpath = ["."]
+testpaths = ["tests"]
+
 [tool.black]
 # Matches [tool.ruff] line-length below so the two tools don't disagree about
 # where to wrap.
