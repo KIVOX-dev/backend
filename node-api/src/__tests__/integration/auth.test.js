@@ -1,6 +1,8 @@
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
 const { buildTestApp, teardownTestApp } = require('../helpers/testApp');
+const userRepository = require('../../repositories/user.repository');
+const { hashPassword } = require('../../utils/password');
 
 describe('Auth: register / login / refresh / change-password', () => {
   let app;
