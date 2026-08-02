@@ -6,6 +6,14 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = []
 
+[tool.pytest.ini_options]
+# Without this, pytest's import-mode falls back to inserting whichever
+# directory it decides is the test package root onto sys.path — here that's
+# tests/ itself (there's no tests/__init__.py to make it walk up further),
+# not the project root, so `from app...` fails with ModuleNotFoundError in
+# CI even though it can appear to work in some local setups.
+pythonpath = ["."]
+
 [tool.ruff]
 line-length = 100
 target-version = "py312"
