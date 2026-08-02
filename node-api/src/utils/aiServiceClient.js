@@ -31,6 +31,11 @@ class AiServiceUpstreamError extends Error {
 }
 
 async function callAiService(path, body) {
+  if (!env.aiService.sharedSecret) {
+    logger.error('AI service shared secret is not configured');
+    throw new AiServiceUnavailableError('AI service shared secret is not configured');
+  }
+
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), env.aiService.timeoutMs);
 

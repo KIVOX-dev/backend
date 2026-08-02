@@ -40,7 +40,6 @@
     "mongodb": "^6.10.0",
     "morgan": "^1.10.0",
     "multer": "^2.0.0",
-    "rate-limit-redis": "^4.3.1",
     "winston": "^3.13.0",
     "ws": "^8.18.0"
   },

@@ -1,8 +1,8 @@
-// Shared ioredis client, used by both the rate limiter store
-// (middlewares/rateLimitStore.js) and the WebSocket broadcaster
-// (websocket/redisBroadcaster.js) — one connection, one place that owns its
-// lifecycle and reconnection behavior, rather than each feature managing its
-// own client.
+// Shared ioredis client, used by the rate limiter store
+// (middlewares/rateLimitStore.js). The WebSocket broadcaster
+// (websocket/redisBroadcaster.js) uses its own dedicated pub/sub clients,
+// because Redis subscribe-mode connections cannot be reused for publish/other
+// commands.
 //
 // Entirely optional: with REDIS_URL unset, getRedisClient() returns null and
 // every caller falls back to its single-instance-only behavior (in-memory

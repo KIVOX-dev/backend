@@ -69,8 +69,4 @@ that state.
 
 ## Known accepted risk
 
-`pip-audit` flags `PYSEC-2026-1325` (a Minerva timing side-channel in `python-ecdsa`, pulled in
-transitively by `python-jose`). This service only ever signs/verifies HS256 (HMAC) tokens — never
-ECDSA — so the vulnerable code path is never exercised. Upstream has stated side-channel attacks
-are out of scope for `python-ecdsa` with no planned fix. CI's `ai-audit` job ignores this specific
-ID; everything else still fails the build.
+No accepted runtime dependency vulnerability exemptions are currently documented for this service.

@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta, timezone
 
+import jwt
 from fastapi import Header, HTTPException, status
-from jose import JWTError, jwt
+from jwt.exceptions import InvalidTokenError
 
 from app.config import get_settings
 
@@ -39,5 +40,5 @@ async def verify_service_token(authorization: str | None = Header(default=None))
             audience=AUDIENCE,
             issuer=ISSUER,
         )
-    except JWTError as exc:
+    except InvalidTokenError as exc:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token") from exc
