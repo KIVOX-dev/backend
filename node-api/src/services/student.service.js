@@ -2,6 +2,7 @@ const BaseService = require('./BaseService');
 const studentRepository = require('../repositories/student.repository');
 const userRepository = require('../repositories/user.repository');
 const institutionRepository = require('../repositories/institution.repository');
+const departmentRepository = require('../repositories/department.repository');
 const assessmentAttemptRepository = require('../repositories/assessmentAttempt.repository');
 const interviewAttemptRepository = require('../repositories/interviewAttempt.repository');
 const interviewResponseRepository = require('../repositories/interviewResponse.repository');
@@ -290,18 +291,33 @@ class StudentService extends BaseService {
   // batches.py migration checkpoint) — just onboards users + student rows,
   // no batch/batch_students tracking docs. Ported from python-service's
   // POST /students/batch.
-  async batchCreate({ students = [], department, department_id: departmentId, year }, actor) {
+  async batchCreate({ students = [], department, department_id: departmentId, year, year_of_study: yearOfStudy }, actor) {
     const defaultStatus = actor.role === ROLES.FACULTY ? 'pending' : 'approved';
     let created = 0;
     const createdStudents = [];
 
+    // Cached by department id — a roster is usually a handful of
+    // departments across many rows, not one lookup per row.
+    const durationCache = new Map();
+    const getDurationYears = async (deptId) => {
+      if (!deptId) return null;
+      if (!durationCache.has(deptId)) {
+        const dept = await departmentRepository.findById(deptId);
+        durationCache.set(deptId, dept?.duration_years || null);
+      }
+      return durationCache.get(deptId);
+    };
+
     for (const item of students) {
+      const resolvedDeptId = item.department_id || departmentId;
       const { user, created: wasCreated, tempPassword } = await findOrCreateStudentUser({
         item,
         institutionId: actor.institutionId,
         department,
         departmentId,
         year,
+        yearOfStudy: item.year_of_study ?? yearOfStudy,
+        departmentDurationYears: await getDurationYears(resolvedDeptId),
         status: defaultStatus,
       });
       if (wasCreated) {

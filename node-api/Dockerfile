@@ -15,6 +15,20 @@ FROM node:24-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 
+# The base image bundles a global npm CLI (+ corepack) for convenience, but
+# this container only ever runs `node src/server.js` — npm never executes
+# here. That bundled npm vendors its own internal deps (tar, undici,
+# brace-expansion, ...) pinned to whatever shipped with this Node build,
+# which lag behind upstream security fixes independently of anything in
+# this project's package.json/package-lock.json — Trivy flags them as
+# CRITICAL/HIGH even though they're unreachable dead weight. Removing the
+# global npm/corepack install (not the `node` binary) drops that surface
+# entirely; the db:seed-*/loadtest scripts in package.json are one-line
+# `node scripts/x.js` wrappers anyway, so `docker exec ... node scripts/x.js`
+# still works identically without npm present.
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+  /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json ./
 COPY src ./src

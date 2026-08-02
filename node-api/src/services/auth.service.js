@@ -47,7 +47,16 @@ function issueTokens(user) {
   // `tv` (token_version) is checked on every refresh — see refresh() below.
   // Bumping it on password reset invalidates every refresh token issued
   // before that point, without needing a server-side revocation store.
-  const payload = { sub: user.id, role: user.role, institutionId: user.institution_id, tv: user.token_version || 0 };
+  //
+  // mapPythonRole here (not just in register()) because register() only
+  // normalizes role on brand-new signups — any account whose DB row still
+  // carries a legacy python-service role string (e.g. `college_admin` from
+  // before this Node rewrite, or a row seeded/migrated outside register())
+  // would otherwise have that stale string signed straight into the token
+  // and fail authorize()'s role check on every institution_admin-gated
+  // route forever, since login just re-signs whatever role is on the row.
+  const role = mapPythonRole(user.role);
+  const payload = { sub: user.id, role, institutionId: user.institution_id, tv: user.token_version || 0 };
   return {
     accessToken: signAccessToken(payload),
     refreshToken: signRefreshToken(payload),

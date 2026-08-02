@@ -32,17 +32,22 @@ class BaseRepository {
     return picked;
   }
 
+  // Guards against Mongo operator injection: with Express's bracket-syntax query
+  // parser, `?status[$ne]=x` arrives as `{ status: { $ne: 'x' } }`, and a JSON
+  // body can carry `{ "id": { "$ne": null } }` just as easily. A value that's
+  // an object (or array) here is either a caller bug or an attacker trying to
+  // smuggle a query operator in where a literal value belongs — never safe to
+  // interpolate into a filter.
+  _isPrimitive(value) {
+    return value === null || typeof value !== 'object';
+  }
+
   _buildFilter(filters = {}) {
     const filter = {};
     for (const key of Object.keys(filters)) {
       const value = filters[key];
       if (value === undefined) continue;
-      // Guards against Mongo operator injection: with Express's bracket-syntax query
-      // parser, `?status[$ne]=x` arrives here as `{ status: { $ne: 'x' } }`. Column
-      // names are already whitelisted above, but a whitelisted key still can't be
-      // allowed to carry an object/array value straight into a query filter — reject
-      // any query-string-provided value that isn't a primitive.
-      if (value !== null && typeof value === 'object') continue;
+      if (!this._isPrimitive(value)) continue;
       if (key === 'id') {
         filter._id = value;
       } else if (this.columns.includes(key)) {
@@ -87,6 +92,7 @@ class BaseRepository {
   }
 
   async findById(id) {
+    if (!this._isPrimitive(id)) return null;
     const doc = await this.collection.findOne({ _id: id });
     return this._toEntity(doc);
   }
@@ -95,7 +101,8 @@ class BaseRepository {
   // resolving a list of foreign-key references) into a single $in query —
   // see student.service.js#dashboard for the call site this was added for.
   async findByIds(ids) {
-    const uniqueIds = [...new Set(ids)].filter(Boolean);
+    if (!Array.isArray(ids)) return [];
+    const uniqueIds = [...new Set(ids)].filter((id) => Boolean(id) && this._isPrimitive(id));
     if (uniqueIds.length === 0) return [];
     const docs = await this.collection.find({ _id: { $in: uniqueIds } }).toArray();
     return docs.map((d) => this._toEntity(d));
@@ -116,6 +123,7 @@ class BaseRepository {
   }
 
   async updateById(id, data) {
+    if (!this._isPrimitive(id)) return null;
     const picked = this._pickFields(data);
     if (Object.keys(picked).length === 0) return this.findById(id);
     picked.updated_at = new Date();
@@ -131,6 +139,7 @@ class BaseRepository {
   }
 
   async deleteById(id) {
+    if (!this._isPrimitive(id)) return false;
     const { deletedCount } = await this.collection.deleteOne({ _id: id });
     return deletedCount > 0;
   }

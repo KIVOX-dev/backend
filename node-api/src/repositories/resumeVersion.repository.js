@@ -7,6 +7,7 @@ class ResumeVersionRepository extends BaseRepository {
   }
 
   async findByStudentId(studentId) {
+    if (!this._isPrimitive(studentId)) return [];
     const docs = await this.collection.find({ student_id: studentId }).sort({ created_at: -1 }).toArray();
     return docs.map((d) => this._toEntity(d));
   }

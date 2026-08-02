@@ -16,6 +16,10 @@ const create = Joi.object({
   // aliases for node-api's roll_number/batch_year.
   student_id: Joi.string().max(50),
   year: Joi.number().integer().min(1990).max(2100),
+  // Distinct from `year` above: 1-6 "which year of the program", used to
+  // compute batch_year from the department's duration_years when an
+  // explicit calendar year isn't supplied (see utils/graduationYear.js).
+  year_of_study: Joi.number().integer().min(1).max(6),
   roll_number: Joi.string().max(50),
   batch_year: Joi.number().integer().min(1990).max(2100),
   department_id: Joi.string().uuid(),

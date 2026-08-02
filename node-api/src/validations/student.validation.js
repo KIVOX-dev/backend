@@ -64,7 +64,11 @@ const batchStudent = Joi.object({
   password: Joi.string().min(8).max(128),
   department: Joi.string().max(255),
   department_id: Joi.string().uuid(),
+  // Ambiguous on purpose (see utils/studentOnboarding.js#resolveBatchYear):
+  // a 4-digit-or-larger value is an explicit graduation-year override,
+  // anything smaller is treated as year_of_study and used to compute one.
   year: Joi.number().integer(),
+  year_of_study: Joi.number().integer().min(1).max(6),
 }).or('roll', 'studentId');
 
 const batchCreate = Joi.object({
@@ -72,6 +76,7 @@ const batchCreate = Joi.object({
   department: Joi.string().max(255),
   department_id: Joi.string().uuid(),
   year: Joi.number().integer(),
+  year_of_study: Joi.number().integer().min(1).max(6),
 });
 
 module.exports = { create, update, identify, logTest, logInterview, batchCreate };
