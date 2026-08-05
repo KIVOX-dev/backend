@@ -1,0 +1,102 @@
+# Cloud Build config for this monorepo. There is intentionally NO Dockerfile
+# at the repo root — node-api/ and ai-service/ each have their own, built
+# with their own directory as build context. Every step below is explicit
+# about which Dockerfile + context it uses so Cloud Build never falls back
+# to guessing /workspace/Dockerfile.
+#
+# Trigger setup (GCP Console → Cloud Build → Triggers):
+#   Configuration: "Cloud Build configuration file (yaml or json)"
+#   Location:      cloudbuild.yaml  (repo root)
+# Do NOT use the "Dockerfile" build-type option for this repo — that option
+# has no field for per-service subdirectories on some trigger UIs and is what
+# produces the `lstat /workspace/Dockerfile: no such file or directory` error.
+#
+# Required substitution variables (set in the trigger, Console → Edit trigger
+# → Substitution variables):
+#   _REGION   e.g. asia-south1
+#   _AR_REPO  Artifact Registry repo name, e.g. upscaler-images
+#
+# Required IAM roles for the Cloud Build service account
+# (<project-number>@cloudbuild.gserviceaccount.com):
+#   roles/artifactregistry.writer   - push images
+#   roles/run.admin                 - deploy to Cloud Run
+#   roles/iam.serviceAccountUser    - act as the Cloud Run runtime service account
+#   roles/logging.logWriter         - already granted by default
+
+substitutions:
+  _REGION: asia-south1
+  _AR_REPO: upscaler-images
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: 1200s
+
+steps:
+  # ---- node-api ----
+  - id: build-node-api
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -f
+      - node-api/Dockerfile
+      - -t
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/node-api:${SHORT_SHA}
+      - -t
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/node-api:latest
+      - node-api
+
+  - id: push-node-api
+    name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - --all-tags
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/node-api
+    waitFor: [build-node-api]
+
+  # ---- ai-service ----
+  - id: build-ai-service
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -f
+      - ai-service/Dockerfile
+      - -t
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/ai-service:${SHORT_SHA}
+      - -t
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/ai-service:latest
+      - ai-service
+
+  - id: push-ai-service
+    name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - --all-tags
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/ai-service
+    waitFor: [build-ai-service]
+
+  # ---- deploy: ai-service first (node-api calls it; it holds no state) ----
+  - id: deploy-ai-service
+    name: gcr.io/google.com/cloudsdk/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - ai-service
+      - --image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/ai-service:${SHORT_SHA}
+      - --region=${_REGION}
+      - --no-allow-unauthenticated
+      - --quiet
+    waitFor: [push-ai-service]
+
+  - id: deploy-node-api
+    name: gcr.io/google.com/cloudsdk/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - node-api
+      - --image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/node-api:${SHORT_SHA}
+      - --region=${_REGION}
+      - --quiet
+    waitFor: [push-node-api, deploy-ai-service]
