@@ -22,4 +22,9 @@ const updateStatus = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, application, 'Status updated');
 });
 
-module.exports = { list, getById, create, updateStatus };
+const bulkShortlist = asyncHandler(async (req, res) => {
+  const result = await placementApplicationService.bulkShortlist(req.body, req.user);
+  ApiResponse.ok(res, result, 'Candidates shortlisted');
+});
+
+module.exports = { list, getById, create, updateStatus, bulkShortlist };

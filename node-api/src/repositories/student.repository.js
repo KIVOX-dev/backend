@@ -11,6 +11,16 @@ class StudentRepository extends BaseRepository {
     return this.findOne({ user_id: userId });
   }
 
+  // Batched twin of findByUserId — used where callers already have a page
+  // of users and need each one's enrollment row (e.g. roll_number) without
+  // N sequential lookups.
+  async findByUserIds(userIds) {
+    const uniqueIds = [...new Set(userIds)].filter(Boolean);
+    if (uniqueIds.length === 0) return [];
+    const docs = await this.collection.find({ user_id: { $in: uniqueIds } }).toArray();
+    return docs.map((d) => this._toEntity(d));
+  }
+
   // Scoped to a single institution, not a bare roll-number lookup — roll
   // numbers are only unique *within* an institution (see the
   // {institution_id, roll_number} unique index in scripts/setupIndexes.js),

@@ -30,7 +30,7 @@ class PlacementRecordService extends BaseService {
   // forward, per the migration plan's "fix immediately" rule): a student can
   // only self-report their own placement; staff can report on behalf of a
   // specific student in their own institution.
-  async create(data, actor) {
+  async create(data, actor, proofFile) {
     let student;
     if (actor.role === ROLES.STUDENT) {
       student = await studentRepository.findByUserId(actor.id);
@@ -55,7 +55,8 @@ class PlacementRecordService extends BaseService {
       work_type: data.work_type,
       mode: data.mode,
       location: data.location,
-      proof_url: data.proof_url,
+      // Served back via app.js's existing /uploads static mount.
+      proof_url: proofFile ? `/uploads/placement-proof/${proofFile.filename}` : undefined,
     });
 
     await studentRepository.updateById(student.id, { placement_status: 'placed' });

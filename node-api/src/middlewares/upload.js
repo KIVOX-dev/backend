@@ -71,6 +71,51 @@ const upload = multer({
   fileFilter,
 });
 
+// A second, separate allow-list/instance for placement proof documents
+// (offer letters) — deliberately not merged into ALLOWED_TYPES above: that
+// one backs onboarding's profile photo/signature fields, and PDF has no
+// business being accepted there. Same two-layer verification approach
+// (extension + Content-Type here, magic bytes in verifyAndPersistDocument).
+const documentUploadDir = path.join(process.cwd(), 'uploads', 'placement-proof');
+fs.mkdirSync(documentUploadDir, { recursive: true });
+
+const ALLOWED_DOCUMENT_TYPES = {
+  'application/pdf': { extensions: ['.pdf'], magic: (buf) => buf.slice(0, 5).toString('ascii') === '%PDF-' },
+  'image/jpeg': ALLOWED_TYPES['image/jpeg'],
+  'image/png': ALLOWED_TYPES['image/png'],
+};
+
+const MAX_DOCUMENT_BYTES = 10 * 1024 * 1024;
+
+function documentFileFilter(req, file, cb) {
+  const rule = ALLOWED_DOCUMENT_TYPES[file.mimetype];
+  const ext = extensionOf(file.originalname);
+  if (!rule || !rule.extensions.includes(ext)) {
+    cb(ApiError.badRequest(`Unsupported file type for "${file.fieldname}". Allowed: PDF, JPEG, PNG.`));
+    return;
+  }
+  cb(null, true);
+}
+
+const documentUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: MAX_DOCUMENT_BYTES },
+  fileFilter: documentFileFilter,
+});
+
+const verifyAndPersistDocument = asyncHandler(async (req, res, next) => {
+  for (const file of req.files || []) {
+    const rule = ALLOWED_DOCUMENT_TYPES[file.mimetype];
+    if (!rule || !rule.magic(file.buffer)) {
+      throw ApiError.badRequest(`"${file.originalname}" does not look like a valid ${file.mimetype === 'application/pdf' ? 'PDF' : file.mimetype.split('/')[1].toUpperCase()} file.`);
+    }
+    const ext = extensionOf(file.originalname);
+    file.filename = `${crypto.randomUUID()}${ext}`;
+    await fs.promises.writeFile(path.join(documentUploadDir, file.filename), file.buffer);
+  }
+  next();
+});
+
 // Runs after upload.any() on the same route. Verifies each buffered file's
 // real content against its declared type, then — and only then — writes it
 // to disk under a fresh random filename (never the client-supplied
@@ -91,4 +136,11 @@ const verifyAndPersist = asyncHandler(async (req, res, next) => {
   next();
 });
 
-module.exports = { upload, uploadDir, verifyAndPersist };
+module.exports = {
+  upload,
+  uploadDir,
+  verifyAndPersist,
+  documentUpload,
+  documentUploadDir,
+  verifyAndPersistDocument,
+};

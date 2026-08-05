@@ -14,8 +14,21 @@ router.use(scopeInstitution);
 // HR excluded from list/getById: HR has no institutionId and should use
 // /placements/applications/me instead, not the generic institution-scoped list.
 router.get('/', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY, ROLES.STUDENT), controller.list);
+// Static segment before GET '/:id' — same route-ordering hazard noted
+// elsewhere in this codebase (e.g. test.routes.js).
+router.post(
+  '/bulk-shortlist',
+  authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY),
+  validate(schema.bulkShortlist),
+  controller.bulkShortlist
+);
 router.get('/:id', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY, ROLES.STUDENT), controller.getById);
-router.post('/', authorize(ROLES.STUDENT), validate(schema.create), controller.create);
+router.post(
+  '/',
+  authorize(ROLES.STUDENT, ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY),
+  validate(schema.create),
+  controller.create
+);
 router.patch(
   '/:id/status',
   authorize(ROLES.STUDENT, ROLES.HR, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY, ROLES.SUPER_ADMIN),

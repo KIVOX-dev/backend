@@ -3,6 +3,7 @@ const controller = require('../controllers/placementRecord.controller');
 const authenticate = require('../middlewares/authenticate');
 const authorize = require('../middlewares/authorize');
 const validate = require('../middlewares/validate');
+const { documentUpload, verifyAndPersistDocument } = require('../middlewares/upload');
 const schema = require('../validations/placementRecord.validation');
 const { ROLES } = require('../config/constants');
 
@@ -13,7 +14,15 @@ router.get('/', controller.list); // every role browses placements scoped to the
 router.get('/student/:studentId', controller.listForStudent);
 router.get('/:id', controller.getById);
 
-router.post('/', validate(schema.create), controller.create); // role-gated inside the service (student=self, staff=on behalf of)
+// documentUpload.any() is a no-op on a plain JSON request (proof_file is
+// optional) — see profile.routes.js's identical comment for how that works.
+router.post(
+  '/',
+  documentUpload.any(),
+  verifyAndPersistDocument,
+  validate(schema.create),
+  controller.create
+); // role-gated inside the service (student=self, staff=on behalf of)
 
 router.put(
   '/:id/verify',

@@ -147,6 +147,7 @@ class TestService extends BaseService {
       return {
         ...r,
         student_name: user?.full_name || 'Unknown student',
+        roll_number: student?.roll_number || '—',
         test_title: testById.get(r.test_id)?.title || 'Unknown test',
       };
     });

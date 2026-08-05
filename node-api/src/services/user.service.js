@@ -30,7 +30,18 @@ class UserService extends BaseService {
     if (actor.role !== ROLES.SUPER_ADMIN) {
       visible = rows.filter((u) => u.role !== ROLES.SUPER_ADMIN);
     }
-    return { rows: visible.map(sanitize), meta };
+
+    // Roll number lives on the students collection (one row per student
+    // user), not on the user record itself — attach it here so the admin's
+    // Manage Users table doesn't need a second round trip per row.
+    const studentUserIds = visible.filter((u) => u.role === ROLES.STUDENT).map((u) => u.id);
+    const students = await studentRepository.findByUserIds(studentUserIds);
+    const rollNumberByUserId = new Map(students.map((s) => [s.user_id, s.roll_number]));
+
+    return {
+      rows: visible.map((u) => ({ ...sanitize(u), roll_number: rollNumberByUserId.get(u.id) })),
+      meta,
+    };
   }
 
   async listPending(queryParams, actor) {

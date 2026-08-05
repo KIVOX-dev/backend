@@ -11,7 +11,8 @@ const create = Joi.object({
   work_type: Joi.string().max(50).allow('', null),
   mode: Joi.string().max(50).allow('', null),
   location: Joi.string().max(255).allow('', null),
-  proof_url: Joi.string().uri().allow('', null),
+  // No longer client-supplied: derived from the uploaded proof_file, if any
+  // (see upload.js's documentUpload / placementRecord.service.js#create).
 });
 
 const verify = Joi.object({
