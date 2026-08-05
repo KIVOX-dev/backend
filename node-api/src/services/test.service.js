@@ -127,11 +127,29 @@ class TestService extends BaseService {
   }
 
   // Institution-wide attempts across every test, not just one — ported from
-  // python-service's tests.py#college_results.
+  // python-service's tests.py#college_results. Resolves student_name and
+  // test_title the same way getResults does, since this feeds a combined
+  // table where rows from different tests would otherwise be indistinguishable.
   async collegeResults(actor) {
     const filters = actor.role === ROLES.SUPER_ADMIN ? {} : { institution_id: actor.institutionId };
     const { rows } = await assessmentAttemptRepository.findAll({ page: 1, limit: 1000, filters });
-    return rows;
+
+    const students = await studentRepository.findByIds(rows.map((r) => r.student_id));
+    const studentById = new Map(students.map((s) => [s.id, s]));
+    const users = await userRepository.findByIds(students.map((s) => s.user_id));
+    const userById = new Map(users.map((u) => [u.id, u]));
+    const tests = await testRepository.findByIds(rows.map((r) => r.test_id));
+    const testById = new Map(tests.map((t) => [t.id, t]));
+
+    return rows.map((r) => {
+      const student = studentById.get(r.student_id);
+      const user = student ? userById.get(student.user_id) : null;
+      return {
+        ...r,
+        student_name: user?.full_name || 'Unknown student',
+        test_title: testById.get(r.test_id)?.title || 'Unknown test',
+      };
+    });
   }
 
   // Student self-submits a completed attempt — no pre-existing test-assignment

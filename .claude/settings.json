@@ -7,7 +7,11 @@
       "Bash(node _smoke_userdata.js)",
       "Bash(node _smoke_email_send.js)",
       "Bash(node _smoke_profile_upload.js)",
-      "Bash(grep -i '\\\\.html$')"
+      "Bash(grep -i '\\\\.html$')",
+      "Bash(curl -s -o /dev/null -w \"backend health: %{http_code}\\\\n\" http://localhost:5000/api/v1/health)",
+      "Bash(curl -s -o /dev/null -w \"root: %{http_code}\\\\n\" http://localhost:5000/)",
+      "Bash(curl -s -o /dev/null -w \"/health: %{http_code}\\\\n\" http://localhost:5000/health)",
+      "Bash(curl -s -o /dev/null -w \"/api/v1: %{http_code}\\\\n\" http://localhost:5000/api/v1)"
     ]
   }
 }
