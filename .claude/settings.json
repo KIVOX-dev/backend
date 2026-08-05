@@ -26,7 +26,8 @@
       "Bash(node inspect7.js)",
       "Bash(curl -s -o /dev/null -w \"proof file HTTP status: %{http_code}\\\\n\" \"http://localhost:5000/uploads/placement-proof/8c2b94e0-8854-46e4-840a-a45e11df4c27.png\")",
       "Bash(node repro_login.js)",
-      "Bash(node repro_login2.js)"
+      "Bash(node repro_login2.js)",
+      "Bash(node repro_final_check.js)"
     ]
   }
 }
