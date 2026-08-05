@@ -1,15 +1,21 @@
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
 const { buildTestApp, teardownTestApp } = require('../helpers/testApp');
-const userRepository = require('../../repositories/user.repository');
-const { hashPassword } = require('../../utils/password');
 
 describe('Auth: register / login / refresh / change-password', () => {
   let app;
   let database;
+  // Required lazily, after buildTestApp()'s jest.resetModules() + connect()
+  // — requiring these at file top would grab a stale, disconnected instance
+  // of the module registry (same reasoning as testApp.js's own internal
+  // repository requires).
+  let userRepository;
+  let hashPassword;
 
   beforeAll(async () => {
     ({ app, database } = await buildTestApp());
+    userRepository = require('../../repositories/user.repository');
+    ({ hashPassword } = require('../../utils/password'));
   });
 
   afterAll(async () => {
@@ -150,5 +156,48 @@ describe('Auth: register / login / refresh / change-password', () => {
       .put('/api/v1/auth/change-password')
       .send({ current_password: 'a', new_password: 'Password123!' })
       .expect(401);
+  });
+
+  // Regression test: an account whose DB row still carries the legacy
+  // python-service role string `college_admin` (e.g. seeded/migrated
+  // outside the register() flow, which is the only place that normalizes
+  // role on write) must still log in with a token mapped to the current
+  // `institution_admin` vocabulary — otherwise authorize() rejects every
+  // institution_admin-gated route with a 403 forever, since login just
+  // re-signs whatever role is on the row. See auth.service.js#issueTokens.
+  it('normalizes a legacy `college_admin` DB role to `institution_admin` on login', async () => {
+    const email = uniqueEmail('legacy-role-admin');
+    const password = 'Sup3rSecret!';
+    await userRepository.create({
+      email,
+      password_hash: await hashPassword(password),
+      full_name: 'Legacy Role Admin',
+      role: 'college_admin',
+    });
+
+    const res = await request(app).post('/api/v1/auth/login').send({ email, password }).expect(200);
+    const decoded = jwt.decode(res.body.data.accessToken);
+    expect(decoded.role).toBe('institution_admin');
+  });
+
+  // Same fix, but for a token that was already signed with the legacy role
+  // before this fix existed (or before a DB row gets backfilled) — authenticate()
+  // must normalize it per-request too, so a currently active session
+  // self-heals without forcing a re-login. GET /dashboard/admin is gated
+  // with authorize(FACULTY, INSTITUTION_ADMIN, SUPER_ADMIN); the bug this
+  // guards against is authorize() seeing the raw `college_admin` string and
+  // rejecting with 403 — anything else proves it was mapped and accepted.
+  it('normalizes a legacy `college_admin` role from an already-issued token in authenticate()', async () => {
+    const legacyToken = jwt.sign(
+      { sub: 'legacy-user-id', role: 'college_admin', institutionId: 'legacy-institution-id', tv: 0 },
+      process.env.JWT_SECRET,
+      { expiresIn: '5m' }
+    );
+
+    const res = await request(app)
+      .get('/api/v1/dashboard/admin')
+      .set('Authorization', `Bearer ${legacyToken}`);
+
+    expect(res.status).not.toBe(403);
   });
 });
