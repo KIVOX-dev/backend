@@ -25,4 +25,14 @@ router.post(
 );
 router.get('/verify-email', authLimiter, validate(schema.verifyEmail, 'query'), authController.verifyEmail);
 
+// Authenticated password change — distinct from forgot/reset (token-based,
+// unauthenticated) and change-initial-password (temp-password onboarding).
+router.put(
+  '/change-password',
+  authenticate,
+  authLimiter,
+  validate(schema.changePassword),
+  authController.changePassword
+);
+
 module.exports = router;

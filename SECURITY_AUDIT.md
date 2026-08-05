@@ -437,3 +437,161 @@ Remaining follow-ups are hygiene, not blockers:
 - `starlette.testclient` warns that `httpx` support is deprecated in favor of `httpx2` — harmless
   today, but it will need attention when `httpx` is next bumped.
 - Re-run this audit on a cadence: `npm audit` / `pip-audit` catch *known* CVEs only, not zero-days.
+
+---
+
+## 12. Third pass — full toolchain audit (`safety`, `black`, lock files)
+
+Re-verified the reported CI failure first. **`pip-audit` already passed with exit code 0** — the
+Python scan failure was the one fixed in §3/§4; it is not still failing. This pass therefore
+audited the wider toolchain rather than re-fixing resolved CVEs, and turned up two real defects.
+
+### 12a. Duplicate, unpinned `pydantic` declaration (found by `safety`, missed by `pip-audit`)
+
+`requirements.txt` declared pydantic twice:
+
+```
+pydantic==2.11.3
+pydantic[email]        <- no version constraint
+```
+
+`safety` reported *"4 known vulnerabilities match the pydantic versions that could be installed
+from your specifiers: `pydantic[email]>=0` (unpinned)"*. pip intersected the two constraints and
+resolved 2.11.3 anyway, so **no vulnerable version was ever installed** — but the declaration was
+both a duplicate and an open range, and the safety of the result depended on resolver behaviour
+rather than on the manifest. Consolidated to a single pinned entry:
+
+| | Before | After |
+|---|---|---|
+| pydantic | `pydantic==2.11.3` + bare `pydantic[email]` | `pydantic[email]==2.11.3` |
+
+`safety` goes from *"0 reported, 4 ignored"* → *"0 reported, 0 ignored"*. This also satisfies the
+"remove duplicate packages" requirement — it was the only duplicate in either service.
+
+### 12b. CRITICAL — the `python-test` CI job would have failed
+
+The workflow runs `pytest -v`. A **bare `pytest` does not put the working directory on
+`sys.path`; only `python -m pytest` does.** Every local verification up to this point had used
+`python -m pytest`, which masked the problem. Running the CI command exactly:
+
+```
+$ pytest -v
+tests/test_security.py:8: in <module>
+    from app.core.security import (
+E   ModuleNotFoundError: No module named 'app'
+Interrupted: 2 errors during collection
+```
+
+That job would have gone red on the first push. Fixed in configuration rather than by changing the
+CI invocation, so the suite behaves identically either way:
+
+```toml
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+```
+
+This is the same class of defect as §9a (the undeclared Mongo drivers): **a divergence between the
+developer's invocation and CI's**. Both were invisible until the exact production/CI command was
+run in a clean environment. Every gate in this pass was subsequently re-run using the **bare
+executables in a fresh venv**, not `python -m`.
+
+### 12c. `black` adopted as a separate commit
+
+`black --check` failed on 38 of 56 files (the project had never used black). Applying it is a
+large, purely cosmetic diff, so — per your decision — it was kept as its own commit rather than
+mixed into the security work:
+
+| Commit | Contents |
+|---|---|
+| `759183b` | `fix(deps)`: pydantic pin (§12a) |
+| `d621b5e` | `style`: black reformat, 38 files — **no logic changes** |
+| `e9ad48f` | `chore`: `.git-blame-ignore-revs` pointing at `d621b5e` |
+| `638ee21` | `fix(ci)`: pytest `pythonpath` (§12b) |
+
+`black` is pinned in `requirements-dev.txt` (26.5.1) and enforced by a dedicated `black --check .`
+step in the `python-lint` job. Its `line-length` is set to **100** in `pyproject.toml` to match
+`[tool.ruff]`, so the two tools cannot disagree about wrapping — verified by running both after
+the reformat. `git blame` skips the formatting commit via `.git-blame-ignore-revs`.
+
+### 12d. Lock files — nothing to regenerate
+
+| File | Status |
+|---|---|
+| `requirements.txt` | The real manifest — fully pinned (`==`) on every entry |
+| `requirements-dev.txt` | Fully pinned; `-r requirements.txt` |
+| `pyproject.toml` | Tool config only (`ruff`, `black`, `pytest`); `dependencies = []` |
+| `uv.lock` | **Stub — locks nothing.** Contains exactly one `[[package]]` block: the `backend` project itself, with zero dependencies. A leftover from `uv init`. |
+| `poetry.lock` | Does not exist |
+| `Pipfile` / `Pipfile.lock` | Do not exist |
+
+Because `pyproject.toml` declares `dependencies = []`, `uv.lock` pins no third-party package and
+**cannot carry a vulnerability**; no scanner reads it, and `uv` is not installed or used anywhere
+in the build. There is nothing to regenerate. It is dead weight that misleadingly implies
+uv-managed dependencies — worth either deleting or adopting uv properly, but that is a build-system
+decision, so it was left in place rather than removed unilaterally.
+
+### 12e. `safety` not added to CI (your decision)
+
+`safety scan` (the modern command) **requires authentication** — it prompts for login and needs a
+`SAFETY_API_KEY` secret for CI. `safety check` works unauthenticated against the open-source DB but
+is officially deprecated and unsupported beyond 2024-06-01. Since `pip-audit` already gates CI
+against the same PyPI/OSV advisory data and passes, `safety` was run **once, manually**, as an
+independent cross-check (which is how §12a was found) but not wired into the pipeline. The
+security policy was not weakened and no scan was disabled — `pip-audit` still fails the build on
+any advisory.
+
+---
+
+## 13. `python-service/` removed (backend stabilization pass)
+
+**Date:** 2026-08-01. **Scope:** repo-wide — `python-service/`, `.github/workflows/ci.yml`,
+`README.md`, `REQUIREMENTS.md`.
+
+Everything in §1–12 above documents `python-service` as it existed; it is retained as history and
+was **not rewritten**. This section records its removal, done as part of a broader backend
+stabilization pass (token refresh, HR portal routing, change-password, role/pagination/upload
+hardening — see the corresponding commit(s) around this date for the rest of that pass).
+
+**Why:** `node-api` and `python-service` had drifted into two independent implementations of
+largely the same routes (auth, students, placements/jobs, resume, dashboard, etc.) against two
+separate MongoDB databases (`upscaler_ai_node` vs `upscaler_ai`) — duplicated business logic,
+duplicated auth, and duplicated maintenance/deployment surface (two Dockerfiles, two CI matrices)
+for no behavioral benefit, since the live frontend only ever needed one backend to actually answer
+its requests.
+
+**Verification before deletion:** every route prefix the frontend (`D:\Upscaler-Frontend`) calls
+was cross-checked against `node-api/src/routes/index.js` and confirmed present and independently
+functional — auth, users, institutions, departments, college-admins, companies, hr, faculty,
+students(+profile), placements (aliased at `/jobs` too — see the HR portal fix in this same pass),
+placement-applications, tests, test-assignments, results, notifications, resume, activity-logs,
+user-data, placement-records, profile, ai, interviews, leaderboard, dashboard, batches, chat.
+`node-api` already had its own independent MongoDB seed scripts (`db:seed-colleges`,
+`db:seed-departments`, `db:seed-practice-tests`, `db:seed-question-bank`) — it was never dependent
+on `python-service`'s database or `seed_mongo.py`.
+
+**What changed:**
+- Deleted `python-service/` in full (git history preserves it — recoverable with
+  `git log --diff-filter=D -- python-service` if ever needed).
+- `.github/workflows/ci.yml`: removed the `python-lint`/`python-test`/`python-audit` jobs, the
+  `PYTHON_VERSION` env var, the python-service Docker build step, and its Trivy scan. `docker-build`
+  now only builds/scans `node-api` and depends only on the three node-api jobs.
+  See §12e above — `pip-audit`'s CI gate no longer applies to this repo now that there is no
+  `requirements.txt` to check; dependency scanning is `node-audit`'s `npm audit` plus the Trivy
+  scan on the node-api image.
+- `README.md` / `REQUIREMENTS.md`: updated to describe a single-service repo.
+
+**Known follow-ups, not done as part of this removal:**
+- `seed_mongo.py` (deleted with the rest of `python-service/`) contained a hardcoded plaintext
+  MongoDB Atlas password, flagged back in §1 of this audit. Deleting the file does **not** rotate
+  that credential — it is still recoverable from git history. **Rotate it** if that has not already
+  happened.
+- The frontend's `src/lib/api.ts` (`D:\Upscaler-Frontend`, a separate repo, intentionally not
+  modified here) falls back to `http://<host>:8000/api/v1` — python-service's old port — when
+  `NEXT_PUBLIC_API_URL` is unset. This is a documentation/deployment-config gap, not a code gap:
+  wherever the frontend is actually deployed already sets `NEXT_PUBLIC_API_URL` to node-api's URL
+  (confirmed locally via `.env.local` → `http://localhost:5000/api/v1`), so this had no runtime
+  effect at the time of removal. Still worth fixing the fallback value in that repo as a follow-up
+  so it doesn't quietly point at a dead service.
+- The Postgres-era `sql/schema.sql` mentioned in the root `README.md`'s history section was already
+  superseded before this pass (see that README) and needed no further action here.

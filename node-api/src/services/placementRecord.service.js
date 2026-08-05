@@ -30,7 +30,7 @@ class PlacementRecordService extends BaseService {
   // forward, per the migration plan's "fix immediately" rule): a student can
   // only self-report their own placement; staff can report on behalf of a
   // specific student in their own institution.
-  async create(data, actor) {
+  async create(data, actor, proofFile) {
     let student;
     if (actor.role === ROLES.STUDENT) {
       student = await studentRepository.findByUserId(actor.id);
@@ -46,6 +46,12 @@ class PlacementRecordService extends BaseService {
       throw ApiError.forbidden('Not authorized to report a placement');
     }
 
+    // Whoever holds verify() authority (admin/super_admin only — see below)
+    // entering a placement themselves has nothing left to review; only
+    // defer to the pending-approval flow for roles that can create on a
+    // student's behalf but can't verify (faculty, HR).
+    const canSelfVerify = actor.role === ROLES.SUPER_ADMIN || actor.role === ROLES.INSTITUTION_ADMIN;
+
     const record = await this.repository.create({
       student_id: student.id,
       institution_id: student.institution_id,
@@ -55,7 +61,9 @@ class PlacementRecordService extends BaseService {
       work_type: data.work_type,
       mode: data.mode,
       location: data.location,
-      proof_url: data.proof_url,
+      // Served back via app.js's existing /uploads static mount.
+      proof_url: proofFile ? `/uploads/placement-proof/${proofFile.filename}` : undefined,
+      ...(canSelfVerify ? { verification_status: 'verified', verified_by: actor.id, verified_at: new Date() } : {}),
     });
 
     await studentRepository.updateById(student.id, { placement_status: 'placed' });

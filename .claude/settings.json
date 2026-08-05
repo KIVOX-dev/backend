@@ -6,7 +6,29 @@
       "Bash(JWT_SECRET=x JWT_REFRESH_SECRET=y MONGODB_URI=mongodb://localhost:27017 node -e ' *)",
       "Bash(node _smoke_userdata.js)",
       "Bash(node _smoke_email_send.js)",
-      "Bash(node _smoke_profile_upload.js)"
+      "Bash(node _smoke_profile_upload.js)",
+      "Bash(grep -i '\\\\.html$')",
+      "Bash(curl -s -o /dev/null -w \"backend health: %{http_code}\\\\n\" http://localhost:5000/api/v1/health)",
+      "Bash(curl -s -o /dev/null -w \"root: %{http_code}\\\\n\" http://localhost:5000/)",
+      "Bash(curl -s -o /dev/null -w \"/health: %{http_code}\\\\n\" http://localhost:5000/health)",
+      "Bash(curl -s -o /dev/null -w \"/api/v1: %{http_code}\\\\n\" http://localhost:5000/api/v1)",
+      "Bash(npx --yes playwright install --dry-run chromium)",
+      "Bash(cp /d/Upscaler-Frontend/src/styles/legacy-portal.css /c/Users/07kav/AppData/Local/Temp/claude/d--backend/10686d40-28ba-448e-825b-f09f4e650cc2/scratchpad/legacy-portal.css)",
+      "Bash(cp /d/Upscaler-Frontend/src/styles/theme-refined.css /c/Users/07kav/AppData/Local/Temp/claude/d--backend/10686d40-28ba-448e-825b-f09f4e650cc2/scratchpad/theme-refined.css)",
+      "Bash(cp /d/Upscaler-Frontend/src/styles/legacy-settings.css /c/Users/07kav/AppData/Local/Temp/claude/d--backend/10686d40-28ba-448e-825b-f09f4e650cc2/scratchpad/legacy-settings.css)",
+      "Read(//c/Users/07kav/AppData/Local/Temp/claude/d--backend/10686d40-28ba-448e-825b-f09f4e650cc2/scratchpad/**)",
+      "Bash(node inspect2.js)",
+      "Bash(node inspect3.js)",
+      "Bash(node inspect4.js)",
+      "Bash(node inspect5.js)",
+      "Bash(node scratch_make_roster.js)",
+      "Bash(rm scratch_make_roster.js)",
+      "Bash(node inspect7.js)",
+      "Bash(curl -s -o /dev/null -w \"proof file HTTP status: %{http_code}\\\\n\" \"http://localhost:5000/uploads/placement-proof/8c2b94e0-8854-46e4-840a-a45e11df4c27.png\")",
+      "Bash(node repro_login.js)",
+      "Bash(node repro_login2.js)",
+      "Bash(node repro_final_check.js)",
+      "Bash(gcloud config *)"
     ]
   }
 }

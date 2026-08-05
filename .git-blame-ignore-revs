@@ -1,0 +1,10 @@
+# Revisions listed here are skipped by `git blame`.
+# Enable locally with:
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+# (GitHub reads this file automatically.)
+#
+# Only pure-formatting commits belong here — never anything that changes
+# behaviour, or blame will hide real changes.
+
+# style: apply black formatting across python-service
+d621b5ecc01bce9792e452fcc1c5d8a54bb34484

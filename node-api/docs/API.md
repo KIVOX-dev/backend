@@ -11,14 +11,20 @@ Authorization: Bearer <accessToken>
 Every response follows the shape:
 
 ```json
-{ "success": true, "message": "...", "data": { }, "meta": { "page": 1, "limit": 20, "total": 42 } }
+{ "success": true, "message": "...", "data": { }, "timestamp": "2026-08-01T...", "meta": { "page": 1, "limit": 20, "total": 42, "totalPages": 3, "hasNext": true, "hasPrevious": false } }
 ```
 
 Errors:
 
 ```json
-{ "success": false, "message": "...", "details": ["optional validation messages"] }
+{ "success": false, "message": "...", "detail": "...", "code": "VALIDATION_ERROR", "timestamp": "2026-08-01T...", "details": ["optional per-field validation messages"] }
 ```
+
+`code` is a stable, machine-readable identifier (`UNAUTHORIZED`, `FORBIDDEN`, `NOT_FOUND`,
+`VALIDATION_ERROR`, `CONFLICT`, `TOO_MANY_REQUESTS`, `FILE_TOO_LARGE`, `SERVICE_UNAVAILABLE`,
+`INTERNAL_ERROR`, ...) meant for client-side branching logic — `message`/`detail` are for display
+only and may reword over time. `detail` duplicates `message` for legacy clients that read
+FastAPI's `HTTPException` shape; new code should read `message` or `code`.
 
 ## Roles
 
@@ -37,6 +43,12 @@ service-layer checks. Students only ever see/act on their own student/applicatio
 | POST   | `/auth/google`    | none | `idToken`                                        | Verifies Google ID token server-side  |
 | POST   | `/auth/refresh`   | none | `refreshToken`                                   | Returns new `{ accessToken, refreshToken }` |
 | GET    | `/auth/me`        | any  | —                                                 | Current user profile                  |
+| PUT    | `/auth/change-password` | any | `currentPassword`/`current_password`, `newPassword`/`new_password` | Bumps `token_version` (invalidates other sessions' refresh tokens), returns a fresh token pair for the caller's own session |
+
+`POST /auth/refresh` accepts the token as either `refreshToken` or `refresh_token` in the body, and
+its response includes the new tokens both nested under `data` (standard envelope) *and* flattened
+at the top level (`access_token`/`refresh_token`) — a compatibility shim for a bare-axios frontend
+call site that skips the usual envelope-unwrap interceptor. New clients can use either shape.
 
 Non-student accounts (institution_admin, hr, faculty) are provisioned by `super_admin` /
 `institution_admin` through `POST /users`, not through public registration.
@@ -89,6 +101,10 @@ Placement drives posted by a company at an institution.
 | PUT | `/:id` | super_admin, institution_admin, hr | |
 | DELETE | `/:id` | super_admin, institution_admin | |
 
+Also mounted at `/jobs` — same router, same controller/service, identical behavior under both
+prefixes (including `/jobs/me`, `/jobs/drives`, `/jobs/applications/me`). Exists for a frontend
+module that still calls the pre-migration `/jobs` path name.
+
 ## Placement Applications — `/placement-applications`
 
 | Method | Path | Roles | Notes |
@@ -137,4 +153,24 @@ Read-only audit trail. `super_admin` only. Entries are written internally
 
 ## Pagination
 
-All list endpoints accept `?page=1&limit=20` (limit capped at 100) and return `meta.total`/`meta.page`/`meta.limit`.
+All list endpoints accept `?page=1&limit=20` (limit capped at 100) and `?sortBy=<field>&sortOrder=asc|desc`
+(`sortBy` is whitelisted against that entity's real columns server-side — an unrecognized field is
+a silent no-op, not a 400). Responses include `meta.total`/`meta.page`/`meta.limit`/`meta.totalPages`/
+`meta.hasNext`/`meta.hasPrevious`.
+
+A few endpoints intentionally return everything unpaginated rather than truncating silently —
+`GET /departments` (a college realistically has dozens, not thousands, and every consumer wants
+the full list for a dropdown) being the clearest example. Where an endpoint returns more than
+`limit` rows without real pagination (e.g. `GET /jobs/me`, capped at 1000), the true total is
+still exposed via an `X-Total-Count` response header even though the body stays a plain array.
+
+## Health, readiness, and metrics — `/health`
+
+Unauthenticated, and — unlike every endpoint above — not subject to rate limiting (see
+`docs/OPERATIONS.md`'s "Rate limiting architecture" for why).
+
+| Method | Path | Notes |
+|--------|------|-------|
+| GET | `/health`, `/health/live` | Liveness — process is alive, no downstream checks |
+| GET | `/health/ready` | Readiness — real Mongo ping (required), Redis ping if configured (informational only) |
+| GET | `/health/metrics` | Plain JSON: uptime, memory, local WebSocket connection count, Redis state |

@@ -1,4 +1,5 @@
 const { verifyAccessToken } = require('../utils/jwt');
+const { mapPythonRole } = require('../config/roleMapping');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
 
@@ -15,9 +16,18 @@ module.exports = asyncHandler(async (req, res, next) => {
 
   try {
     const payload = verifyAccessToken(token);
-    req.user = { id: payload.sub, role: payload.role, institutionId: payload.institutionId };
+    // mapPythonRole normalizes any legacy python-service role string (e.g.
+    // `college_admin`) still baked into an already-issued token — issueTokens
+    // now normalizes on every fresh sign, but this covers sessions signed
+    // before that fix, or before a DB row's role gets backfilled, so
+    // authorize()'s role check (ROLES.INSTITUTION_ADMIN etc.) always sees
+    // the current role vocabulary regardless of what the token literally says.
+    req.user = { id: payload.sub, role: mapPythonRole(payload.role), institutionId: payload.institutionId };
     next();
-  } catch (err) {
+  } catch {
+    // Deliberately generic — never echo back jwt.verify's own error message
+    // (expired vs malformed vs bad signature), which would hand an attacker
+    // a free oracle for probing token validity.
     throw ApiError.unauthorized('Invalid or expired access token');
   }
 });

@@ -3,6 +3,8 @@ const app = require('./app');
 const env = require('./config/env');
 const { connect, close } = require('./config/database');
 const { attachChatServer } = require('./websocket/chatServer');
+const { broadcaster } = require('./websocket/broadcaster');
+const { closeRedisClient } = require('./config/redis');
 const logger = require('./utils/logger');
 
 // Created explicitly (rather than via app.listen()) so the WebSocket server
@@ -23,7 +25,7 @@ async function start() {
 async function shutdown(signal) {
   logger.info(`${signal} received, shutting down gracefully`);
   server?.close(async () => {
-    await close();
+    await Promise.allSettled([close(), broadcaster.close(), closeRedisClient()]);
     logger.info('Shutdown complete');
     process.exit(0);
   });

@@ -6,13 +6,16 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 # Cancel superseded runs on the same branch/PR to save CI minutes.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: "22"
+  NODE_VERSION: "24"
   PYTHON_VERSION: "3.12"
 
 jobs:
@@ -73,64 +76,70 @@ jobs:
       - name: npm audit (fail on high/critical)
         run: npm audit --audit-level=high
 
-  # ── Python service ──────────────────────────────────────────────────────
-  python-lint:
-    name: python-service / lint
+  # ── AI Service (FastAPI) ────────────────────────────────────────────────
+  # Same three-job split as node-api above, same reasoning.
+  ai-lint:
+    name: ai-service / lint
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: python-service
+        working-directory: ai-service
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: "pip"
-          cache-dependency-path: python-service/requirements-dev.txt
-      - run: pip install -r requirements-dev.txt
-      - name: Lint (ruff)
-        run: ruff check .
+          cache-dependency-path: ai-service/requirements-lock.txt
+      - run: pip install -r requirements-lock.txt
+      - run: ruff check .
 
-  python-test:
-    name: python-service / test
+  ai-test:
+    name: ai-service / test
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: python-service
+        working-directory: ai-service
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: "pip"
-          cache-dependency-path: python-service/requirements-dev.txt
-      - run: pip install -r requirements-dev.txt
-      - name: Test (pytest)
-        run: pytest -v
+          cache-dependency-path: ai-service/requirements-lock.txt
+      - run: pip install -r requirements-lock.txt
+      - run: pytest -v
 
-  python-audit:
-    name: python-service / dependency audit
+  ai-audit:
+    name: ai-service / dependency audit
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: python-service
+        working-directory: ai-service
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: "pip"
-          cache-dependency-path: python-service/requirements.txt
-      - run: pip install -r requirements.txt
-      - name: pip-audit (dependency vulnerability scan)
-        run: |
-          pip install pip-audit
-          pip-audit -r requirements.txt
+      - run: pip install pip-audit
+      # PYSEC-2026-1325 (python-ecdsa, pulled in transitively by python-jose):
+      # a Minerva timing side-channel against ECDSA private-key signing
+      # operations. This service only ever signs/verifies HS256 (HMAC)
+      # tokens — see app/security.py — never ECDSA, and upstream has stated
+      # side-channel attacks are out of scope with no planned fix. Ignored
+      # here rather than left to silently fail the build on every run.
+      - name: pip-audit (fail on anything else)
+        run: pip-audit -r requirements-lock.txt --ignore-vuln PYSEC-2026-1325
 
   docker-build:
-    name: Docker build (both services)
-    needs: [node-lint, node-test, node-audit, python-lint, python-test, python-audit]
+    name: Docker build (node-api)
+    needs: [node-lint, node-test, node-audit]
     runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
     steps:
       - uses: actions/checkout@v4
 
@@ -139,16 +148,10 @@ jobs:
         with:
           context: node-api
           push: false
+          load: true # image must land in the local Docker daemon — the smoke-test step below runs it
           tags: node-api:ci
 
-      - name: Build python-service image
-        uses: docker/build-push-action@v5
-        with:
-          context: python-service
-          push: false
-          tags: python-service:ci
-
-      # Scan built images for known CVEs before they ever reach a registry.
+      # Scan the built image for known CVEs before it ever reaches a registry.
       # Pinned to a commit SHA (not a mutable tag/branch like `@master`) —
       # third-party actions should be pinned the same way a dependency would
       # be, since an unpinned ref can start running different code with no
@@ -160,38 +163,181 @@ jobs:
           severity: CRITICAL,HIGH
           exit-code: "1"
 
-      - name: Trivy scan — python-service
+      # A clean scan and a successful build both say nothing about whether
+      # the image actually *starts* — this is what would have caught the
+      # uploads/ directory permission bug (see Dockerfile's chown step):
+      # the build succeeded and Trivy was happy, but `docker run` crashed
+      # immediately on every attempt. Boots the real image against a real
+      # (ephemeral, in-CI) MongoDB and hits /health for real.
+      - name: Smoke test — container actually starts
+        run: |
+          docker run -d --rm --name node-api-smoke -p 5000:5000 \
+            --network host \
+            -e MONGODB_URI="mongodb://127.0.0.1:27017" \
+            -e MONGODB_DB_NAME="ci_smoke" \
+            -e JWT_SECRET="ci-smoke-secret" \
+            -e JWT_REFRESH_SECRET="ci-smoke-refresh-secret" \
+            -e CORS_ORIGINS="http://localhost:3000" \
+            node-api:ci
+          for i in $(seq 1 15); do
+            if curl -sf http://127.0.0.1:5000/health; then echo "container is healthy"; exit 0; fi
+            sleep 1
+          done
+          echo "Container never became healthy:"
+          docker logs node-api-smoke
+          exit 1
+
+  docker-build-ai:
+    name: Docker build (ai-service)
+    needs: [ai-lint, ai-test, ai-audit]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build ai-service image
+        uses: docker/build-push-action@v5
+        with:
+          context: ai-service
+          push: false
+          load: true
+          tags: ai-service:ci
+
+      - name: Trivy scan — ai-service
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          image-ref: python-service:ci
+          image-ref: ai-service:ci
           severity: CRITICAL,HIGH
           exit-code: "1"
 
-  # Deploy is intentionally separate from the CI jobs above and gated on `main`
-  # only, so a red build can never reach Cloud Run. It's commented out end-to-end
-  # because no GCP project/Workload Identity Federation is wired up yet — see the
-  # GCP section of the audit for what needs to exist before this can be enabled.
+      # Same reasoning as node-api's smoke test above — a clean build and
+      # scan say nothing about whether the process actually starts under its
+      # non-root user with no config beyond the image's own defaults.
+      - name: Smoke test — container actually starts
+        run: |
+          docker run -d --rm --name ai-service-smoke -p 8001:8001 \
+            -e AI_SERVICE_ENV=production \
+            -e AI_SERVICE_SHARED_SECRET="ci-smoke-not-the-default-secret" \
+            ai-service:ci
+          for i in $(seq 1 15); do
+            if curl -sf http://127.0.0.1:8001/health; then echo "container is healthy"; exit 0; fi
+            sleep 1
+          done
+          echo "Container never became healthy:"
+          docker logs ai-service-smoke
+          exit 1
+
+  # ── Deploy ───────────────────────────────────────────────────────────────
+  # Separate from the CI jobs above and gated on `main`, so a red build can
+  # never reach Cloud Run.
   #
-  # deploy:
-  #   name: Deploy to Cloud Run
-  #   needs: [docker-build]
-  #   if: github.ref == 'refs/heads/main'
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: read
-  #     id-token: write   # for Workload Identity Federation — no long-lived JSON keys
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: google-github-actions/auth@v2
-  #       with:
-  #         workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
-  #         service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
-  #     - uses: google-github-actions/setup-gcloud@v2
-  #     - run: |
-  #         gcloud builds submit node-api --tag ${{ secrets.AR_REPO }}/node-api:${{ github.sha }}
-  #         gcloud run deploy node-api-prod \
-  #           --image ${{ secrets.AR_REPO }}/node-api:${{ github.sha }} \
-  #           --region ${{ secrets.GCP_REGION }} \
-  #           --no-traffic --tag pr-${{ github.sha }}
-  #         # promote traffic only after health check + smoke test pass, e.g.:
-  #         # gcloud run services update-traffic node-api-prod --to-latest
+  # This job is WRITTEN but not yet EXERCISED — no GCP project or Workload
+  # Identity Federation pool exists yet, so it has never actually run. The
+  # `if:` below is what keeps that honest: with the WIF_PROVIDER secret unset
+  # the job is skipped rather than failing every push with a red X. Setting
+  # the five secrets listed below is what turns it on; until then everything
+  # up to and including image build + smoke test still runs on every commit.
+  #
+  # Required repository secrets:
+  #   WIF_PROVIDER         projects/<n>/locations/global/workloadIdentityPools/<pool>/providers/<provider>
+  #   WIF_SERVICE_ACCOUNT  deployer@<project>.iam.gserviceaccount.com
+  #   AR_REPO              <region>-docker.pkg.dev/<project>/<repo>
+  #   GCP_REGION           e.g. asia-south1
+  #   AI_SERVICE_SECRET_ID Secret Manager secret holding AI_SERVICE_SHARED_SECRET
+  deploy:
+    name: Deploy to Cloud Run
+    needs: [docker-build, docker-build-ai]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # Workload Identity Federation — no long-lived JSON keys
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Skip if GCP is not configured
+        id: gate
+        run: |
+          if [ -z "${{ secrets.WIF_PROVIDER }}" ]; then
+            echo "GCP secrets not set — skipping deploy (this is expected until GCP is wired up)."
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: google-github-actions/auth@v2
+        if: steps.gate.outputs.configured == 'true'
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+        if: steps.gate.outputs.configured == 'true'
+
+      - name: Configure Artifact Registry auth
+        if: steps.gate.outputs.configured == 'true'
+        run: gcloud auth configure-docker "${{ secrets.GCP_REGION }}-docker.pkg.dev" --quiet
+
+      # Both images are pushed before either is deployed, so a registry
+      # failure can't leave node-api pointing at an ai-service tag that was
+      # never published.
+      - name: Build & push images
+        if: steps.gate.outputs.configured == 'true'
+        run: |
+          set -euo pipefail
+          docker build -t "${{ secrets.AR_REPO }}/node-api:${{ github.sha }}" node-api
+          docker build -t "${{ secrets.AR_REPO }}/ai-service:${{ github.sha }}" ai-service
+          docker push "${{ secrets.AR_REPO }}/node-api:${{ github.sha }}"
+          docker push "${{ secrets.AR_REPO }}/ai-service:${{ github.sha }}"
+
+      # ai-service first: node-api's AI routes call it, and it holds no state,
+      # so rolling it forward ahead of its only caller is the safe order.
+      # --no-allow-unauthenticated keeps it off the public internet; only
+      # node-api's service account may invoke it.
+      - name: Deploy ai-service
+        if: steps.gate.outputs.configured == 'true'
+        run: |
+          gcloud run deploy ai-service \
+            --image "${{ secrets.AR_REPO }}/ai-service:${{ github.sha }}" \
+            --region "${{ secrets.GCP_REGION }}" \
+            --no-allow-unauthenticated \
+            --set-env-vars "AI_SERVICE_ENV=production" \
+            --set-secrets "AI_SERVICE_SHARED_SECRET=${{ secrets.AI_SERVICE_SECRET_ID }}:latest" \
+            --quiet
+
+      # Deployed with --no-traffic so the new revision receives nothing until
+      # the smoke test below passes against its dedicated tag URL. This is the
+      # step that makes a bad revision a non-event rather than an outage.
+      - name: Deploy node-api (no traffic yet)
+        if: steps.gate.outputs.configured == 'true'
+        run: |
+          gcloud run deploy node-api \
+            --image "${{ secrets.AR_REPO }}/node-api:${{ github.sha }}" \
+            --region "${{ secrets.GCP_REGION }}" \
+            --no-traffic --tag "sha-${GITHUB_SHA::7}" \
+            --quiet
+
+      - name: Smoke test the new revision
+        if: steps.gate.outputs.configured == 'true'
+        run: |
+          set -euo pipefail
+          URL=$(gcloud run services describe node-api \
+            --region "${{ secrets.GCP_REGION }}" \
+            --format="value(status.traffic.filter(tag:sha-${GITHUB_SHA::7}).extract(url))" | tr -d '[]')
+          echo "Probing $URL/health/ready"
+          for i in $(seq 1 20); do
+            if curl -sf "$URL/health/ready" | grep -q '"status":"ready"'; then
+              echo "new revision is ready"; exit 0
+            fi
+            sleep 5
+          done
+          echo "New revision never became ready — traffic NOT promoted."
+          exit 1
+
+      # Only reached if the smoke test passed. Until this runs, 100% of
+      # traffic is still on the previous revision.
+      - name: Promote traffic
+        if: steps.gate.outputs.configured == 'true'
+        run: |
+          gcloud run services update-traffic node-api \
+            --region "${{ secrets.GCP_REGION }}" \
+            --to-latest --quiet

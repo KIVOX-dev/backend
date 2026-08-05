@@ -1,5 +1,23 @@
 const Joi = require('joi');
 
+// The live HR posting form (hr/page.tsx) sends these as plain strings
+// ("React, Node.js", "2024, 2025", or "Any year") rather than arrays —
+// accept both shapes and normalize to an array so storage stays consistent
+// with every other write path (batch import, admin tooling).
+const stringOrArray = (itemSchema, { toInt = false } = {}) =>
+  Joi.alternatives()
+    .try(Joi.array().items(itemSchema), Joi.string().max(1000).allow('', null))
+    .custom((value) => {
+      if (Array.isArray(value)) return value;
+      if (!value) return [];
+      const parts = value
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (!toInt) return parts;
+      return parts.map((s) => parseInt(s, 10)).filter((n) => Number.isInteger(n));
+    });
+
 const create = Joi.object({
   // Either/both may be set: company_id links to an existing companies record;
   // company_name is free text for a posting whose company isn't in that
@@ -18,9 +36,9 @@ const create = Joi.object({
   package_lpa: Joi.number().min(0).allow(null),
   salary_min_lpa: Joi.number().min(0).allow(null),
   salary_max_lpa: Joi.number().min(0).allow(null),
-  required_skills: Joi.array().items(Joi.string().max(100)),
+  required_skills: stringOrArray(Joi.string().max(100)),
   eligible_departments: Joi.array().items(Joi.string().max(100)),
-  eligible_years: Joi.array().items(Joi.number().integer()),
+  eligible_years: stringOrArray(Joi.number().integer(), { toInt: true }),
   min_cgpa: Joi.number().min(0).max(10).allow(null),
   eligibility_criteria: Joi.object().unknown(true),
   application_deadline: Joi.date().iso().allow(null),

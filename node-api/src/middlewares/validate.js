@@ -11,7 +11,7 @@ module.exports = function validate(schema, source = 'body') {
     });
     if (error) {
       const details = error.details.map((d) => d.message);
-      throw ApiError.badRequest('Validation failed', details);
+      throw ApiError.badRequest('Validation failed', details, 'VALIDATION_ERROR');
     }
     req[source] = value;
     next();

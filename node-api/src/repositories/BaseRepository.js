@@ -32,17 +32,22 @@ class BaseRepository {
     return picked;
   }
 
+  // Guards against Mongo operator injection: with Express's bracket-syntax query
+  // parser, `?status[$ne]=x` arrives as `{ status: { $ne: 'x' } }`, and a JSON
+  // body can carry `{ "id": { "$ne": null } }` just as easily. A value that's
+  // an object (or array) here is either a caller bug or an attacker trying to
+  // smuggle a query operator in where a literal value belongs — never safe to
+  // interpolate into a filter.
+  _isPrimitive(value) {
+    return value === null || typeof value !== 'object';
+  }
+
   _buildFilter(filters = {}) {
     const filter = {};
     for (const key of Object.keys(filters)) {
       const value = filters[key];
       if (value === undefined) continue;
-      // Guards against Mongo operator injection: with Express's bracket-syntax query
-      // parser, `?status[$ne]=x` arrives here as `{ status: { $ne: 'x' } }`. Column
-      // names are already whitelisted above, but a whitelisted key still can't be
-      // allowed to carry an object/array value straight into a query filter — reject
-      // any query-string-provided value that isn't a primitive.
-      if (value !== null && typeof value === 'object') continue;
+      if (!this._isPrimitive(value)) continue;
       if (key === 'id') {
         filter._id = value;
       } else if (this.columns.includes(key)) {
@@ -58,17 +63,36 @@ class BaseRepository {
     return { id: _id, ...rest };
   }
 
-  async findAll({ page = 1, limit = 20, filters = {} } = {}) {
+  async findAll({ page = 1, limit = 20, filters = {}, sort } = {}) {
     const filter = this._buildFilter(filters);
     const skip = (page - 1) * limit;
     const [docs, total] = await Promise.all([
-      this.collection.find(filter).sort(this.defaultSort).skip(skip).limit(limit).toArray(),
+      this.collection
+        .find(filter)
+        .sort(sort || this.defaultSort)
+        .skip(skip)
+        .limit(limit)
+        .toArray(),
       this.collection.countDocuments(filter),
     ]);
     return { rows: docs.map((d) => this._toEntity(d)), total, page, limit };
   }
 
+  // Whitelist-only: `field` must be a real column (or `id`/`created_at`,
+  // always present) — never pass a caller-supplied key straight into a
+  // MongoDB sort spec (same reasoning as _buildFilter's operator-injection
+  // guard above). Returns undefined (falls back to defaultSort) for anything
+  // not recognized, rather than throwing, so an unrecognized ?sortBy= is a
+  // silent no-op instead of a 400 on an otherwise-valid list request.
+  buildSort(field, order) {
+    if (!field) return undefined;
+    const key = field === 'id' ? '_id' : field;
+    if (key !== '_id' && key !== 'created_at' && !this.columns.includes(key)) return undefined;
+    return { [key]: order === 'desc' ? -1 : 1 };
+  }
+
   async findById(id) {
+    if (!this._isPrimitive(id)) return null;
     const doc = await this.collection.findOne({ _id: id });
     return this._toEntity(doc);
   }
@@ -77,7 +101,8 @@ class BaseRepository {
   // resolving a list of foreign-key references) into a single $in query —
   // see student.service.js#dashboard for the call site this was added for.
   async findByIds(ids) {
-    const uniqueIds = [...new Set(ids)].filter(Boolean);
+    if (!Array.isArray(ids)) return [];
+    const uniqueIds = [...new Set(ids)].filter((id) => Boolean(id) && this._isPrimitive(id));
     if (uniqueIds.length === 0) return [];
     const docs = await this.collection.find({ _id: { $in: uniqueIds } }).toArray();
     return docs.map((d) => this._toEntity(d));
@@ -98,6 +123,7 @@ class BaseRepository {
   }
 
   async updateById(id, data) {
+    if (!this._isPrimitive(id)) return null;
     const picked = this._pickFields(data);
     if (Object.keys(picked).length === 0) return this.findById(id);
     picked.updated_at = new Date();
@@ -113,6 +139,7 @@ class BaseRepository {
   }
 
   async deleteById(id) {
+    if (!this._isPrimitive(id)) return false;
     const { deletedCount } = await this.collection.deleteOne({ _id: id });
     return deletedCount > 0;
   }

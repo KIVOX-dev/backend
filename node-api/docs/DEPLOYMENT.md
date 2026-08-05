@@ -76,9 +76,55 @@ Notes:
 - **Read scaling**: for read-heavy load (dashboards, leaderboards), use an Atlas read replica /
   secondary with `readPreference: 'secondaryPreferred'` for read-only repository queries; writes
   stay on the primary.
-- **Rate limiting**: `express-rate-limit` protects a single instance; behind Cloud Run's autoscaling
-  this is per-instance, not global — for a hard global cap, move rate limiting to Cloud Armor or an
-  API Gateway in front of Cloud Run.
+- **Rate limiting**: Redis-backed when `REDIS_URL` is set (shared counters across every instance —
+  see §8 below); falls back to per-instance in-memory counting when it isn't, or during a Redis
+  outage. Below a handful of instances the in-memory fallback is usually fine; once traffic is
+  spread across many replicas, set `REDIS_URL` so the limit is enforced globally rather than
+  `max * instance_count`.
+- **WebSocket broadcasting**: same story — Redis pub/sub (`REDIS_URL` set) is required for a chat
+  message to reach a user connected to a *different* instance than the sender. Single-instance
+  deployments don't need this; anything with `--min-instances` > 1 does.
+
+## 8. Redis (rate limiting + WebSocket broadcasting across instances)
+
+Optional at low scale, required once `--max-instances` (or equivalent) is set above 1 and you
+want rate limits and chat delivery to work correctly *across* instances rather than per-instance.
+
+```bash
+# Memorystore for Redis (GCP) — or any Redis 6+, including a self-hosted one behind VPC peering.
+gcloud redis instances create upscaler-ai-redis \
+  --size=1 --region=asia-south1 --redis-version=redis_7_0
+
+# Cloud Run must be on the same VPC (via a Serverless VPC Access connector) to reach it —
+# Memorystore has no public IP by design.
+gcloud run deploy upscaler-ai-api \
+  --vpc-connector YOUR_CONNECTOR \
+  --set-env-vars REDIS_URL=redis://10.x.x.x:6379 \
+  ...(other flags from §4)
+```
+
+Nothing else changes — `config/redis.js` picks up `REDIS_URL` automatically, and every
+Redis-backed feature (rate limiting, chat broadcast) degrades to its single-instance behavior
+if Redis is unreachable rather than failing requests. Verify after deploying:
+
+```bash
+curl https://your-service-url/health/ready
+# {"status":"ready","checks":{"mongo":{"status":"ok",...},"redis":{"status":"ok","latencyMs":...}}}
+```
+
+## 9. Health, readiness, and metrics endpoints
+
+All three are registered *before* the rate limiter (deliberately — see app.js) so load balancer /
+orchestrator probes are never subject to the same request budget as real API traffic:
+
+| Endpoint | Purpose | Checks |
+|---|---|---|
+| `GET /health`, `GET /health/live` | Liveness — is the process alive | Nothing downstream (never fails due to Mongo/Redis being down — that would cause a restart loop) |
+| `GET /health/ready` | Readiness — can this instance serve traffic | Real Mongo ping (required); real Redis ping if `REDIS_URL` is set (informational only — never fails readiness) |
+| `GET /health/metrics` | Plain JSON operational snapshot | Uptime, memory, local WebSocket connection count, Redis configured/ready state |
+
+Point Cloud Run's liveness/startup probes (or Kubernetes' `livenessProbe`/`readinessProbe`) at
+`/health/live` and `/health/ready` respectively.
 
 ## 6. Frontend deployment
 

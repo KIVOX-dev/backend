@@ -33,12 +33,12 @@ const remove = asyncHandler(async (req, res) => {
 });
 
 const approve = asyncHandler(async (req, res) => {
-  const user = await userService.approve(req.params.id);
+  const user = await userService.approve(req.params.id, req.user);
   ApiResponse.ok(res, user, 'Approved');
 });
 
 const reject = asyncHandler(async (req, res) => {
-  const user = await userService.reject(req.params.id);
+  const user = await userService.reject(req.params.id, req.user);
   ApiResponse.ok(res, user, 'Rejected');
 });
 

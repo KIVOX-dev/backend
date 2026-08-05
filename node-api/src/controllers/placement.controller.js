@@ -10,13 +10,19 @@ const create = asyncHandler(async (req, res) => {
   ApiResponse.created(res, placement);
 });
 
+// The frontend consumes both of these as a plain array (no pagination UI —
+// see hr/page.tsx), so the response body stays an array; the true total is
+// still surfaced via X-Total-Count for any caller that cares whether `rows`
+// was truncated (see placement.service.js#listMine/#listDrives).
 const listMine = asyncHandler(async (req, res) => {
-  const rows = await placementService.listMine(req.user);
+  const { rows, total } = await placementService.listMine(req.user);
+  res.set('X-Total-Count', String(total));
   ApiResponse.ok(res, rows);
 });
 
 const listDrives = asyncHandler(async (req, res) => {
-  const rows = await placementService.listDrives(req.user);
+  const { rows, total } = await placementService.listDrives(req.user);
+  res.set('X-Total-Count', String(total));
   ApiResponse.ok(res, rows);
 });
 

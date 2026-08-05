@@ -41,10 +41,16 @@ class PlacementService extends BaseService {
     return this.repository.create(payload);
   }
 
-  // A recruiter/HR's own postings.
+  // A recruiter/HR's own postings. Frontend (hr/page.tsx) renders this as a
+  // plain array with no pagination UI, so this intentionally returns
+  // everything rather than a default-sized page — `total` is still the real
+  // countDocuments result (not rows.length), so a caller with >1000
+  // postings is at least visible via `total` even though `rows` caps there;
+  // see placement.controller.js for how that's surfaced without changing
+  // the array response body shape the frontend already depends on.
   async listMine(actor) {
-    const { rows } = await super.list({ limit: 1000 }, { recruiter_id: actor.id });
-    return rows;
+    const { rows, meta } = await super.list({ limit: 1000 }, { recruiter_id: actor.id });
+    return { rows, total: meta.total };
   }
 
   // Institution-scoped postings with an applicant count per posting — backs
@@ -52,11 +58,11 @@ class PlacementService extends BaseService {
   // GET /jobs/drives.
   async listDrives(actor) {
     const extraFilters = actor.role === ROLES.SUPER_ADMIN ? {} : { institution_id: actor.institutionId };
-    const { rows: postings } = await super.list({ limit: 1000 }, extraFilters);
-    if (postings.length === 0) return [];
+    const { rows: postings, meta } = await super.list({ limit: 1000 }, extraFilters);
+    if (postings.length === 0) return { rows: [], total: meta.total };
 
     const counts = await placementApplicationRepository.countByPlacementIds(postings.map((p) => p.id));
-    return postings.map((p) => ({
+    const rows = postings.map((p) => ({
       id: p.id,
       title: p.title,
       company_name: p.company_name,
@@ -67,6 +73,7 @@ class PlacementService extends BaseService {
       created_at: p.created_at,
       applicant_count: counts[p.id] || 0,
     }));
+    return { rows, total: meta.total };
   }
 
   // All applications across the caller's own postings, with student name/email

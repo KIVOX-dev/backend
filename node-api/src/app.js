@@ -7,8 +7,11 @@ const morgan = require('morgan');
 
 const env = require('./config/env');
 const routes = require('./routes');
+const healthRoutes = require('./routes/health.routes');
 const { apiLimiter } = require('./middlewares/rateLimiter');
 const { notFoundHandler, errorHandler } = require('./middlewares/errorHandler');
+const requestId = require('./middlewares/requestId');
+const requestLogger = require('./middlewares/requestLogger');
 const logger = require('./utils/logger');
 
 const app = express();
@@ -17,6 +20,8 @@ const app = express();
 // see the real client IP instead of the proxy's.
 app.set('trust proxy', 1);
 
+app.use(requestId);
+app.use(requestLogger);
 app.use(helmet());
 app.use(
   cors({
@@ -34,9 +39,18 @@ app.use(compression());
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(morgan(env.isProduction ? 'combined' : 'dev', { stream: { write: (msg) => logger.info(msg.trim()) } }));
-app.use(apiLimiter);
 
+// Registered *before* apiLimiter, deliberately: these are infrastructure
+// probes (load balancer / orchestrator health checks), not attacker-facing
+// API surface, and polling them every few seconds from a shared LB IP would
+// otherwise burn through the same rate-limit budget as real traffic —
+// caught by actually load-testing /health, which started returning 429
+// under sustained request volume well below what a real liveness probe
+// schedule would produce across several replicas.
 app.get('/health', (req, res) => res.status(200).json({ status: 'ok', uptime: process.uptime() }));
+app.use('/health', healthRoutes); // adds /health/live (alias), /health/ready, /health/metrics
+
+app.use(apiLimiter);
 
 // Serves uploaded profile photos/signatures (see src/middlewares/upload.js).
 // Matches python-service's public /uploads/profile/<file> URL shape.

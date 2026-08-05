@@ -67,5 +67,7 @@ full per-endpoint role matrix.
 
 - [`docs/API.md`](docs/API.md) — endpoint reference
 - [`docs/FRONTEND_INTEGRATION.md`](docs/FRONTEND_INTEGRATION.md) — Axios client + CORS setup for the frontend
-- [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) — Cloud Run + MongoDB Atlas deployment, scaling notes
+- [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) — Cloud Run + MongoDB Atlas deployment, scaling, Redis setup
+- [`docs/OPERATIONS.md`](docs/OPERATIONS.md) — WebSocket auth migration, rate-limiting architecture, monitoring, troubleshooting, rollback
+- [`docs/CREDENTIAL_ROTATION.md`](docs/CREDENTIAL_ROTATION.md) — credential rotation checklist
 - [`scripts/setupIndexes.js`](scripts/setupIndexes.js) — full index plan (16 collections, uniqueness + query indexes)

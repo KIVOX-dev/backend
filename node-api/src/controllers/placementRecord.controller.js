@@ -11,7 +11,8 @@ const list = asyncHandler(async (req, res) => {
 });
 
 const create = asyncHandler(async (req, res) => {
-  const record = await placementRecordService.create(req.body, req.user);
+  const proofFile = (req.files || []).find((f) => f.fieldname === 'proof_file');
+  const record = await placementRecordService.create(req.body, req.user, proofFile);
   ApiResponse.created(res, record);
 });
 

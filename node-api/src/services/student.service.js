@@ -2,6 +2,7 @@ const BaseService = require('./BaseService');
 const studentRepository = require('../repositories/student.repository');
 const userRepository = require('../repositories/user.repository');
 const institutionRepository = require('../repositories/institution.repository');
+const departmentRepository = require('../repositories/department.repository');
 const assessmentAttemptRepository = require('../repositories/assessmentAttempt.repository');
 const interviewAttemptRepository = require('../repositories/interviewAttempt.repository');
 const interviewResponseRepository = require('../repositories/interviewResponse.repository');
@@ -38,19 +39,53 @@ class StudentService extends BaseService {
   // name/email, filter by department/batch year). Falls back to the plain
   // BaseService list when no search/department filter is given, since that
   // path doesn't need the users join.
+  //
+  // GET /students has no role gate (PlatformChat.tsx's contact-directory
+  // fallback calls it as a student when GET /users/ 403s them), so this is
+  // the one place a student-role caller reaches the full students
+  // collection. Every field here (phone, date_of_birth, gender, address,
+  // cgpa, roll_number, ...) used to go out unfiltered to that caller —
+  // real PII exposure, not just an enumeration risk. Non-staff callers now
+  // get a minimal directory projection instead of the raw record.
   async list(queryParams, actor) {
     const { search, department, batch_year: batchYear, ...rest } = queryParams;
+    let result;
     if (!search && !department) {
-      return super.list(rest, actor.role === ROLES.SUPER_ADMIN ? {} : { institution_id: actor.institutionId });
+      result = await super.list(rest, actor.role === ROLES.SUPER_ADMIN ? {} : { institution_id: actor.institutionId });
+    } else {
+      const limit = Math.min(Number(queryParams.limit) || 100, 1000);
+      const { rows, total } = await studentRepository.searchWithUsers({
+        institutionId: actor.role === ROLES.SUPER_ADMIN ? undefined : actor.institutionId,
+        search,
+        department,
+        batchYear: batchYear ? Number(batchYear) : undefined,
+        limit,
+      });
+      result = { rows, meta: { page: 1, limit, total } };
     }
-    const rows = await studentRepository.searchWithUsers({
-      institutionId: actor.role === ROLES.SUPER_ADMIN ? undefined : actor.institutionId,
-      search,
-      department,
-      batchYear: batchYear ? Number(batchYear) : undefined,
-      limit: Math.min(Number(queryParams.limit) || 100, 1000),
+    if (STAFF_ROLES.includes(actor.role)) return result;
+    return { rows: await this.toDirectory(result.rows), meta: result.meta };
+  }
+
+  // Minimal, non-sensitive fields only — see the `list()` comment above.
+  // full_name/email aren't present on the plain (non-search) branch's raw
+  // student rows, so this resolves them from `users` itself rather than
+  // silently omitting them.
+  async toDirectory(rows) {
+    const users = await userRepository.findByIds(rows.map((r) => r.user_id).filter(Boolean));
+    const userById = Object.fromEntries(users.map((u) => [u.id, u]));
+    return rows.map((r) => {
+      const user = userById[r.user_id];
+      return {
+        id: r.id,
+        full_name: r.full_name || user?.full_name || null,
+        email: r.email || user?.email || null,
+        department: r.department || null,
+        department_id: r.department_id || null,
+        avatar_url: user?.avatar_url || null,
+        role: ROLES.STUDENT,
+      };
     });
-    return { rows, meta: { page: 1, limit: rows.length, total: rows.length } };
   }
 
   // Kiosk/verification lookup by human-typed college name + roll number —
@@ -66,8 +101,11 @@ class StudentService extends BaseService {
       throw ApiError.notFound('Student not found');
     }
 
-    const student = await studentRepository.findByRollNumber(String(rollNumber || '').trim().toUpperCase());
-    if (!student || student.institution_id !== institution.id) {
+    const student = await studentRepository.findByInstitutionAndRollNumber(
+      institution.id,
+      String(rollNumber || '').trim().toUpperCase()
+    );
+    if (!student) {
       logger.info('Student identify lookup: no match', { collegeName, rollNumber, ip: context.ip });
       throw ApiError.notFound('Student not found');
     }
@@ -253,18 +291,33 @@ class StudentService extends BaseService {
   // batches.py migration checkpoint) — just onboards users + student rows,
   // no batch/batch_students tracking docs. Ported from python-service's
   // POST /students/batch.
-  async batchCreate({ students = [], department, department_id: departmentId, year }, actor) {
+  async batchCreate({ students = [], department, department_id: departmentId, year, year_of_study: yearOfStudy }, actor) {
     const defaultStatus = actor.role === ROLES.FACULTY ? 'pending' : 'approved';
     let created = 0;
     const createdStudents = [];
 
+    // Cached by department id — a roster is usually a handful of
+    // departments across many rows, not one lookup per row.
+    const durationCache = new Map();
+    const getDurationYears = async (deptId) => {
+      if (!deptId) return null;
+      if (!durationCache.has(deptId)) {
+        const dept = await departmentRepository.findById(deptId);
+        durationCache.set(deptId, dept?.duration_years || null);
+      }
+      return durationCache.get(deptId);
+    };
+
     for (const item of students) {
+      const resolvedDeptId = item.department_id || departmentId;
       const { user, created: wasCreated, tempPassword } = await findOrCreateStudentUser({
         item,
         institutionId: actor.institutionId,
         department,
         departmentId,
         year,
+        yearOfStudy: item.year_of_study ?? yearOfStudy,
+        departmentDurationYears: await getDurationYears(resolvedDeptId),
         status: defaultStatus,
       });
       if (wasCreated) {

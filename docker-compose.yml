@@ -1,0 +1,128 @@
+# Full local stack: frontend + node-api (x2) + ai-service + MongoDB + Redis.
+#
+#   docker compose up --build
+#   frontend  http://localhost:3000
+#   node-api  http://localhost:5000
+#
+# node-api runs TWO replicas behind nothing in particular, deliberately: with
+# REDIS_URL set they share rate-limit counters and broadcast chat to each
+# other over Redis pub/sub. Drop REDIS_URL and each replica silently becomes
+# its own island — chat messages stop crossing between them and rate limits
+# become per-instance. Running two here makes that class of bug reproducible
+# locally instead of only in production.
+
+name: upscaler-ai
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  ai-service:
+    build:
+      context: ./ai-service
+    restart: unless-stopped
+    environment:
+      # Must match node-api's AI_SERVICE_SHARED_SECRET exactly. Both read the
+      # same shell variable so they cannot drift; the service refuses to boot
+      # under AI_SERVICE_ENV=production with the public default.
+      AI_SERVICE_SHARED_SECRET: ${AI_SERVICE_SHARED_SECRET:-dev-only-shared-secret-change-me}
+      AI_SERVICE_ENV: ${AI_SERVICE_ENV:-development}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      MONGODB_URI: mongodb://mongo:27017
+      MONGODB_DB_NAME: upscaler_ai_service
+    depends_on:
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8001/health').read()"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  node-api:
+    build:
+      context: ./node-api
+    restart: unless-stopped
+    deploy:
+      replicas: 2
+    # No host port binding on purpose — two replicas cannot both claim
+    # host :5000. They sit behind the nginx service below, which is the
+    # single published entry point.
+    expose:
+      - "5000"
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      MONGODB_URI: mongodb://mongo:27017
+      MONGODB_DB_NAME: ${MONGODB_DB_NAME:-upscaler_ai_node}
+      # Without this every replica keeps its own rate-limit counters and its
+      # own in-memory chat broadcaster — see the note at the top of this file.
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env before starting}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?set JWT_REFRESH_SECRET in .env before starting}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+      AI_SERVICE_URL: http://ai-service:8001
+      AI_SERVICE_SHARED_SECRET: ${AI_SERVICE_SHARED_SECRET:-dev-only-shared-secret-change-me}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      BREVO_API_KEY: ${BREVO_API_KEY:-}
+      BREVO_SENDER_EMAIL: ${BREVO_SENDER_EMAIL:-}
+      BREVO_SENDER_NAME: ${BREVO_SENDER_NAME:-UpScaler-AI}
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ai-service:
+        condition: service_healthy
+
+  # Round-robins across the node-api replicas so a single stable URL
+  # (localhost:5000) reaches every instance — see deploy/nginx.conf.
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-5000}:80"
+    volumes:
+      - ./deploy/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - node-api
+
+  frontend:
+    build:
+      context: ../Upscaler-Frontend
+      args:
+        # Baked into the client bundle at build time, so this is the URL the
+        # BROWSER uses — localhost, not the compose service name. Changing it
+        # requires a rebuild, not a restart.
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:5000/api/v1}
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      - nginx
+
+volumes:
+  mongo-data:
+  redis-data:

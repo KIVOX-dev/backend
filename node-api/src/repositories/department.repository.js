@@ -7,6 +7,7 @@ class DepartmentRepository extends BaseRepository {
   }
 
   async findByInstitutionId(institutionId) {
+    if (!this._isPrimitive(institutionId)) return [];
     const docs = await this.collection.find({ institution_id: institutionId }).sort({ name: 1 }).toArray();
     return docs.map((d) => this._toEntity(d));
   }
