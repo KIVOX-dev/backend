@@ -24,8 +24,8 @@
 #   roles/logging.logWriter         - already granted by default
 
 substitutions:
-  _REGION: asia-south1
-  _AR_REPO: upscaler-images
+  _REGION: europe-west1
+  _AR_REPO: cloud-run-source-deploy
 
 options:
   logging: CLOUD_LOGGING_ONLY
