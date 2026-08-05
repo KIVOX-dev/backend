@@ -6,7 +6,8 @@
       "Bash(JWT_SECRET=x JWT_REFRESH_SECRET=y MONGODB_URI=mongodb://localhost:27017 node -e ' *)",
       "Bash(node _smoke_userdata.js)",
       "Bash(node _smoke_email_send.js)",
-      "Bash(node _smoke_profile_upload.js)"
+      "Bash(node _smoke_profile_upload.js)",
+      "Bash(grep -i '\\\\.html$')"
     ]
   }
 }
