@@ -51,4 +51,45 @@ const identifyLimiter = rateLimit({
   store: storeFor('identify', IDENTIFY_WINDOW_MS),
 });
 
-module.exports = { apiLimiter, authLimiter, identifyLimiter };
+// Every endpoint that proxies to ai-service/Groq (resume analyze/match-jd/
+// ai-suggest/parse/improve, interview question generation, assessment
+// question generation) shares this one bucket per user — see
+// PROJECT_AUDIT_REPORT.md P1-5: these used to fall under only the generic
+// apiLimiter, and resumeBuilder.service.js has its own comment flagging
+// "an easy way to burn through the Groq quota with no accountability".
+// One shared limiter (not one per route) is deliberate: the resource being
+// protected is the Groq quota itself, so a user hitting 7 different AI
+// routes should still draw down a single quota, not get 7x the budget by
+// spreading requests across endpoints. Keyed by user id, never IP — every
+// route this is applied to already runs behind `authenticate`, so req.user
+// is always populated by the time this middleware executes.
+const AI_WINDOW_MS = 15 * 60 * 1000;
+const aiLimiter = rateLimit({
+  windowMs: AI_WINDOW_MS,
+  max: parseInt(process.env.AI_RATE_LIMIT_MAX, 10) || 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => `user:${req.user.id}`,
+  message: { success: false, message: 'Too many AI requests, please try again later.' },
+  store: storeFor('ai-user', AI_WINDOW_MS),
+});
+
+// Second, coarser ceiling on top of aiLimiter: caps one institution's total
+// AI usage regardless of how many individual users it spreads the requests
+// across, so a large institution with many accounts can't collectively
+// exhaust the shared Groq quota just by virtue of headcount. Actors with no
+// institution (super_admin) fall back to their own user id, matching
+// canActOnStudent's own super_admin handling elsewhere — never a single
+// shared "no institution" bucket every institutionless actor would compete for.
+const AI_INSTITUTION_WINDOW_MS = 15 * 60 * 1000;
+const aiInstitutionLimiter = rateLimit({
+  windowMs: AI_INSTITUTION_WINDOW_MS,
+  max: parseInt(process.env.AI_INSTITUTION_RATE_LIMIT_MAX, 10) || 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => `institution:${req.user.institutionId || req.user.id}`,
+  message: { success: false, message: "Your institution has reached its AI usage limit for this period, please try again later." },
+  store: storeFor('ai-institution', AI_INSTITUTION_WINDOW_MS),
+});
+
+module.exports = { apiLimiter, authLimiter, identifyLimiter, aiLimiter, aiInstitutionLimiter };

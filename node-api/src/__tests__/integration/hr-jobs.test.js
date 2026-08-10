@@ -81,3 +81,104 @@ describe('HR portal: /jobs alias and payload shape', () => {
     expect(Array.isArray(res.body.data)).toBe(true);
   });
 });
+
+// Regression test for SEC-001: GET /placements (aliased /jobs) previously
+// called BaseService's plain list() with no actor, returning every
+// institution's drives to any authenticated caller. See
+// placement.service.js#list / placement.repository.js#findAllForActorInstitution.
+describe('GET /placements institution scoping (SEC-001)', () => {
+  let app;
+  let database;
+  let institutionRepository;
+  let userRepository;
+  let placementRepository;
+  let hashPassword;
+
+  beforeAll(async () => {
+    ({ app, database, institutionRepository, userRepository, placementRepository, hashPassword } =
+      await buildTestApp());
+  });
+
+  afterAll(async () => {
+    await teardownTestApp(database);
+  });
+
+  it('hides another institution\'s admin-posted drive, but keeps institution-agnostic recruiter postings visible', async () => {
+    const institutionA = await seedInstitution(institutionRepository, { code: `A-${Date.now()}` });
+    const institutionB = await seedInstitution(institutionRepository, { code: `B-${Date.now()}` });
+
+    const { user: adminA } = await seedUser(userRepository, hashPassword, {
+      role: 'institution_admin',
+      institutionId: institutionA.id,
+      email: `admin-a-${Date.now()}@example.com`,
+    });
+    const driveA = await placementRepository.create({
+      title: 'Institution A Internal Drive',
+      company_name: 'Acme',
+      institution_id: institutionA.id,
+      created_by: adminA.id,
+      status: 'open',
+    });
+    // No institution_id — mirrors a real HR-posted job (PlacementService#create
+    // never sets institution_id for the hr role).
+    const openJob = await placementRepository.create({
+      title: 'Open Market Job',
+      company_name: 'Globex',
+      created_by: adminA.id,
+      status: 'open',
+    });
+
+    const { user: studentB, password: studentBPassword } = await seedUser(userRepository, hashPassword, {
+      role: 'student',
+      institutionId: institutionB.id,
+      email: `student-b-${Date.now()}@example.com`,
+    });
+    const loginRes = await request(app)
+      .post('/api/v1/auth/login')
+      .send({ email: studentB.email, password: studentBPassword })
+      .expect(200);
+    const studentBToken = loginRes.body.data.accessToken;
+
+    const res = await request(app)
+      .get('/api/v1/placements')
+      .set('Authorization', `Bearer ${studentBToken}`)
+      .expect(200);
+
+    const ids = res.body.data.map((p) => p.id);
+    expect(ids).not.toContain(driveA.id);
+    expect(ids).toContain(openJob.id);
+  });
+
+  it('super_admin sees drives from every institution via the plain list', async () => {
+    const institutionA = await seedInstitution(institutionRepository, { code: `SA-${Date.now()}` });
+    const { user: adminA } = await seedUser(userRepository, hashPassword, {
+      role: 'institution_admin',
+      institutionId: institutionA.id,
+      email: `admin-sa-${Date.now()}@example.com`,
+    });
+    const drive = await placementRepository.create({
+      title: 'Cross-Institution Visible To Super Admin',
+      company_name: 'Acme',
+      institution_id: institutionA.id,
+      created_by: adminA.id,
+      status: 'open',
+    });
+
+    const { user: superAdmin, password: superAdminPassword } = await seedUser(userRepository, hashPassword, {
+      role: 'super_admin',
+      institutionId: null,
+      email: `super-${Date.now()}@example.com`,
+    });
+    const loginRes = await request(app)
+      .post('/api/v1/auth/login')
+      .send({ email: superAdmin.email, password: superAdminPassword })
+      .expect(200);
+
+    const res = await request(app)
+      .get('/api/v1/placements')
+      .set('Authorization', `Bearer ${loginRes.body.data.accessToken}`)
+      .expect(200);
+
+    expect(res.body.data.map((p) => p.id)).toContain(drive.id);
+  });
+});

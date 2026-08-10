@@ -3,6 +3,7 @@ const testRepository = require('../repositories/test.repository');
 const assessmentAttemptRepository = require('../repositories/assessmentAttempt.repository');
 const studentRepository = require('../repositories/student.repository');
 const userRepository = require('../repositories/user.repository');
+const departmentRepository = require('../repositories/department.repository');
 const testAssignmentRepository = require('../repositories/testAssignment.repository');
 const { applyTestResult } = require('../utils/studentStats');
 const { callAiService, AiServiceUnavailableError } = require('../utils/aiServiceClient');
@@ -140,15 +141,19 @@ class TestService extends BaseService {
     const userById = new Map(users.map((u) => [u.id, u]));
     const tests = await testRepository.findByIds(rows.map((r) => r.test_id));
     const testById = new Map(tests.map((t) => [t.id, t]));
+    const departments = await departmentRepository.findByIds(students.map((s) => s.department_id));
+    const departmentById = new Map(departments.map((d) => [d.id, d]));
 
     return rows.map((r) => {
       const student = studentById.get(r.student_id);
       const user = student ? userById.get(student.user_id) : null;
+      const department = student ? departmentById.get(student.department_id) : null;
       return {
         ...r,
         student_name: user?.full_name || 'Unknown student',
         roll_number: student?.roll_number || '—',
         test_title: testById.get(r.test_id)?.title || 'Unknown test',
+        department_name: department?.name || '—',
       };
     });
   }

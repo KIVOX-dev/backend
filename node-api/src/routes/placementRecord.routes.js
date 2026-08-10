@@ -12,6 +12,9 @@ router.use(authenticate);
 
 router.get('/', controller.list); // every role browses placements scoped to their own institution
 router.get('/student/:studentId', controller.listForStudent);
+// Issues a short-lived signed URL for the record's proof document — see
+// placementRecord.service.js#getProofUrl and routes/placementProofFiles.routes.js.
+router.get('/:id/proof-url', controller.getProofUrl);
 router.get('/:id', controller.getById);
 
 // documentUpload.any() is a no-op on a plain JSON request (proof_file is

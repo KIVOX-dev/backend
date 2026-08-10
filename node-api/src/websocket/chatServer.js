@@ -5,6 +5,38 @@ const userRepository = require('../repositories/user.repository');
 const env = require('../config/env');
 const logger = require('../utils/logger');
 const { broadcaster } = require('./broadcaster');
+const { assertSameInstitution } = require('../utils/authz');
+
+// Hard cap on a single WebSocket frame — the ws library's own default
+// (100 MiB) is meant for binary/streaming use cases, not a JSON chat
+// message; leaving it at that default is a low-effort memory-pressure
+// vector for something this app never needs more than a few KB for. See
+// PROJECT_AUDIT_REPORT.md P1-8.
+const MAX_WS_PAYLOAD_BYTES = 16 * 1024;
+
+// Independent of the frame-size cap above: content is still capped
+// per-field so a technically-small-enough frame can't smuggle an
+// unreasonably long chat message (matches typical chat-app limits, and the
+// same order of magnitude as other free-text fields validated elsewhere in
+// this app, e.g. resumeBuilder.validation's textarea caps).
+const MAX_MESSAGE_CONTENT_LENGTH = 4000;
+
+// Per-socket sliding-window rate limit — deliberately in-memory, not the
+// Redis-backed HybridRateLimitStore middlewares/rateLimiter.js uses for HTTP
+// routes: the chat broadcaster itself is already documented as
+// single-instance/in-memory only (see broadcaster.js), so a per-process
+// limiter here isn't introducing a new scaling limitation, just matching the
+// one that already exists for this feature.
+const MESSAGE_RATE_WINDOW_MS = 10_000;
+const MESSAGE_RATE_MAX = 20;
+
+function isRateLimited(socket) {
+  const now = Date.now();
+  socket.messageTimestamps = (socket.messageTimestamps || []).filter((t) => now - t < MESSAGE_RATE_WINDOW_MS);
+  if (socket.messageTimestamps.length >= MESSAGE_RATE_MAX) return true;
+  socket.messageTimestamps.push(now);
+  return false;
+}
 
 // ws-level ping/pong (this section) is purely for the SERVER to detect and
 // clean up dead sockets — a client whose TCP connection dropped without a
@@ -49,13 +81,17 @@ async function authenticate(request) {
   const payload = verifyAccessToken(token); // throws on invalid/missing — caller catches
   const user = await userRepository.findById(payload.sub);
   if (!user) throw new Error('User not found');
-  return { id: user.id, role: user.role, name: user.full_name };
+  // institutionId is required by the receiver-scoping check in the
+  // 'message' handler below (see assertSameInstitution) — not previously
+  // included here since nothing needed it before that check existed.
+  return { id: user.id, role: user.role, name: user.full_name, institutionId: user.institution_id };
 }
 
 function attachChatServer(httpServer) {
   const wss = new WebSocketServer({
     server: httpServer,
     path: `${env.apiPrefix}/chat/ws`,
+    maxPayload: MAX_WS_PAYLOAD_BYTES,
     // Echoes the client's offered subprotocol back — required by the WS spec
     // whenever the client sends Sec-WebSocket-Protocol at all; some clients
     // (browsers included) abort the handshake if the server accepts the
@@ -102,6 +138,17 @@ function attachChatServer(httpServer) {
       socket.isAlive = true;
     });
 
+    // Without this, an 'error' event on any one client's socket (e.g. the
+    // MAX_WS_PAYLOAD_BYTES violation above, or any other protocol-level
+    // fault the ws library surfaces this way) is an unhandled EventEmitter
+    // error — which throws and would crash the entire node-api process for
+    // every connected user, not just the one whose frame triggered it.
+    // Caught by chatSecurity.test.js's maxPayload test, which failed with
+    // exactly that unhandled-error crash before this handler existed.
+    socket.on('error', (err) => {
+      logger.warn('WebSocket error', { userId: socket.user?.id, error: err.message });
+    });
+
     broadcaster.register(socket.user.id, socket);
     logger.info('WebSocket connected', { userId: socket.user.id });
 
@@ -121,7 +168,37 @@ function attachChatServer(httpServer) {
       }
 
       const { receiver_id: receiverId, content } = data;
-      if (!receiverId || !content) return;
+      if (!receiverId || !content || typeof content !== 'string') return;
+
+      if (isRateLimited(socket)) {
+        if (socket.readyState === socket.OPEN) {
+          socket.send(JSON.stringify({ type: 'error', message: 'You are sending messages too quickly.' }));
+        }
+        return;
+      }
+
+      if (content.length > MAX_MESSAGE_CONTENT_LENGTH) {
+        if (socket.readyState === socket.OPEN) {
+          socket.send(JSON.stringify({ type: 'error', message: 'Message is too long.' }));
+        }
+        return;
+      }
+
+      // Same scoping as the contact directory this receiver_id would have
+      // come from (PlatformChat.tsx fetches contacts from GET /users or
+      // GET /students, both already institution-scoped) — this endpoint
+      // used to accept any receiver_id with no check that the two accounts
+      // have any relationship at all. See PROJECT_AUDIT_REPORT.md P1-8.
+      const receiver = await userRepository.findById(receiverId);
+      if (!receiver) return;
+      try {
+        assertSameInstitution(socket.user, receiver);
+      } catch {
+        if (socket.readyState === socket.OPEN) {
+          socket.send(JSON.stringify({ type: 'error', message: 'You cannot message this user.' }));
+        }
+        return;
+      }
 
       let message;
       try {

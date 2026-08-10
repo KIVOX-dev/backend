@@ -69,7 +69,18 @@
       "Bash(lsof -ti:3002 -sTCP:LISTEN)",
       "Bash(magick --version)",
       "Bash(convert --version)",
-      "Bash(python3 -c \"import PIL; print\\(PIL.__version__\\)\")"
+      "Bash(python3 -c \"import PIL; print\\(PIL.__version__\\)\")",
+      "Bash(python3 -c \"import numpy; print\\('numpy', numpy.__version__\\)\")",
+      "Bash(python3 -c \"import scipy; print\\('scipy', scipy.__version__\\)\")",
+      "Bash(python3)",
+      "Bash(grep -rn \"renderOriginalPage\\\\|legacyHtml\" /d/Upscaler-Frontend/src --include=\"*.tsx\" --include=\"*.ts\" | grep -v \"legacyHtml.tsx:\" *)",
+      "Read(//d//**)",
+      "Bash(mkdir -p /d/Upscaler-Frontend/public/logos)",
+      "Bash(cp bar-logo.png brand-logo.png primary-logo.png logo-mark.png /d/Upscaler-Frontend/public/logos/)",
+      "Bash(cp sizes/icon-512.png /d/Upscaler-Frontend/src/app/icon.png)",
+      "Bash(cp sizes/apple-touch-icon-180.png /d/Upscaler-Frontend/src/app/apple-icon.png)",
+      "Bash(cp sizes/icon-192.png /d/Upscaler-Frontend/public/icon-192.png)",
+      "Bash(taskkill //F //PID 14528)"
     ],
     "additionalDirectories": [
       "\\tmp"

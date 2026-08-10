@@ -25,6 +25,11 @@ async function buildTestApp() {
   // (20/15min) intentionally, so auth tests stay under that per file.
   process.env.RATE_LIMIT_MAX = '1000';
   process.env.AUTH_RATE_LIMIT_MAX = '1000';
+  // Only defaulted, not forced — aiRateLimit.test.js deliberately sets a
+  // tight AI_RATE_LIMIT_MAX before calling buildTestApp() to exercise the
+  // 429 path itself; every other test file gets this generous default.
+  if (!process.env.AI_RATE_LIMIT_MAX) process.env.AI_RATE_LIMIT_MAX = '1000';
+  if (!process.env.AI_INSTITUTION_RATE_LIMIT_MAX) process.env.AI_INSTITUTION_RATE_LIMIT_MAX = '1000';
 
   jest.resetModules();
   const database = require('../../config/database');
@@ -38,9 +43,20 @@ async function buildTestApp() {
   const userRepository = require('../../repositories/user.repository');
   const institutionRepository = require('../../repositories/institution.repository');
   const studentRepository = require('../../repositories/student.repository');
+  const placementRecordRepository = require('../../repositories/placementRecord.repository');
+  const placementRepository = require('../../repositories/placement.repository');
   const { hashPassword } = require('../../utils/password');
 
-  return { app, database, userRepository, institutionRepository, studentRepository, hashPassword };
+  return {
+    app,
+    database,
+    userRepository,
+    institutionRepository,
+    studentRepository,
+    placementRecordRepository,
+    placementRepository,
+    hashPassword,
+  };
 }
 
 async function teardownTestApp(database) {

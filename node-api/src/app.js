@@ -8,6 +8,7 @@ const morgan = require('morgan');
 const env = require('./config/env');
 const routes = require('./routes');
 const healthRoutes = require('./routes/health.routes');
+const placementProofFilesRoutes = require('./routes/placementProofFiles.routes');
 const { apiLimiter } = require('./middlewares/rateLimiter');
 const { notFoundHandler, errorHandler } = require('./middlewares/errorHandler');
 const requestId = require('./middlewares/requestId');
@@ -53,8 +54,13 @@ app.use('/health', healthRoutes); // adds /health/live (alias), /health/ready, /
 app.use(apiLimiter);
 
 // Serves uploaded profile photos/signatures (see src/middlewares/upload.js).
-// Matches python-service's public /uploads/profile/<file> URL shape.
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+// Matches python-service's public /uploads/profile/<file> URL shape. Scoped
+// to this one subdirectory (not the whole uploads/ root) specifically so it
+// can never fall through to placement-proof/ — that one has its own
+// signature-gated route below and must never be reachable as a plain static
+// file, publicly, with no check at all (see routes/placementProofFiles.routes.js).
+app.use('/uploads/profile', express.static(path.join(process.cwd(), 'uploads', 'profile')));
+app.use('/uploads/placement-proof', placementProofFilesRoutes);
 
 app.use(env.apiPrefix, routes);
 

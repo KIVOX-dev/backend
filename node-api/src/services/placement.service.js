@@ -41,6 +41,30 @@ class PlacementService extends BaseService {
     return this.repository.create(payload);
   }
 
+  // The general "browse" list (GET /placements, aliased as GET /jobs) —
+  // was previously wired to BaseService's plain list() with no actor, which
+  // returned every institution's drives to every authenticated caller
+  // regardless of role. Mirrors listDrives' scoping but also keeps
+  // institution-agnostic HR/recruiter postings visible (see
+  // placement.repository.js#findAllForActorInstitution) since fetchAllJobs
+  // in hr/page.tsx depends on browsing other recruiters' open postings.
+  async list(queryParams, actor) {
+    if (!actor || actor.role === ROLES.SUPER_ADMIN) {
+      return super.list(queryParams);
+    }
+    const { page: pageParam, limit: limitParam, sortBy, sortOrder } = queryParams;
+    const page = Math.max(parseInt(pageParam, 10) || 1, 1);
+    const limit = Math.min(Math.max(parseInt(limitParam, 10) || 20, 1), 100);
+    const sort = this.repository.buildSort(sortBy, sortOrder);
+    const { rows, total } = await this.repository.findAllForActorInstitution({
+      page,
+      limit,
+      sort,
+      institutionId: actor.institutionId,
+    });
+    return { rows, meta: { page, limit, total } };
+  }
+
   // A recruiter/HR's own postings. Frontend (hr/page.tsx) renders this as a
   // plain array with no pagination UI, so this intentionally returns
   // everything rather than a default-sized page — `total` is still the real

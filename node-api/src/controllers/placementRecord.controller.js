@@ -5,10 +5,7 @@ const ApiResponse = require('../utils/ApiResponse');
 
 const base = createCrudController(placementRecordService);
 
-const list = asyncHandler(async (req, res) => {
-  const { rows, meta } = await placementRecordService.list(req.query, req.user);
-  ApiResponse.paginated(res, rows, meta);
-});
+const list = base.listWithActor;
 
 const create = asyncHandler(async (req, res) => {
   const proofFile = (req.files || []).find((f) => f.fieldname === 'proof_file');
@@ -26,4 +23,9 @@ const verify = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, record, 'Verification updated');
 });
 
-module.exports = { ...base, list, create, listForStudent, verify };
+const getProofUrl = asyncHandler(async (req, res) => {
+  const result = await placementRecordService.getProofUrl(req.params.id, req.user);
+  ApiResponse.ok(res, result);
+});
+
+module.exports = { ...base, list, create, listForStudent, verify, getProofUrl };

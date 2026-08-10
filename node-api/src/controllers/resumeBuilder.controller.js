@@ -5,16 +5,10 @@ const ApiResponse = require('../utils/ApiResponse');
 
 const base = createCrudController(resumeBuilderService);
 
-// Overrides the generic base `list` — resumeBuilderService.list() needs
-// `actor` for institution scoping (buildInstitutionFilter), which
-// crudControllerFactory's generic list handler never passes. Without this,
-// GET /resume/all crashed with a TypeError reading actor.institutionId off
-// undefined — a pre-existing bug, unrelated to the Express 5 migration,
-// caught while auditing every route using the generic factory's list().
-const list = asyncHandler(async (req, res) => {
-  const { rows, meta } = await resumeBuilderService.list(req.query, req.user);
-  ApiResponse.paginated(res, rows, meta);
-});
+// resumeBuilderService.list() needs `actor` for institution scoping
+// (buildInstitutionFilter) — GET /resume/all used to crash with a TypeError
+// reading actor.institutionId off undefined before this was wired up.
+const list = base.listWithActor;
 
 const getOwn = asyncHandler(async (req, res) => {
   const result = await resumeBuilderService.getOwn(req.user);

@@ -4,6 +4,7 @@ const authenticate = require('../middlewares/authenticate');
 const authorize = require('../middlewares/authorize');
 const validate = require('../middlewares/validate');
 const scopeInstitution = require('../middlewares/scopeInstitution');
+const { aiLimiter, aiInstitutionLimiter } = require('../middlewares/rateLimiter');
 const schema = require('../validations/test.validation');
 const { ROLES } = require('../config/constants');
 
@@ -19,6 +20,8 @@ router.use(authenticate, scopeInstitution);
 router.post(
   '/generate-questions',
   authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN),
+  aiLimiter,
+  aiInstitutionLimiter,
   validate(schema.generateQuestions),
   controller.generateQuestions
 );

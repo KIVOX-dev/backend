@@ -1,9 +1,9 @@
-// Join row, batch <-> student. python-service's version had no dedup check
-// on insert (re-running a batch import with an overlapping roster could
-// create duplicate rows for the same pair) — not fixed here, since it's
-// harmless (nothing treats this as a unique constraint) and out of scope for
-// a straight port; worth a follow-up index (`{batch_id, student_id}` unique)
-// if this becomes a real data-quality issue.
+// Join row, batch <-> student. `student_id` is the `students` collection's
+// own row id (not `users._id`) — same convention every other *_id field
+// named "student_id" in this codebase follows (see batch.service.js#create,
+// fixed in the same pass this comment was corrected in). Deduplication on
+// insert is enforced at the database level by the {batch_id, student_id}
+// unique index in scripts/setupIndexes.js, not application code.
 module.exports = {
   tableName: 'batch_students',
   columns: ['batch_id', 'student_id'],

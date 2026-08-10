@@ -1,7 +1,10 @@
 // Static onboarding-form schema definitions, ported verbatim from
-// python-service's profile.py. Purely a client-rendering contract — the
-// backend never validates submitted values against these (matching python's
-// original behavior; see profile.service.js#saveOwn).
+// python-service's profile.py. Also the source of truth for
+// validations/profile.validation.js's server-side whitelist — field name,
+// type, and (for number/select fields) range/options all come from here, so
+// the form and the validator can't drift apart. `required` is still a
+// client-rendering-only concern (not enforced server-side) — see that file
+// for why.
 const { ROLES } = require('./constants');
 
 // python-service's ROLE_TO_PORTAL used college_admin/recruiter, which map to

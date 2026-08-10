@@ -3,6 +3,7 @@ const BaseService = require('./BaseService');
 const batchRepository = require('../repositories/batch.repository');
 const batchStudentRepository = require('../repositories/batchStudent.repository');
 const userRepository = require('../repositories/user.repository');
+const studentRepository = require('../repositories/student.repository');
 const { findOrCreateStudentUser } = require('../utils/studentOnboarding');
 const { ROLES } = require('../config/constants');
 const ApiError = require('../utils/ApiError');
@@ -31,9 +32,24 @@ class BatchService extends BaseService {
         year: batch.year,
         status: 'approved',
       });
-      // No dedup check — matches python-service's create_batch exactly (see
-      // batchStudent.model.js).
-      await batchStudentRepository.create({ batch_id: batch.id, student_id: user.id });
+      // student_id here must be the `students` collection's own row id —
+      // the same convention test_assignments/results/achievements/
+      // placement_applications/resume_builder all use — not user.id (the
+      // `users` collection's id). findOrCreateStudentUser always creates the
+      // paired students row alongside a brand-new user (see
+      // studentOnboarding.js), and every existing student-role user already
+      // has one from whenever they were first onboarded, so this lookup
+      // should always resolve; skip (rather than crash the whole batch
+      // import) on the one row if it somehow doesn't. See
+      // PROJECT_AUDIT_REPORT.md P1-6 — this used to store user.id, silently
+      // breaking any future feature that joins batch_students to students
+      // by student_id.
+      const student = await studentRepository.findByUserId(user.id);
+      if (student) {
+        // No dedup check — matches python-service's create_batch exactly (see
+        // batchStudent.model.js).
+        await batchStudentRepository.create({ batch_id: batch.id, student_id: student.id });
+      }
       if (created && tempPassword) {
         createdStudents.push({ id: user.id, email: user.email, name: user.full_name, tempPassword });
       }

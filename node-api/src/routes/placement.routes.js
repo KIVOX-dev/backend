@@ -15,7 +15,7 @@ router.get('/me', authorize(ROLES.HR, ROLES.SUPER_ADMIN), controller.listMine);
 router.get('/drives', controller.listDrives); // institution-scoped inside the service
 router.get('/applications/me', authorize(ROLES.HR, ROLES.SUPER_ADMIN), controller.listApplicationsForRecruiter);
 
-router.get('/', controller.list); // every role can browse placements relevant to them
+router.get('/', controller.listWithActor); // every role can browse placements relevant to them (institution-scoped, see placement.service.js#list)
 router.get('/:id', controller.getById);
 router.post(
   '/',

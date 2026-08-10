@@ -100,8 +100,15 @@ const INDEX_PLAN = {
   interview_attempts: [
     { key: { student_id: 1 }, options: {} },
   ],
+  // interview_responses has no student_id field at all (see
+  // models/interviewResponse.model.js's columns) — every response is looked
+  // up by attempt_id (student.service.js#logInterview is the only writer).
+  // The previous index here was on student_id, a field that never exists on
+  // any document in this collection: a dead index with zero query benefit
+  // that still paid write overhead on every insert. See
+  // PROJECT_AUDIT_REPORT.md P2-26.
   interview_responses: [
-    { key: { student_id: 1 }, options: {} },
+    { key: { attempt_id: 1 }, options: {} },
   ],
   resume_versions: [
     { key: { student_id: 1, created_at: -1 }, options: {} },
@@ -121,6 +128,10 @@ const INDEX_PLAN = {
   ],
   placement_records: [
     { key: { student_id: 1 }, options: {} },
+    // placementRecord.service.js#list/#listForStudent filter by institution_id
+    // for every non-super-admin caller (the common case) — without this,
+    // every institution-scoped fetch is an unindexed collection scan.
+    { key: { institution_id: 1 }, options: {} },
   ],
   messages: [
     { key: { sender_id: 1, receiver_id: 1, created_at: -1 }, options: {} },

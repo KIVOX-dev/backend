@@ -24,6 +24,10 @@
   "engines": {
     "node": ">=24.0.0"
   },
+  "//overrides": "js-yaml is a transitive dev-only dependency (jest -> babel-plugin-istanbul -> @istanbuljs/load-nyc-config) pinned by that chain at a version with a published high-severity advisory (quadratic CPU consumption parsing !!omap, GHSA-5p4m-2wfm-xmqj). 3.15.1 is a within-major patch release that fixes it; never reachable from production code either way since it's test-tooling only.",
+  "overrides": {
+    "js-yaml": "^3.15.1"
+  },
   "dependencies": {
     "@getbrevo/brevo": "^6.0.2",
     "bcrypt": "^6.0.0",

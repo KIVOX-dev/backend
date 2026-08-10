@@ -5,18 +5,18 @@ to a third-party service. Ordered by urgency.
 
 ---
 
-## 1. `KAVI123` on `cluster0.wdl8tpt.mongodb.net` — **EXPOSED, revoke now**
+## 1. `KAVI123` on `cluster0.wdl8tpt.mongodb.net` — example value, not live
 
-**Status: publicly readable on GitHub right now.**
+**Status: confirmed by the project owner (2026-08-06) to be a placeholder/example
+credential, not a real one that was ever used against production.** The real,
+original credential has always lived in `.env` (`cluster0.o90ixew.mongodb.net`,
+see item 2) and was never committed — confirmed by the full-history scan below.
 
-A plaintext Atlas password for this user was committed in
-`python-service/seed_mongo.py`. The file was later deleted, but deletion does
-not remove it from history — it remains in commits `0274160` and `1f68007`,
-both reachable from `origin/main` and three other branches on
-`github.com/KIVOX-dev/backend`, which is a **public** repository.
-
-Assume this credential is compromised. Anyone who has cloned or scraped the
-repo has it.
+The string is still technically reachable in git history (commits `0274160` and
+`1f68007`, on a public repo: `github.com/KIVOX-dev/backend`), so it's worth a
+30-second check in Atlas that no cluster named `wdl8tpt` was ever actually
+provisioned under this account — cheap to confirm, and closes the loop rather
+than leaving it as an assumption. If nothing turns up, no action needed.
 
 1. **Atlas → Database Access → delete the `KAVI123` user.** Delete, don't
    rotate — if nothing still uses it (nothing in this working tree references

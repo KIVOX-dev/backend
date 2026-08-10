@@ -6,10 +6,7 @@ const ApiResponse = require('../utils/ApiResponse');
 
 const base = createCrudController(studentService);
 
-const list = asyncHandler(async (req, res) => {
-  const { rows, meta } = await studentService.list(req.query, req.user);
-  ApiResponse.paginated(res, rows, meta);
-});
+const list = base.listWithActor;
 
 const identify = asyncHandler(async (req, res) => {
   const result = await studentService.identify(

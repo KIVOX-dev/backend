@@ -5,6 +5,7 @@ const assessmentAttemptRepository = require('../repositories/assessmentAttempt.r
 const interviewAttemptRepository = require('../repositories/interviewAttempt.repository');
 const placementRecordRepository = require('../repositories/placementRecord.repository');
 const { ROLES } = require('../config/constants');
+const { canActOnStudent } = require('../utils/authz');
 const ApiError = require('../utils/ApiError');
 
 const RECENT_LIMIT = 5;
@@ -14,9 +15,17 @@ class DashboardService {
   // Distinct from student.service.js#dashboard (students.py's own dashboard
   // endpoint, which reads cached stats off the students row) — this mirrors
   // dashboard.py's version, computed fresh via aggregation over attempts.
-  async studentDashboard(studentId) {
+  //
+  // `actor` is required and checked with the same canActOnStudent() gate
+  // every other per-student endpoint in student.service.js already uses —
+  // this endpoint used to skip it entirely (any authenticated user, any
+  // role, any institution, could read any student's stats by id). Both
+  // current callers (StudentTracking.tsx, CollegeAdminDashboard.tsx) already
+  // pass the students-collection id, matching what findById expects here.
+  async studentDashboard(studentId, actor) {
     const student = await studentRepository.findById(studentId);
     if (!student) throw ApiError.notFound('Student not found');
+    if (!canActOnStudent(actor, student)) throw ApiError.forbidden('Not authorized');
 
     const [stats, history, interviewsCompleted, placements] = await Promise.all([
       assessmentAttemptRepository.aggregateStatsForStudent(studentId),

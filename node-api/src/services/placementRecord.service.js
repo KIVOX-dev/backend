@@ -3,6 +3,7 @@ const placementRecordRepository = require('../repositories/placementRecord.repos
 const studentRepository = require('../repositories/student.repository');
 const { ROLES } = require('../config/constants');
 const { assertInstitutionOwnership } = require('../utils/authz');
+const { sign } = require('../utils/signedUrl');
 const ApiError = require('../utils/ApiError');
 
 const STAFF_ROLES = [ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY, ROLES.HR];
@@ -68,6 +69,30 @@ class PlacementRecordService extends BaseService {
 
     await studentRepository.updateById(student.id, { placement_status: 'placed' });
     return record;
+  }
+
+  // Issues a short-lived signed URL for this record's proof document — see
+  // routes/placementProofFiles.routes.js and utils/signedUrl.js. Ownership
+  // is intentionally stricter than assertInstitutionOwnership alone would
+  // give: a student caller must be the record's own student (not just any
+  // student sharing the same institution_id, which is all
+  // assertInstitutionOwnership itself checks), while staff/super_admin
+  // follow the same institution-scoping every other record endpoint uses.
+  async getProofUrl(id, actor) {
+    const record = await this.repository.findById(id);
+    if (!record) throw ApiError.notFound('Placement record not found');
+
+    if (actor.role === ROLES.STUDENT) {
+      const student = await studentRepository.findByUserId(actor.id);
+      if (!student || student.id !== record.student_id) {
+        throw ApiError.forbidden('You do not have access to this resource');
+      }
+    } else {
+      assertInstitutionOwnership(actor, record);
+    }
+
+    if (!record.proof_url) throw ApiError.notFound('This placement record has no proof document');
+    return { url: sign(record.proof_url) };
   }
 
   async verify(id, verificationStatus, actor) {
