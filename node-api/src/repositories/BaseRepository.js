@@ -42,15 +42,25 @@ class BaseRepository {
     return value === null || typeof value !== 'object';
   }
 
+  // Stricter than _isPrimitive: `_id` is always an app-generated UUID string
+  // (see class doc comment above) — never a number, boolean, or Mongo
+  // ObjectId. Used everywhere an `id` reaches a query as the sole guard
+  // between it and `collection.find*`, so it's kept as a plain, local
+  // `typeof` check rather than routed through a shared helper — that's what
+  // lets both readers and static analysis see, right at the call site, that
+  // anything reaching the query here has already been narrowed to a string.
+  _isValidId(value) {
+    return typeof value === 'string' && value.length > 0;
+  }
+
   _buildFilter(filters = {}) {
     const filter = {};
     for (const key of Object.keys(filters)) {
       const value = filters[key];
       if (value === undefined) continue;
-      if (!this._isPrimitive(value)) continue;
       if (key === 'id') {
-        filter._id = value;
-      } else if (this.columns.includes(key)) {
+        if (this._isValidId(value)) filter._id = value;
+      } else if (this._isPrimitive(value) && this.columns.includes(key)) {
         filter[key] = value;
       }
     }
@@ -92,7 +102,7 @@ class BaseRepository {
   }
 
   async findById(id) {
-    if (!this._isPrimitive(id)) return null;
+    if (!this._isValidId(id)) return null;
     const doc = await this.collection.findOne({ _id: id });
     return this._toEntity(doc);
   }
@@ -102,7 +112,7 @@ class BaseRepository {
   // see student.service.js#dashboard for the call site this was added for.
   async findByIds(ids) {
     if (!Array.isArray(ids)) return [];
-    const uniqueIds = [...new Set(ids)].filter((id) => Boolean(id) && this._isPrimitive(id));
+    const uniqueIds = [...new Set(ids)].filter((id) => this._isValidId(id));
     if (uniqueIds.length === 0) return [];
     const docs = await this.collection.find({ _id: { $in: uniqueIds } }).toArray();
     return docs.map((d) => this._toEntity(d));
@@ -123,7 +133,7 @@ class BaseRepository {
   }
 
   async updateById(id, data) {
-    if (!this._isPrimitive(id)) return null;
+    if (!this._isValidId(id)) return null;
     const picked = this._pickFields(data);
     if (Object.keys(picked).length === 0) return this.findById(id);
     picked.updated_at = new Date();
@@ -139,7 +149,7 @@ class BaseRepository {
   }
 
   async deleteById(id) {
-    if (!this._isPrimitive(id)) return false;
+    if (!this._isValidId(id)) return false;
     const { deletedCount } = await this.collection.deleteOne({ _id: id });
     return deletedCount > 0;
   }

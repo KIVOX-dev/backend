@@ -9,7 +9,7 @@ const env = require('./config/env');
 const routes = require('./routes');
 const healthRoutes = require('./routes/health.routes');
 const placementProofFilesRoutes = require('./routes/placementProofFiles.routes');
-const { apiLimiter } = require('./middlewares/rateLimiter');
+const { apiLimiter, healthLimiter } = require('./middlewares/rateLimiter');
 const { notFoundHandler, errorHandler } = require('./middlewares/errorHandler');
 const requestId = require('./middlewares/requestId');
 const requestLogger = require('./middlewares/requestLogger');
@@ -47,7 +47,11 @@ app.use(morgan(env.isProduction ? 'combined' : 'dev', { stream: { write: (msg) =
 // otherwise burn through the same rate-limit budget as real traffic —
 // caught by actually load-testing /health, which started returning 429
 // under sustained request volume well below what a real liveness probe
-// schedule would produce across several replicas.
+// schedule would produce across several replicas. healthLimiter is its own,
+// much more generous ceiling (see middlewares/rateLimiter.js) — /health is
+// still a public, unauthenticated handler doing real Mongo/Redis I/O, so
+// "ahead of apiLimiter" must not mean "no limit at all".
+app.use('/health', healthLimiter);
 app.get('/health', (req, res) => res.status(200).json({ status: 'ok', uptime: process.uptime() }));
 app.use('/health', healthRoutes); // adds /health/live (alias), /health/ready, /health/metrics
 

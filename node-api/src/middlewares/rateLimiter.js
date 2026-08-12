@@ -92,4 +92,24 @@ const aiInstitutionLimiter = rateLimit({
   store: storeFor('ai-institution', AI_INSTITUTION_WINDOW_MS),
 });
 
-module.exports = { apiLimiter, authLimiter, identifyLimiter, aiLimiter, aiInstitutionLimiter };
+// /health/* is registered ahead of apiLimiter in app.js — deliberately: real
+// load-balancer/orchestrator probes poll every few seconds from across
+// several replicas and blew through apiLimiter's window (429s under normal
+// probe volume, well below anything an actual attacker would need). But
+// /health/ready and /health/metrics are still unauthenticated handlers that
+// hit Mongo/Redis on every call, reachable by anyone who can reach this
+// service — "no limiter at all" trades one bug for another (unbounded
+// hammering of the DB via a public endpoint). This ceiling is sized well
+// above any plausible probe cadence (many replicas x sub-second polling)
+// while still bounding a single source's sustained request rate.
+const HEALTH_WINDOW_MS = 60 * 1000;
+const healthLimiter = rateLimit({
+  windowMs: HEALTH_WINDOW_MS,
+  max: parseInt(process.env.HEALTH_RATE_LIMIT_MAX, 10) || 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many health check requests, please try again later.' },
+  store: storeFor('health', HEALTH_WINDOW_MS),
+});
+
+module.exports = { apiLimiter, authLimiter, identifyLimiter, aiLimiter, aiInstitutionLimiter, healthLimiter };
