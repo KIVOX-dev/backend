@@ -90,8 +90,8 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: "pip"
-          cache-dependency-path: ai-service/requirements-lock.txt
-      - run: pip install -r requirements-lock.txt
+          cache-dependency-path: ai-service/requirements-dev.txt
+      - run: pip install -r requirements-dev.txt
       - run: ruff check .
 
   ai-test:
@@ -106,8 +106,8 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: "pip"
-          cache-dependency-path: ai-service/requirements-lock.txt
-      - run: pip install -r requirements-lock.txt
+          cache-dependency-path: ai-service/requirements-dev.txt
+      - run: pip install -r requirements-dev.txt
       - run: pytest -v
 
   ai-audit:
