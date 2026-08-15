@@ -58,9 +58,15 @@ class BaseRepository {
     for (const key of Object.keys(filters)) {
       const value = filters[key];
       if (value === undefined) continue;
+      if (!this._isPrimitive(value)) continue;
       if (key === 'id') {
-        if (this._isValidId(value)) filter._id = value;
-      } else if (this._isPrimitive(value) && this.columns.includes(key)) {
+        // Always set filter._id, even when value fails _isValidId (e.g. '' or a
+        // number) — `_id` is never that value for a real document, so this
+        // fails closed (matches nothing). Dropping the key instead would turn
+        // an invalid id filter into no id filter at all, widening the query
+        // to every row matching the *other* filters (or the whole collection).
+        filter._id = value;
+      } else if (this.columns.includes(key)) {
         filter[key] = value;
       }
     }
