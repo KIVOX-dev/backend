@@ -1,74 +1,104 @@
 # UpScaler-AI Backend
 
-This repository hosts two backend services:
+UpScaler-AI is a placement and career-readiness platform for institutions — students, faculty,
+HR, and admins share one system for tests, interviews, resumes, and placement tracking. This
+repository holds the two backend services that power it.
 
-| Folder | Stack | Purpose |
+| Service | Stack | Role |
 |---|---|---|
-| [`node-api/`](node-api/README.md) | Node.js / Express / MongoDB | Clean-architecture REST API, RBAC, JWT + Google OAuth — sole source of truth for every route the frontend calls |
-| [`ai-service/`](ai-service/README.md) | Python 3.12 / FastAPI / MongoDB | Narrow internal AI microservice (interview question generation, resume AI features) — called only by node-api over a JWT-authenticated internal API, never directly by the frontend |
+| [`node-api/`](node-api/README.md) | Node.js, Express, MongoDB | The API. Every route the frontend calls — auth, RBAC, students, placements, chat — lives here. |
+| [`ai-service/`](ai-service/README.md) | Python 3.12, FastAPI, MongoDB | A narrow internal microservice for Groq-backed AI features (interview questions, resume analysis). Called only by `node-api`, never by the frontend directly. |
 
-See `node-api/README.md` for architecture and `node-api/REQUIREMENTS.md` for prerequisites.
+`node-api` is the sole entry point for the frontend and the source of truth for business data.
+`ai-service` owns no business data of its own and reaches the outside world only through a
+JWT-authenticated internal API that `node-api` mints tokens for on each request.
 
-## Python service removal — and why `ai-service/` is not that service coming back
+## Getting started
 
-The original `python-service/` (Python 3.12 / FastAPI / MongoDB) was removed. It predated
-`node-api` and the two had drifted into duplicate, inconsistently-behaving implementations of the
-same routes (auth, students, placements, etc.) against separate MongoDB databases. `node-api` had
-already reached full functional parity with every endpoint the live frontend actually calls (see
-`SECURITY_AUDIT.md` for the migration history), so keeping both running was pure duplicated
-maintenance and deployment surface with no remaining benefit. Its git history is preserved; see the
-commit that removed it for the full file list. Full migration/removal notes are appended to
-`SECURITY_AUDIT.md`. Its leftover files on disk (a stale `.venv`, caches, `.env`) were never
-cleaned up after that removal and have since been deleted for real.
+The fastest way to run the full stack — frontend, both backend services, MongoDB, and Redis — is
+Docker Compose:
 
-`ai-service/` is a deliberately smaller, newly-built replacement for one narrow slice of
-functionality — the Groq-backed AI features (interview question generation, resume analysis/JD
-matching/AI-suggest/parsing, assessment question generation) that used to live directly inside
-node-api via `groq-sdk`. It owns no business data (no students/placements/auth — those stay in
-node-api/MongoDB), is never called directly by the frontend, and every route requires a
-JWT node-api mints per-request (see `ai-service/app/security.py`). It is not a restoration of the
-old full-stack duplicate service described above.
-
-## Recent updates
-
-- **Added** the full Node/Express/PostgreSQL API (16-table schema, RBAC, JWT + Google OAuth,
-  clean architecture, deployment docs) — originally scaffolded at the repo root.
-- **Removed** ~19 stale one-off debug/migration scripts that had accumulated at the repo root
-  (`fix_db*.py`, `migrate_to_mongo.py`, `sync_sqlite_to_mongo.py`, `query_db*.py`, `test_hash.py`,
-  `change_admin_pass.py`, `check.py`, `test-login.js`, a `query.js` with a hardcoded DB password,
-  an empty `skillovate.db`, and an unused `main.py` stub) and ~60 committed `__pycache__/*.pyc`
-  files; added the right patterns to `.gitignore` so they don't return.
-- **Reorganized** the repo root: what used to be a flat mix of Python and Node config files is now
-  split into `python-service/` and `node-api/`, each self-contained. `Dockerfile.node` was renamed
-  to plain `Dockerfile` inside `node-api/` (the `.node` extension was being misread as a compiled
-  Node binary by some tooling, and the suffix was only there to avoid colliding with the Python
-  service's `Dockerfile` when both sat in the same folder — no longer needed once separated).
-- **Found and relocated** `seed_mongo.py` (created outside this cleanup, containing a hardcoded
-  plaintext MongoDB Atlas password) into `python-service/` — **that credential should be rotated**;
-  see the security note in `python-service/README.md`.
-- **Swapped the Node API's database from PostgreSQL to MongoDB** — no live Postgres instance was
-  ever provisioned, whereas the Python service's MongoDB Atlas connection was already proven
-  working. `sql/schema.sql` was replaced by `node-api/scripts/setupIndexes.js` (creates the same
-  uniqueness/query indexes without SQL). Both services now use MongoDB, but **on separate
-  database names** (`upscaler_ai` for Python, `upscaler_ai_node` for Node) on the same cluster — they
-  do not share collections, and each still owns its own connection string.
-- **Standardized the Python service on MongoDB only.** It still carried a full SQLAlchemy layer
-  (an ORM model package, `alembic.ini`, `sqlalchemy`/`alembic`/`psycopg` dependencies, a
-  `DATABASE_URL` setting, and `Session`/`Query` type hints on functions that were actually being
-  handed a Mongo handle) left over from the Postgres era. All of it was unreachable at runtime and
-  has been removed — see [`SECURITY_AUDIT.md`](SECURITY_AUDIT.md) for the full inventory. The same
-  pass found that the service's real drivers (`motor`, `pymongo`, `certifi`, `groq`) were never
-  declared in `requirements.txt`, which meant the built Docker image crashed on startup.
-
-## Local development ports
+```bash
+cp .env.compose.example .env    # fill in JWT_SECRET and JWT_REFRESH_SECRET; see comments inline
+docker compose up --build
+```
 
 | Service | URL |
 |---|---|
-| Frontend | http://localhost:5173 (or 3000 for the existing Next.js app) |
+| Frontend | http://localhost:3000 |
 | Node API | http://localhost:5000 |
 
-The frontend's `NEXT_PUBLIC_API_URL` should point at `http://localhost:5000/api/v1`. Its
-unset-env-var fallback (`src/lib/api.ts`, `D:\Upscaler-Frontend`) still defaults to port 8000 — a
-leftover from when python-service owned that port. That fallback only matters if
-`NEXT_PUBLIC_API_URL` is unset; update it to 5000 (or set the env var everywhere it's deployed) as
-a follow-up.
+To work on a single service instead — with hot reload and without Docker — see that service's own
+README:
+
+- [`node-api/README.md`](node-api/README.md) — architecture, quick start, API docs
+- [`ai-service/README.md`](ai-service/README.md) — quick start, testing, deployment notes
+
+Prerequisites for running services outside Docker (Node/Python versions, package managers) are
+listed in [`REQUIREMENTS.md`](REQUIREMENTS.md). Frontend requirements live in the frontend's own
+repository, `Upscaler-Frontend/REQUIREMENTS.md`.
+
+## How the pieces fit together
+
+```
+Browser
+  │
+  ▼
+Frontend (Next.js, :3000)
+  │  NEXT_PUBLIC_API_URL
+  ▼
+node-api (:5000)  ──┬──▶  MongoDB   (business data: users, students, placements, tests, chat)
+  │  internal JWT    ├──▶  Redis     (shared rate limits + chat pub/sub across replicas)
+  ▼                  │
+ai-service (:8001)  ─┘──▶  Groq API  (question generation, resume analysis)
+```
+
+`ai-service` is stateless aside from an optional, best-effort logging collection nothing else
+reads. If `GROQ_API_KEY` is unset, its AI routes degrade gracefully — interview and assessment
+generation fall back to local placeholder questions, resume improvement returns the original text
+unchanged, and the remaining resume routes return a clear `503` instead of crashing. `node-api`
+never needs to know which case it hit.
+
+## Security
+
+Both services are described in detail in their own READMEs, but the shared expectations are:
+
+- `JWT_SECRET` and `JWT_REFRESH_SECRET` have no defaults — the stack refuses to start without
+  them, rather than booting with a guessable value.
+- `AI_SERVICE_SHARED_SECRET` must match between `node-api` and `ai-service`; it's the only thing
+  standing between an attacker who can reach `ai-service`'s port and a forged internal token.
+  Running `ai-service` with `AI_SERVICE_ENV=production` while that secret is still the public
+  default from `.env.example` makes it refuse to start.
+- `node-api` enforces RBAC and institution-level data scoping per route, validates every write
+  with Joi, whitelists writable fields per entity (no mass-assignment), and rate-limits globally
+  and on auth routes specifically.
+
+See [`SECURITY_AUDIT.md`](SECURITY_AUDIT.md) for the full audit history and
+[`node-api/docs/CREDENTIAL_ROTATION.md`](node-api/docs/CREDENTIAL_ROTATION.md) for the credential
+rotation checklist.
+
+## Project history
+
+This repo used to hold a third service, `python-service/` (Python/FastAPI/MongoDB), that
+duplicated `node-api`'s routes — auth, students, placements — against a separate database. It
+predated `node-api`, and once `node-api` reached full functional parity with every route the
+frontend actually calls, keeping both running was pure duplicated maintenance with no remaining
+benefit. It was removed; its git history is preserved, and the full migration record lives in
+`SECURITY_AUDIT.md`.
+
+`ai-service` is not that service coming back. It's a deliberately smaller, newly built replacement
+for one narrow slice of what `python-service` used to do — the AI features — built from scratch
+with none of the old service's business-data ownership or direct frontend exposure.
+
+## Repository layout
+
+```
+backend/
+├── node-api/        Express API — see node-api/README.md
+├── ai-service/      FastAPI microservice — see ai-service/README.md
+├── deploy/          nginx config, credential rotation notes
+├── docker-compose.yml
+├── cloudbuild.yaml  Cloud Run deployment
+├── SECURITY_AUDIT.md
+└── REQUIREMENTS.md
+```
