@@ -6,6 +6,7 @@ const hrRepository = require('../repositories/hr.repository');
 const departmentRepository = require('../repositories/department.repository');
 const { hashPassword } = require('../utils/password');
 const { computeGraduationYear } = require('../utils/graduationYear');
+const { resolveDepartmentIdByName } = require('../utils/departmentMatch');
 const { ROLES } = require('../config/constants');
 const { assertSameInstitution } = require('../utils/authz');
 const ApiError = require('../utils/ApiError');
@@ -218,15 +219,35 @@ class UserService extends BaseService {
     // last point before they're an active account, so it's the last
     // reasonable place to compute it from whatever's on the row now.
     if (target.role === ROLES.STUDENT) {
-      const student = await studentRepository.findByUserId(id);
-      if (student && !student.batch_year && student.year_of_study) {
-        const department = student.department_id ? await departmentRepository.findById(student.department_id) : null;
-        const graduationYear = computeGraduationYear({
-          durationYears: department?.duration_years,
-          yearOfStudy: student.year_of_study,
-        });
-        if (graduationYear) {
-          await studentRepository.updateById(student.id, { batch_year: graduationYear });
+      let student = await studentRepository.findByUserId(id);
+      if (student) {
+        // The free-text `department` on the user row (shown as-is in Manage
+        // Users) and `department_id` on the student row (the FK every
+        // department-scoped query, e.g. bulk test assignment, actually
+        // filters on) can drift apart — an upload whose Department column
+        // didn't match a real department by name/code at import time leaves
+        // department_id null forever otherwise, silently making that
+        // student invisible to anything keyed on it despite looking
+        // perfectly normal in the admin UI. Re-resolve it here the same way
+        // the upload does (see departmentMatch.js), now that the
+        // department row may exist even if it didn't at upload time.
+        if (!student.department_id && target.department) {
+          const departments = await departmentRepository.findByInstitutionId(target.institution_id);
+          const resolvedDepartmentId = resolveDepartmentIdByName(target.department, departments);
+          if (resolvedDepartmentId) {
+            student = await studentRepository.updateById(student.id, { department_id: resolvedDepartmentId });
+          }
+        }
+
+        if (!student.batch_year && student.year_of_study) {
+          const department = student.department_id ? await departmentRepository.findById(student.department_id) : null;
+          const graduationYear = computeGraduationYear({
+            durationYears: department?.duration_years,
+            yearOfStudy: student.year_of_study,
+          });
+          if (graduationYear) {
+            await studentRepository.updateById(student.id, { batch_year: graduationYear });
+          }
         }
       }
     }

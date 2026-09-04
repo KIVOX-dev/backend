@@ -14,6 +14,7 @@
     "db:setup-indexes": "node scripts/setupIndexes.js",
     "db:seed-colleges": "node scripts/seedColleges.js",
     "db:backfill-institution-id": "node scripts/backfillInstitutionId.js",
+    "db:backfill-department-id": "node scripts/backfillMissingDepartmentId.js",
     "db:backfill-student-profiles": "node scripts/backfillMissingStudentProfiles.js",
     "db:seed-practice-tests": "node scripts/seedPracticeTests.js",
     "db:seed-question-bank": "node scripts/seedQuestionBank.js",
