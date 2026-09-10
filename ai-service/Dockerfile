@@ -12,6 +12,13 @@
 FROM python:3.12-alpine AS runtime
 WORKDIR /app
 
+# The python:3.12-alpine base image is only rebuilt on Python releases, so its
+# OS packages (e.g. util-linux/libuuid) lag behind Alpine's security
+# advisories between those rebuilds. Upgrading at build time — rather than
+# pinning a base image digest — keeps the image current with upstream patches
+# on every build instead of drifting until the next Python bump.
+RUN apk update && apk upgrade --no-cache
+
 RUN apk add --no-cache gcc musl-dev libffi-dev
 
 # requirements-lock.txt is the exact resolved set (pip freeze) — mirrors
