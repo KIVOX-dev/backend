@@ -25,13 +25,25 @@
 #   roles/secretmanager.secretAccessor - read the secrets below when wiring --set-secrets
 #
 # node-api/src/config/env.js throws (crashing the container before it ever
-# binds a port) if JWT_SECRET, JWT_REFRESH_SECRET, or MONGODB_URI are unset —
-# create these once, then grant the Cloud Run runtime service account
+# binds a port) if JWT_SECRET, JWT_REFRESH_SECRET, or MONGODB_URI are unset.
+# Create secret values via the Secret Manager Console UI (New Secret / New
+# Version) rather than piping literal values through a shell here — keeps
+# them out of shell history and this file. Required secrets:
+#   node-api-jwt-secret         random string (e.g. openssl rand -base64 48)
+#   node-api-jwt-refresh-secret random string, different from the above
+#   node-api-mongodb-uri        MongoDB Atlas connection string
+#   node-api-brevo-api-key      Brevo transactional-email API key
+#   ai-service-shared-secret    random string — used by BOTH services below;
+#                                must be byte-identical on both sides, since
+#                                it's how node-api and ai-service authenticate
+#                                to each other (see aiServiceClient.js /
+#                                ai-service/app/config.py)
+#   ai-service-groq-api-key     Groq API key
+#
+# Then grant the Cloud Run runtime service account
 # (<project-number>-compute@developer.gserviceaccount.com, unless you deploy
-# with a dedicated one) roles/secretmanager.secretAccessor on each:
-#   printf '%s' "$(openssl rand -base64 48)" | gcloud secrets create node-api-jwt-secret --data-file=-
-#   printf '%s' "$(openssl rand -base64 48)" | gcloud secrets create node-api-jwt-refresh-secret --data-file=-
-#   printf '%s' "<your MongoDB connection string>" | gcloud secrets create node-api-mongodb-uri --data-file=-
+# with a dedicated one) roles/secretmanager.secretAccessor on each of the
+# five secrets above (Secret Manager → secret → Permissions → Grant Access).
 
 substitutions:
   _REGION: europe-west1
@@ -97,6 +109,8 @@ steps:
       - --region=${_REGION}
       - --port=8001
       - --no-allow-unauthenticated
+      - --set-env-vars=AI_SERVICE_ENV=production
+      - --set-secrets=AI_SERVICE_SHARED_SECRET=ai-service-shared-secret:latest,GROQ_API_KEY=ai-service-groq-api-key:latest
       - --quiet
     waitFor: [push-ai-service]
 
@@ -110,6 +124,7 @@ steps:
       - --image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/node-api:${SHORT_SHA}
       - --region=${_REGION}
       - --allow-unauthenticated
-      - --set-secrets=JWT_SECRET=node-api-jwt-secret:latest,JWT_REFRESH_SECRET=node-api-jwt-refresh-secret:latest,MONGODB_URI=node-api-mongodb-uri:latest
+      - --set-env-vars=NODE_ENV=production,AI_SERVICE_URL=https://ai-service-177421000110.europe-west1.run.app
+      - --set-secrets=JWT_SECRET=node-api-jwt-secret:latest,JWT_REFRESH_SECRET=node-api-jwt-refresh-secret:latest,MONGODB_URI=node-api-mongodb-uri:latest,AI_SERVICE_SHARED_SECRET=ai-service-shared-secret:latest,BREVO_API_KEY=node-api-brevo-api-key:latest
       - --quiet
     waitFor: [push-node-api, deploy-ai-service]
