@@ -15,6 +15,13 @@ FROM node:24-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 
+# The node:24-alpine base image is only rebuilt on Node releases, so its OS
+# packages (e.g. libssl3/libcrypto3) lag behind Alpine's security advisories
+# between those rebuilds. Upgrading at build time — rather than pinning a
+# base image digest — keeps the image current with upstream patches on every
+# build instead of drifting until the next Node bump.
+RUN apk update && apk upgrade --no-cache
+
 # The base image bundles a global npm CLI (+ corepack) for convenience, but
 # this container only ever runs `node src/server.js` — npm never executes
 # here. That bundled npm vendors its own internal deps (tar, undici,

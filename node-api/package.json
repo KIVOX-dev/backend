@@ -44,7 +44,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.10.0",
     "morgan": "^1.10.0",
-    "multer": "^2.0.0",
+    "multer": "^2.3.0",
     "winston": "^3.13.0",
     "ws": "^8.18.0"
   },
