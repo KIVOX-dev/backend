@@ -22,6 +22,16 @@
 #   roles/run.admin                 - deploy to Cloud Run
 #   roles/iam.serviceAccountUser    - act as the Cloud Run runtime service account
 #   roles/logging.logWriter         - already granted by default
+#   roles/secretmanager.secretAccessor - read the secrets below when wiring --set-secrets
+#
+# node-api/src/config/env.js throws (crashing the container before it ever
+# binds a port) if JWT_SECRET, JWT_REFRESH_SECRET, or MONGODB_URI are unset —
+# create these once, then grant the Cloud Run runtime service account
+# (<project-number>-compute@developer.gserviceaccount.com, unless you deploy
+# with a dedicated one) roles/secretmanager.secretAccessor on each:
+#   printf '%s' "$(openssl rand -base64 48)" | gcloud secrets create node-api-jwt-secret --data-file=-
+#   printf '%s' "$(openssl rand -base64 48)" | gcloud secrets create node-api-jwt-refresh-secret --data-file=-
+#   printf '%s' "<your MongoDB connection string>" | gcloud secrets create node-api-mongodb-uri --data-file=-
 
 substitutions:
   _REGION: europe-west1
@@ -100,5 +110,6 @@ steps:
       - --image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/node-api:${SHORT_SHA}
       - --region=${_REGION}
       - --allow-unauthenticated
+      - --set-secrets=JWT_SECRET=node-api-jwt-secret:latest,JWT_REFRESH_SECRET=node-api-jwt-refresh-secret:latest,MONGODB_URI=node-api-mongodb-uri:latest
       - --quiet
     waitFor: [push-node-api, deploy-ai-service]
