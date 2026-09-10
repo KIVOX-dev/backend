@@ -85,6 +85,7 @@ steps:
       - ai-service
       - --image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/ai-service:${SHORT_SHA}
       - --region=${_REGION}
+      - --port=8001
       - --no-allow-unauthenticated
       - --quiet
     waitFor: [push-ai-service]
