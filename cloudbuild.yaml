@@ -77,7 +77,7 @@ steps:
 
   # ---- deploy: ai-service first (node-api calls it; it holds no state) ----
   - id: deploy-ai-service
-    name: gcr.io/google.com/cloudsdk/cloud-sdk
+    name: gcr.io/cloud-builders/gcloud
     entrypoint: gcloud
     args:
       - run
@@ -90,7 +90,7 @@ steps:
     waitFor: [push-ai-service]
 
   - id: deploy-node-api
-    name: gcr.io/google.com/cloudsdk/cloud-sdk
+    name: gcr.io/cloud-builders/gcloud
     entrypoint: gcloud
     args:
       - run
@@ -98,5 +98,6 @@ steps:
       - node-api
       - --image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/node-api:${SHORT_SHA}
       - --region=${_REGION}
+      - --allow-unauthenticated
       - --quiet
     waitFor: [push-node-api, deploy-ai-service]
