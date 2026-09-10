@@ -1,6 +1,15 @@
 const express = require('express');
 
+const { name, version } = require('../../package.json');
+
 const router = express.Router();
+
+// The bare API prefix (e.g. GET /api/v1) had no handler of its own, so it
+// fell through to notFoundHandler with the same generic "Route not found"
+// body as any real typo'd endpoint — indistinguishable from an actual
+// broken route when someone hits the API root directly (browser address
+// bar, uptime checks, onboarding docs). This just confirms the API is up.
+router.get('/', (req, res) => res.status(200).json({ name, version, status: 'ok' }));
 
 router.use('/auth', require('./auth.routes'));
 router.use('/users', require('./user.routes'));
