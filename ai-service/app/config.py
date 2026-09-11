@@ -38,7 +38,13 @@ class Settings(BaseSettings):
     # than crashing — matches node-api's groqClient.js philosophy exactly,
     # since node-api used to own this same check before it moved here.
     groq_api_key: str = ""
-    groq_model: str = "llama-3.3-70b-versatile"
+    # llama-3.3-70b-versatile was Groq's default here until its shutdown
+    # (deprecated 2026-06-17, fully decommissioned 2026-08-16 — confirmed
+    # directly: every AI-generation call was failing in production with a
+    # 404 from Groq's own /chat/completions, not a config/auth problem on
+    # our end). openai/gpt-oss-120b is Groq's own recommended replacement
+    # for this exact model, per https://console.groq.com/docs/deprecations.
+    groq_model: str = "openai/gpt-oss-120b"
     groq_base_url: str = "https://api.groq.com/openai/v1"
 
     # --- MongoDB (optional: request/response observability logging only —
