@@ -81,7 +81,14 @@ async function findOrCreateStudentUser({ item, institutionId, department, depart
     if (!suppliedPassword) {
       tempPassword = resolvedPassword;
       // Best-effort — sendEmail never throws, and there's nowhere to send a
-      // synthetic @upscaler-ai.local fallback address anyway.
+      // synthetic @upscaler-ai.local fallback address anyway. Deliberately
+      // NOT awaited: this runs once per newly-created row, and a batch
+      // upload of any real size was serializing an external network call
+      // to the email provider on top of every single row, turning what
+      // should be a fast DB-bound loop into one bounded by email-API
+      // latency — large rosters routinely blew past the frontend's 30s
+      // request timeout. The welcome email still gets sent; the response
+      // just doesn't wait on it.
       if (!isSyntheticEmail) {
         const { subject, html, text } = studentWelcomeTemplate({
           fullName: item.name,
@@ -89,7 +96,7 @@ async function findOrCreateStudentUser({ item, institutionId, department, depart
           tempPassword,
           loginUrl: `${env.frontendUrl}/login`,
         });
-        await sendEmail({ to: email, subject, html, text });
+        sendEmail({ to: email, subject, html, text });
       }
     }
   }

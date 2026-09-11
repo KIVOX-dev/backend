@@ -308,21 +308,41 @@ class StudentService extends BaseService {
       return durationCache.get(deptId);
     };
 
-    for (const item of students) {
-      const resolvedDeptId = item.department_id || departmentId;
-      const { user, created: wasCreated, tempPassword } = await findOrCreateStudentUser({
-        item,
-        institutionId: actor.institutionId,
-        department,
-        departmentId,
-        year,
-        yearOfStudy: item.year_of_study ?? yearOfStudy,
-        departmentDurationYears: await getDurationYears(resolvedDeptId),
-        status: defaultStatus,
-      });
-      if (wasCreated) {
-        created += 1;
-        if (tempPassword) createdStudents.push({ id: user.id, email: user.email, name: user.full_name, tempPassword });
+    // Processed in small concurrent chunks rather than one row at a time —
+    // each row does real I/O (a bcrypt hash plus 1-2 DB round trips), so a
+    // large roster processed fully sequentially could take long enough to
+    // trip the frontend's request timeout even after removing the welcome-
+    // email wait above. Bounded (not Promise.all over the whole roster) so
+    // a huge file doesn't fire hundreds of concurrent writes at once; 10 is
+    // comfortably under bcrypt's usual libuv threadpool size (4, unless
+    // UV_THREADPOOL_SIZE is raised) doubled for headroom, not a tuned
+    // number. Two rows sharing the same email within one chunk could both
+    // pass the "no existing user" check before either finishes creating —
+    // a real but narrow race (duplicate email rows in the same upload),
+    // accepted here rather than serializing everything to close it.
+    const CHUNK_SIZE = 10;
+    for (let i = 0; i < students.length; i += CHUNK_SIZE) {
+      const chunk = students.slice(i, i + CHUNK_SIZE);
+      const results = await Promise.all(
+        chunk.map(async (item) => {
+          const resolvedDeptId = item.department_id || departmentId;
+          return findOrCreateStudentUser({
+            item,
+            institutionId: actor.institutionId,
+            department,
+            departmentId,
+            year,
+            yearOfStudy: item.year_of_study ?? yearOfStudy,
+            departmentDurationYears: await getDurationYears(resolvedDeptId),
+            status: defaultStatus,
+          });
+        })
+      );
+      for (const { user, created: wasCreated, tempPassword } of results) {
+        if (wasCreated) {
+          created += 1;
+          if (tempPassword) createdStudents.push({ id: user.id, email: user.email, name: user.full_name, tempPassword });
+        }
       }
     }
 
