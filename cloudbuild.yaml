@@ -98,6 +98,19 @@ steps:
     waitFor: [build-ai-service]
 
   # ---- deploy: ai-service first (node-api calls it; it holds no state) ----
+  # --no-allow-unauthenticated below means node-api's runtime service
+  # account needs roles/run.invoker granted on THIS service, or every call
+  # node-api makes gets a 403 straight from Cloud Run's own IAM layer
+  # before the request ever reaches the app (confirmed in production —
+  # every AI feature was broken this way; see aiServiceClient.js's fix and
+  # comments). This deploy step doesn't grant that binding — Cloud Build's
+  # own service account isn't necessarily allowed to modify IAM policy on
+  # other services, and it's a one-time grant, not something that needs to
+  # run on every deploy. Run once, manually:
+  #   gcloud run services add-iam-policy-binding ai-service \
+  #     --region=${_REGION} \
+  #     --member="serviceAccount:<node-api's runtime service account>" \
+  #     --role="roles/run.invoker"
   - id: deploy-ai-service
     name: gcr.io/cloud-builders/gcloud
     entrypoint: gcloud

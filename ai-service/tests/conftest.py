@@ -30,7 +30,7 @@ def client():
 @pytest.fixture
 def auth_headers():
     token = mint_service_token(TEST_SECRET)
-    return {"Authorization": f"Bearer {token}"}
+    return {"X-Service-Token": f"Bearer {token}"}
 
 
 @pytest.fixture

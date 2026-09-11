@@ -12,7 +12,7 @@ def test_garbage_token_is_rejected(client):
     resp = client.post(
         "/v1/interview/generate-questions",
         json={"role": "Backend Engineer"},
-        headers={"Authorization": "Bearer not-a-real-token"},
+        headers={"X-Service-Token": "Bearer not-a-real-token"},
     )
     assert resp.status_code == 401
 
@@ -22,7 +22,7 @@ def test_token_signed_with_wrong_secret_is_rejected(client):
     resp = client.post(
         "/v1/interview/generate-questions",
         json={"role": "Backend Engineer"},
-        headers={"Authorization": f"Bearer {bad_token}"},
+        headers={"X-Service-Token": f"Bearer {bad_token}"},
     )
     assert resp.status_code == 401
 
@@ -32,7 +32,7 @@ def test_expired_token_is_rejected(client):
     resp = client.post(
         "/v1/interview/generate-questions",
         json={"role": "Backend Engineer"},
-        headers={"Authorization": f"Bearer {expired}"},
+        headers={"X-Service-Token": f"Bearer {expired}"},
     )
     assert resp.status_code == 401
 

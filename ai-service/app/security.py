@@ -20,18 +20,25 @@ def mint_service_token(shared_secret: str, ttl_seconds: int = 60) -> str:
     return jwt.encode(payload, shared_secret, algorithm=ALGORITHM)
 
 
-async def verify_service_token(authorization: str | None = Header(default=None)) -> None:
+async def verify_service_token(x_service_token: str | None = Header(default=None)) -> None:
     """Every AI route depends on this — only node-api (the sole caller,
     server-to-server, never a browser) holds the shared secret needed to
     produce a token that verifies here. A missing/invalid/expired token is
     always 401, with no distinction given in the response about which check
     failed, so a caller fishing for the shared secret learns nothing more
-    from an expired-but-otherwise-valid token than from a garbage one."""
+    from an expired-but-otherwise-valid token than from a garbage one.
+
+    Read from X-Service-Token, not Authorization — this Cloud Run service is
+    deployed --no-allow-unauthenticated, so Authorization is already spoken
+    for by Cloud Run's own IAM layer (a Google-signed identity token,
+    checked before a request ever reaches this app at all; see
+    node-api/src/utils/aiServiceClient.js). This check is the second,
+    independent layer behind that, not a replacement for it."""
     settings = get_settings()
-    if not authorization or not authorization.startswith("Bearer "):
+    if not x_service_token or not x_service_token.startswith("Bearer "):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing bearer token")
 
-    token = authorization.removeprefix("Bearer ").strip()
+    token = x_service_token.removeprefix("Bearer ").strip()
     try:
         jwt.decode(
             token,
