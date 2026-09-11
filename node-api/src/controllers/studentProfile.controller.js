@@ -7,6 +7,11 @@ const getOwn = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, profile);
 });
 
+const getSummary = asyncHandler(async (req, res) => {
+  const summary = await studentProfileService.getSummary(req.user);
+  ApiResponse.ok(res, summary);
+});
+
 const createOwn = asyncHandler(async (req, res) => {
   const profile = await studentProfileService.createOwn(req.user, req.body);
   ApiResponse.created(res, profile, 'Profile created');
@@ -17,4 +22,4 @@ const updateOwn = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, profile, 'Profile updated');
 });
 
-module.exports = { getOwn, createOwn, updateOwn };
+module.exports = { getOwn, createOwn, updateOwn, getSummary };

@@ -15,6 +15,7 @@ const router = express.Router();
 router.use(authenticate, authorize(ROLES.STUDENT));
 
 router.get('/', controller.getOwn);
+router.get('/summary', controller.getSummary);
 router.post('/', validate(schema.create), controller.createOwn);
 router.put('/', validate(schema.update), controller.updateOwn);
 
