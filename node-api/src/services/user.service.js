@@ -32,15 +32,35 @@ class UserService extends BaseService {
       visible = rows.filter((u) => u.role !== ROLES.SUPER_ADMIN);
     }
 
-    // Roll number lives on the students collection (one row per student
-    // user), not on the user record itself — attach it here so the admin's
-    // Manage Users table doesn't need a second round trip per row.
+    // Roll number and department both live on the students collection (one
+    // row per student user), not on the user record itself — attach them
+    // here so the admin's Manage Users table doesn't need a second round
+    // trip per row. `users.department` is a separate, legacy plain-string
+    // column (still whatever a non-student role's own creation flow set,
+    // if anything) — for students specifically it's stale/disconnected
+    // from the real FK the rest of the app (Assign Test, the Edit Student
+    // modal, Departments management) actually reads and writes, so it's
+    // overridden here with the resolved name from students.department_id,
+    // the same source of truth as everywhere else.
     const studentUserIds = visible.filter((u) => u.role === ROLES.STUDENT).map((u) => u.id);
     const students = await studentRepository.findByUserIds(studentUserIds);
     const rollNumberByUserId = new Map(students.map((s) => [s.user_id, s.roll_number]));
 
+    const departmentIds = [...new Set(students.map((s) => s.department_id).filter(Boolean))];
+    const departments = await departmentRepository.findByIds(departmentIds);
+    const departmentNameById = new Map(departments.map((d) => [d.id, d.name]));
+    const departmentNameByUserId = new Map(
+      students
+        .filter((s) => s.department_id)
+        .map((s) => [s.user_id, departmentNameById.get(s.department_id)])
+    );
+
     return {
-      rows: visible.map((u) => ({ ...sanitize(u), roll_number: rollNumberByUserId.get(u.id) })),
+      rows: visible.map((u) => ({
+        ...sanitize(u),
+        roll_number: rollNumberByUserId.get(u.id),
+        department: departmentNameByUserId.get(u.id) ?? u.department,
+      })),
       meta,
     };
   }
