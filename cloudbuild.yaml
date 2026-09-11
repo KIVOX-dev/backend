@@ -124,7 +124,7 @@ steps:
       - --image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/node-api:${SHORT_SHA}
       - --region=${_REGION}
       - --allow-unauthenticated
-      - --set-env-vars=NODE_ENV=production,AI_SERVICE_URL=https://ai-service-177421000110.europe-west1.run.app
+      - --set-env-vars=^;^NODE_ENV=production;AI_SERVICE_URL=https://ai-service-177421000110.europe-west1.run.app;CORS_ORIGINS=https://upscalerai-frontend.vercel.app,http://localhost:3000
       - --set-secrets=JWT_SECRET=node-api-jwt-secret:latest,JWT_REFRESH_SECRET=node-api-jwt-refresh-secret:latest,MONGODB_URI=node-api-mongodb-uri:latest,AI_SERVICE_SHARED_SECRET=ai-service-shared-secret:latest,BREVO_API_KEY=node-api-brevo-api-key:latest
       - --quiet
     waitFor: [push-node-api, deploy-ai-service]
