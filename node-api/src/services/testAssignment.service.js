@@ -114,25 +114,40 @@ class TestAssignmentService extends BaseService {
       throw ApiError.badRequest('No students match that department and batch year');
     }
 
+    // Processed in small concurrent chunks rather than one student at a
+    // time — each row does 2-3 real DB round trips (an existence check, a
+    // $sample draw, a write), so assigning to a real department-sized
+    // roster (100+ students) sequentially routinely exceeded the frontend's
+    // request timeout, the same failure mode student.service.js#batchCreate
+    // had for the batch-upload endpoint. Bounded (not one Promise.all over
+    // the whole roster) so a very large department doesn't fire hundreds of
+    // concurrent writes at once.
+    const CHUNK_SIZE = 10;
     let assignedCount = 0;
-    for (const student of students) {
-      // Respects the existing unique (test_id, student_id) index —
-      // re-assigning the same test to an already-assigned student is a
-      // silent no-op, not a duplicate row or an error.
-      const existing = await this.repository.findOne({ test_id: data.test_id, student_id: student.id });
-      if (existing) continue;
-      // Drawn per-student, inside the loop — each call to $sample is
-      // independently random, which is what gives every student their own
-      // distinct subset and order even though they share the same test.
-      await this.repository.create({
-        test_id: data.test_id,
-        student_id: student.id,
-        scheduled_at: data.scheduled_at,
-        question_ids: await drawQuestionIds(test),
-        institution_id: actor.institutionId,
-        assigned_by: actor.id,
-      });
-      assignedCount += 1;
+    for (let i = 0; i < students.length; i += CHUNK_SIZE) {
+      const chunk = students.slice(i, i + CHUNK_SIZE);
+      const results = await Promise.all(
+        chunk.map(async (student) => {
+          // Respects the existing unique (test_id, student_id) index —
+          // re-assigning the same test to an already-assigned student is a
+          // silent no-op, not a duplicate row or an error.
+          const existing = await this.repository.findOne({ test_id: data.test_id, student_id: student.id });
+          if (existing) return false;
+          // Drawn per-student — each call to $sample is independently
+          // random, which is what gives every student their own distinct
+          // subset and order even though they share the same test.
+          await this.repository.create({
+            test_id: data.test_id,
+            student_id: student.id,
+            scheduled_at: data.scheduled_at,
+            question_ids: await drawQuestionIds(test),
+            institution_id: actor.institutionId,
+            assigned_by: actor.id,
+          });
+          return true;
+        })
+      );
+      assignedCount += results.filter(Boolean).length;
     }
     return { assigned_count: assignedCount, matched_students: students.length };
   }
