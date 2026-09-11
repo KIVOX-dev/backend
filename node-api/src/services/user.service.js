@@ -111,16 +111,28 @@ class UserService extends BaseService {
     // recruiter_profiles alongside the user). python's version only had loose
     // string fields (student_id, year, department); node-api's existing
     // students/faculty/hr collections use real FKs (institution_id,
-    // department_id, company_id) — cascaded here only where those FKs are
-    // actually supplied, rather than fabricating placeholder linkage python
-    // used to (e.g. a fake "New Company" row for every new HR user).
-    if (user.role === ROLES.STUDENT && resolvedRollNumber && resolvedBatchYear) {
+    // department_id, company_id).
+    //
+    // The student branch always fires regardless of whether roll_number/
+    // batch_year were supplied — it used to require both, which silently
+    // left any student created without them (e.g. the super admin's plain
+    // "Add New User" form, which collects neither) with no `students` row
+    // at all. Every institution-scoped student feature (tests, dashboard,
+    // placements) resolves through studentRepository.findByUserId(user_id),
+    // so a missing row doesn't error — it just silently empty-lists
+    // everywhere for that account, with nothing surfaced to them (see
+    // scripts/backfillMissingStudentProfiles.js, written for the same
+    // failure mode via a different path — self-registration before
+    // auth.service.js was fixed). `profile_completed: false` (student.model.js's
+    // own default) is exactly the flag this app already has for "linked but
+    // not fully filled in yet".
+    if (user.role === ROLES.STUDENT) {
       await studentRepository.create({
         user_id: user.id,
         institution_id: user.institution_id,
         department_id: department_id || null,
-        roll_number: resolvedRollNumber,
-        batch_year: resolvedBatchYear,
+        roll_number: resolvedRollNumber || null,
+        batch_year: resolvedBatchYear || null,
         year_of_study: yearOfStudy || null,
       });
     } else if (user.role === ROLES.FACULTY && department_id) {
