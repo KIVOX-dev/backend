@@ -46,7 +46,7 @@
 # five secrets above (Secret Manager → secret → Permissions → Grant Access).
 
 substitutions:
-  _REGION: europe-west1
+  _REGION: asia-south1
   _AR_REPO: cloud-run-source-deploy
 
 options:
