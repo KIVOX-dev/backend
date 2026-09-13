@@ -8,12 +8,5 @@ __pycache__/
 *.db
 node-api/uploads/
 node-api/coverage/
-node-api/loadtest/k6/accounts.json
-node-api/loadtest/k6/tokens.json
-node-api/loadtest/k6/*.summary.json
-node-api/loadtest/k6/loadtest-summary.json
 .pytest_cache/
 .ruff_cache/
-node-api/.env.migration
-node-api/migration/.checkpoints/
-node-api/migration/reports/
