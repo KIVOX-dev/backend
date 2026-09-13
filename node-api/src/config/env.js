@@ -2,7 +2,7 @@
 // Uses .env.node (not .env / .env.example, which belong to the existing Python service).
 require('dotenv').config({ path: '.env.node' });
 
-const required = ['JWT_SECRET', 'JWT_REFRESH_SECRET', 'MONGODB_URI'];
+const required = ['JWT_SECRET', 'JWT_REFRESH_SECRET', 'MONGODB_URI', 'TURNSTILE_SECRET_KEY'];
 for (const key of required) {
   if (!process.env[key]) {
     throw new Error(`Missing required environment variable: ${key}`);
@@ -56,6 +56,22 @@ module.exports = {
 
   // Used to build reset-password/verify-email links sent by email.
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
+
+  // Cloudflare Turnstile — gates /auth/register and /auth/forgot-password
+  // against bot abuse (see middlewares/verifyTurnstile.js). The secret is
+  // required at boot, same as the JWT secrets, since an unset value would
+  // otherwise silently disable a security control rather than fail loudly.
+  turnstile: {
+    secretKey: process.env.TURNSTILE_SECRET_KEY,
+    // Optional: comma-separated allow-list of hostnames the widget is
+    // expected to be served from (siteverify's `hostname` response field).
+    // Left empty, hostname isn't checked — set this in production once the
+    // frontend's deployed domain is known.
+    allowedHostnames: (process.env.TURNSTILE_HOSTNAMES || '')
+      .split(',')
+      .map((h) => h.trim())
+      .filter(Boolean),
+  },
 
   rateLimit: {
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 15 * 60 * 1000,

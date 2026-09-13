@@ -2,6 +2,16 @@ const request = require('supertest');
 const jwt = require('jsonwebtoken');
 const { buildTestApp, teardownTestApp } = require('../helpers/testApp');
 
+// Real Cloudflare verification is never exercised here — /auth/register is
+// gated by middlewares/verifyTurnstile.js, which this stubs out so these
+// tests don't depend on network access or a real widget/secret pair. A
+// fixed 'test-turnstile-token' body value is enough to pass Joi's presence
+// check; this mock is what actually approves it.
+jest.mock('../../services/turnstile.service', () => ({
+  verifyToken: jest.fn().mockResolvedValue({ success: true }),
+}));
+const TURNSTILE_TOKEN = 'test-turnstile-token';
+
 describe('Auth: register / login / refresh / change-password', () => {
   let app;
   let database;
@@ -34,7 +44,10 @@ describe('Auth: register / login / refresh / change-password', () => {
   async function registerAndLogin(prefix = 'refresh-user') {
     const email = uniqueEmail(prefix);
     const password = 'Sup3rSecret!';
-    await request(app).post('/api/v1/auth/register').send({ email, password, name: 'Refresh User' }).expect(201);
+    await request(app)
+      .post('/api/v1/auth/register')
+      .send({ email, password, name: 'Refresh User', turnstileToken: TURNSTILE_TOKEN })
+      .expect(201);
     const res = await request(app).post('/api/v1/auth/login').send({ email, password }).expect(200);
     return res.body.data;
   }
@@ -42,7 +55,7 @@ describe('Auth: register / login / refresh / change-password', () => {
   it('registers a new student and immediately issues tokens', async () => {
     const res = await request(app)
       .post('/api/v1/auth/register')
-      .send({ email: 'newbie@example.com', password: 'Sup3rSecret!', name: 'New Bie' })
+      .send({ email: 'newbie@example.com', password: 'Sup3rSecret!', name: 'New Bie', turnstileToken: TURNSTILE_TOKEN })
       .expect(201);
     expect(res.body.success).toBe(true);
     expect(res.body.data.accessToken).toBeTruthy();
@@ -58,7 +71,10 @@ describe('Auth: register / login / refresh / change-password', () => {
 
   it('rejects login with the wrong password', async () => {
     const email = uniqueEmail('wrong-pw');
-    await request(app).post('/api/v1/auth/register').send({ email, password: 'Sup3rSecret!', name: 'Wrong Pw' }).expect(201);
+    await request(app)
+      .post('/api/v1/auth/register')
+      .send({ email, password: 'Sup3rSecret!', name: 'Wrong Pw', turnstileToken: TURNSTILE_TOKEN })
+      .expect(201);
     await request(app).post('/api/v1/auth/login').send({ email, password: 'wrong-password' }).expect(401);
   });
 
@@ -114,7 +130,10 @@ describe('Auth: register / login / refresh / change-password', () => {
   // Regression test for C-3.
   it('changes password, rejects the wrong current password, and invalidates the old refresh token', async () => {
     const email = uniqueEmail('changer');
-    await request(app).post('/api/v1/auth/register').send({ email, password: 'OldPass123!', name: 'Changer' }).expect(201);
+    await request(app)
+      .post('/api/v1/auth/register')
+      .send({ email, password: 'OldPass123!', name: 'Changer', turnstileToken: TURNSTILE_TOKEN })
+      .expect(201);
     const login = await request(app).post('/api/v1/auth/login').send({ email, password: 'OldPass123!' }).expect(200);
     const { accessToken, refreshToken } = login.body.data;
 
@@ -141,7 +160,10 @@ describe('Auth: register / login / refresh / change-password', () => {
 
   it('rejects change-password to the same password', async () => {
     const email = uniqueEmail('samepass');
-    await request(app).post('/api/v1/auth/register').send({ email, password: 'Password123!', name: 'Same Pass' }).expect(201);
+    await request(app)
+      .post('/api/v1/auth/register')
+      .send({ email, password: 'Password123!', name: 'Same Pass', turnstileToken: TURNSTILE_TOKEN })
+      .expect(201);
     const login = await request(app).post('/api/v1/auth/login').send({ email, password: 'Password123!' }).expect(200);
 
     await request(app)

@@ -17,6 +17,10 @@ const register = Joi.object({
   role: Joi.string().max(50),
   company_name: Joi.string().max(255).allow('', null),
   companyName: Joi.string().max(255).allow('', null),
+  // Cloudflare Turnstile token from the widget rendered with data-action="register"
+  // — verified server-side in middlewares/verifyTurnstile.js before this schema's
+  // result ever reaches the controller.
+  turnstileToken: Joi.string().max(2048).required(),
 }).or('name', 'fullName');
 
 const login = Joi.object({
@@ -39,6 +43,8 @@ const refresh = Joi.object({
 
 const forgotPassword = Joi.object({
   email: Joi.string().email().required(),
+  // Cloudflare Turnstile token, widget rendered with data-action="forgot_password".
+  turnstileToken: Joi.string().max(2048).required(),
 });
 
 const resetPassword = Joi.object({

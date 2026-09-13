@@ -19,6 +19,11 @@ async function buildTestApp() {
   process.env.JWT_REFRESH_EXPIRES_IN = '7d';
   process.env.FRONTEND_URL = 'http://localhost:3000';
   process.env.CORS_ORIGINS = 'http://localhost:3000';
+  // Only needs to satisfy env.js's required-var check — the real Cloudflare
+  // siteverify call is never reached in tests, since every test that hits a
+  // Turnstile-gated route mocks src/services/turnstile.service.js instead
+  // (see auth.test.js) rather than making a real network call.
+  if (!process.env.TURNSTILE_SECRET_KEY) process.env.TURNSTILE_SECRET_KEY = 'test-turnstile-secret';
   process.env.NODE_ENV = 'test';
   // High enough that a single test file's requests never trip the general
   // limiter — auth-specific endpoints keep their own tighter limiter

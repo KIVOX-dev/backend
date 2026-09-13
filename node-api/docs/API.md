@@ -38,12 +38,19 @@ service-layer checks. Students only ever see/act on their own student/applicatio
 
 | Method | Path              | Auth | Body                                             | Notes                                |
 |--------|-------------------|------|--------------------------------------------------|---------------------------------------|
-| POST   | `/auth/register`  | none | `email, password, fullName, phone?, institutionId?` | Always creates a `student` account |
+| POST   | `/auth/register`  | none | `email, password, fullName, phone?, institutionId?, turnstileToken` | Always creates a `student` account |
 | POST   | `/auth/login`     | none | `email, password`                                | Returns `{ user, accessToken, refreshToken }` |
 | POST   | `/auth/google`    | none | `idToken`                                        | Verifies Google ID token server-side  |
 | POST   | `/auth/refresh`   | none | `refreshToken`                                   | Returns new `{ accessToken, refreshToken }` |
 | GET    | `/auth/me`        | any  | —                                                 | Current user profile                  |
+| POST   | `/auth/forgot-password` | none | `email, turnstileToken`                     | Always 200 with a generic message, regardless of whether the email exists |
 | PUT    | `/auth/change-password` | any | `currentPassword`/`current_password`, `newPassword`/`new_password` | Bumps `token_version` (invalidates other sessions' refresh tokens), returns a fresh token pair for the caller's own session |
+
+`turnstileToken` is the Cloudflare Turnstile widget response (`data-action="register"` /
+`data-action="forgot_password"` respectively), verified server-side against Cloudflare's
+`siteverify` API before the request reaches its handler — see `middlewares/verifyTurnstile.js`.
+A missing/invalid/reused token, an action mismatch, or a `TURNSTILE_HOSTNAMES` mismatch all fail
+the same way: `403 TURNSTILE_FAILED`.
 
 `POST /auth/refresh` accepts the token as either `refreshToken` or `refresh_token` in the body, and
 its response includes the new tokens both nested under `data` (standard envelope) *and* flattened
