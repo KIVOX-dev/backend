@@ -26,6 +26,14 @@ const register = Joi.object({
 const login = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
+  // Not .required() here (unlike register/forgotPassword) — /auth/login is
+  // shared by all 6 role login forms and a huge existing test surface calls
+  // it without this field. Enforcement still happens for real: a missing
+  // token reaches middlewares/verifyTurnstile.js, which calls the real
+  // Cloudflare check and 403s regardless of what Joi allowed through. Making
+  // it Joi-required would only change a missing-field response from 403 to
+  // 400 — not worth breaking ~20 test files across the suite for that.
+  turnstileToken: Joi.string().max(2048),
 });
 
 const googleLogin = Joi.object({

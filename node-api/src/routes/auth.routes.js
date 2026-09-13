@@ -15,7 +15,7 @@ router.post(
   verifyTurnstile('register'),
   authController.register
 );
-router.post('/login', authLimiter, validate(schema.login), authController.login);
+router.post('/login', authLimiter, validate(schema.login), verifyTurnstile('login'), authController.login);
 router.post('/google', authLimiter, validate(schema.googleLogin), authController.googleLogin);
 router.post('/refresh', authLimiter, validate(schema.refresh), authController.refresh);
 router.get('/me', authenticate, authController.me);

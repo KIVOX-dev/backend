@@ -11,4 +11,5 @@ module.exports = {
   // timeout keeps the suite reliable both locally and in CI.
   maxWorkers: 2,
   testTimeout: 30000,
+  setupFiles: ['<rootDir>/src/__tests__/setupTurnstileMock.js'],
 };
