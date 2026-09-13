@@ -20,7 +20,10 @@
     "db:seed-question-bank": "node scripts/seedQuestionBank.js",
     "db:seed-departments": "node scripts/seedDepartments.js",
     "loadtest:token": "node scripts/mintLoadTestToken.js",
-    "loadtest": "node scripts/loadtest/run.js"
+    "loadtest": "node scripts/loadtest/run.js",
+    "migrate:run": "node migration/migrate.js",
+    "migrate:verify": "node migration/verify.js",
+    "migrate:setup-indexes": "node migration/setupTargetIndexes.js"
   },
   "engines": {
     "node": ">=24.0.0"
