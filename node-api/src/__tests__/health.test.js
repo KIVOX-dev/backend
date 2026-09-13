@@ -1,6 +1,7 @@
 process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-jwt-secret';
 process.env.JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'test-jwt-refresh-secret';
 process.env.MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017';
+process.env.TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY || 'test-turnstile-secret';
 
 const request = require('supertest');
 const app = require('../app');
