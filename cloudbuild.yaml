@@ -137,7 +137,11 @@ steps:
       - --image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/node-api:${SHORT_SHA}
       - --region=${_REGION}
       - --allow-unauthenticated
-      - --set-env-vars=^;^NODE_ENV=production;AI_SERVICE_URL=https://ai-service-177421000110.asia-south1.run.app;CORS_ORIGINS=https://www.talentsnaps.com,https://talentsnaps.com,http://localhost:3000;BREVO_SENDER_EMAIL=07kavimaran@gmail.com;BREVO_SENDER_NAME=UpScaler-AI;FRONTEND_URL=https://www.talentsnaps.com;TURNSTILE_HOSTNAMES=talentsnaps.com,www.talentsnaps.com
+      # GOOGLE_CLIENT_ID: not secret (it's the OAuth audience, already public in every
+      # frontend Google Identity Services request) — GOOGLE_CLIENT_SECRET is deliberately
+      # NOT set here: src/utils/googleAuth.js only verifies ID tokens (audience check),
+      # which never needs the secret; nothing in this codebase reads it.
+      - --set-env-vars=^;^NODE_ENV=production;AI_SERVICE_URL=https://ai-service-177421000110.asia-south1.run.app;CORS_ORIGINS=https://www.talentsnaps.com,https://talentsnaps.com,http://localhost:3000;BREVO_SENDER_EMAIL=07kavimaran@gmail.com;BREVO_SENDER_NAME=UpScaler-AI;FRONTEND_URL=https://www.talentsnaps.com;TURNSTILE_HOSTNAMES=talentsnaps.com,www.talentsnaps.com;GOOGLE_CLIENT_ID=435349081708-0inh7fen8dnse14g6vlsmm6r5n25ap44.apps.googleusercontent.com
       # TURNSTILE_SECRET_KEY: create this secret in Secret Manager BEFORE the next
       # deploy runs — env.js requires it at boot (same as the JWT secrets), so a
       # missing secret here means node-api fails to start in production, not just
