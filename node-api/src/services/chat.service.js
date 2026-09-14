@@ -7,6 +7,11 @@ class ChatService {
     return { messages };
   }
 
+  async getBroadcastHistory(userId, scope, limit = 50) {
+    const messages = await messageRepository.findBroadcastHistory(userId, scope, limit);
+    return { messages };
+  }
+
   // Contacts this user has an actual conversation with, regardless of role
   // directory scoping — see message.repository.js#findPartnerIds for why
   // this exists at all.

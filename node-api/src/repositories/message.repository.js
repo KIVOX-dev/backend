@@ -23,6 +23,30 @@ class MessageRepository extends BaseRepository {
     return docs.map((d) => this._toEntity(d)).reverse();
   }
 
+  // The sender's own view of "my broadcast history" — one row per broadcast
+  // SEND, not per fanned-out recipient copy (there could be dozens of those
+  // for a single send). No conversation document backs a broadcast (there's
+  // no single receiver_id to query by — see message.model.js's comment), so
+  // this is the only way that history persists across sessions at all;
+  // without it, GET /chat/history/-1 (the frontend's virtual broadcast
+  // contact id) always legitimately returns nothing, and a broadcast the
+  // admin just sent looks like it "vanishes" the moment local React state
+  // resets (e.g. on logout/login), even though every real recipient's own
+  // copy is durably stored and correct.
+  async findBroadcastHistory(senderId, scope, limit = 50) {
+    const docs = await this.collection
+      .aggregate([
+        { $match: { sender_id: senderId, broadcast_scope: scope, broadcast_id: { $exists: true, $ne: null } } },
+        { $sort: { created_at: -1 } },
+        { $group: { _id: '$broadcast_id', doc: { $first: '$$ROOT' } } },
+        { $replaceRoot: { newRoot: '$doc' } },
+        { $sort: { created_at: -1 } },
+        { $limit: limit },
+      ])
+      .toArray();
+    return docs.map((d) => this._toEntity(d)).reverse();
+  }
+
   // Every distinct user this person has exchanged at least one message with,
   // in either direction — this is what lets a message actually SHOW UP for
   // its recipient. Without it, the frontend's contact list is built purely

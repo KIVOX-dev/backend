@@ -167,8 +167,24 @@ function attachChatServer(httpServer) {
         return;
       }
 
-      const { receiver_id: receiverId, content } = data;
+      const { receiver_id: receiverId, content, broadcast_id: broadcastId, broadcast_scope: broadcastScope } = data;
       if (!receiverId || !content || typeof content !== 'string') return;
+
+      // Only meaningful (and only trusted) from an admin fanning one
+      // compose-time send out to many recipients — see PlatformChat.tsx's
+      // broadcast branch of handleSend, which generates one broadcastId per
+      // send and stamps it on every fanned-out copy. A non-admin can't
+      // trigger this path from the UI at all; silently drop the fields
+      // rather than validate-and-reject so a malformed/forged value on an
+      // ordinary 1:1 message just degrades to a normal message, not an error.
+      const isAdminSender = socket.user.role === 'institution_admin' || socket.user.role === 'super_admin';
+      const validScopes = new Set(['student', 'faculty', 'everyone']);
+      const useBroadcastFields =
+        isAdminSender &&
+        typeof broadcastId === 'string' &&
+        broadcastId.length > 0 &&
+        broadcastId.length <= 100 &&
+        validScopes.has(broadcastScope);
 
       if (isRateLimited(socket)) {
         if (socket.readyState === socket.OPEN) {
@@ -208,6 +224,7 @@ function attachChatServer(httpServer) {
           sender_role: socket.user.role,
           receiver_id: receiverId,
           content,
+          ...(useBroadcastFields ? { broadcast_id: broadcastId, broadcast_scope: broadcastScope } : {}),
         });
       } catch (err) {
         logger.error('Failed to persist chat message', { error: err.message });
