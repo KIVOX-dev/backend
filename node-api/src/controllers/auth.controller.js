@@ -70,6 +70,11 @@ const me = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, user);
 });
 
+const activityHeatmap = asyncHandler(async (req, res) => {
+  const result = await authService.activityHeatmap(req.user.id);
+  ApiResponse.ok(res, result);
+});
+
 // Always the same generic message, whether or not the email belongs to a
 // real account — see authService.js#forgotPassword for why.
 const forgotPassword = asyncHandler(async (req, res) => {
@@ -105,6 +110,7 @@ module.exports = {
   googleLogin,
   refresh,
   me,
+  activityHeatmap,
   forgotPassword,
   resetPassword,
   changeInitialPassword,

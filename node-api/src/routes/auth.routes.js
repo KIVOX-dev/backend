@@ -19,6 +19,7 @@ router.post('/login', authLimiter, validate(schema.login), verifyTurnstile('logi
 router.post('/google', authLimiter, validate(schema.googleLogin), authController.googleLogin);
 router.post('/refresh', authLimiter, validate(schema.refresh), authController.refresh);
 router.get('/me', authenticate, authController.me);
+router.get('/me/activity-heatmap', authenticate, authController.activityHeatmap);
 
 // Same authLimiter as login/register — these are exactly the kind of
 // endpoint credential-stuffing/enumeration tooling targets.

@@ -29,6 +29,19 @@ class AssessmentAttemptRepository extends BaseRepository {
     return result ? { tests_completed: result.tests_completed, avg_accuracy: result.avg_accuracy } : { tests_completed: 0, avg_accuracy: 0 };
   }
 
+  // Same day-grouping purpose as activityLogRepository#countLoginsByDay —
+  // see that comment. One source among several the heatmap merges (see
+  // auth.service.js#activityHeatmap).
+  async countByDay(studentId, since) {
+    const rows = await this.collection
+      .aggregate([
+        { $match: { student_id: studentId, created_at: { $gte: since } } },
+        { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$created_at' } }, count: { $sum: 1 } } },
+      ])
+      .toArray();
+    return rows.map((r) => ({ date: r._id, count: r.count }));
+  }
+
   async recentForStudent(studentId, limit = 100) {
     const docs = await this.collection
       .find({ student_id: studentId })

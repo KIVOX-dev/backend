@@ -1,6 +1,9 @@
 const userRepository = require('../repositories/user.repository');
 const institutionRepository = require('../repositories/institution.repository');
 const studentRepository = require('../repositories/student.repository');
+const activityLogRepository = require('../repositories/activityLog.repository');
+const assessmentAttemptRepository = require('../repositories/assessmentAttempt.repository');
+const interviewAttemptRepository = require('../repositories/interviewAttempt.repository');
 const { hashPassword, verifyPassword } = require('../utils/password');
 const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../utils/jwt');
 const { verifyGoogleIdToken } = require('../utils/googleAuth');
@@ -240,6 +243,48 @@ async function me(userId) {
   return withCollegeName(sanitizeUser(user));
 }
 
+// ~53 weeks — matches the width of GitHub's own contribution grid (its
+// rightmost column is the current week, so this intentionally overshoots a
+// calendar year by a few days rather than under-filling the grid).
+const HEATMAP_WINDOW_DAYS = 371;
+
+// A "day" here means "this user did something" — logins (every role) plus,
+// for students specifically, completed practice tests and mock interviews.
+// Sourced from three different collections (see
+// activityLogRepository#countLoginsByDay and the two #countByDay methods)
+// and merged in-app since each is already pre-aggregated to a handful of
+// per-day rows by the time it gets here, not raw event volume.
+async function activityHeatmap(userId) {
+  const user = await userRepository.findById(userId);
+  if (!user) throw ApiError.notFound('User not found');
+
+  const since = new Date(Date.now() - HEATMAP_WINDOW_DAYS * 24 * 60 * 60 * 1000);
+  const sources = [activityLogRepository.countLoginsByDay(userId, since)];
+
+  // student_id on assessment/interview attempts is the students collection's
+  // own _id, not this user's id — see student.service.js's comment on the
+  // same distinction. Only students have either collection at all.
+  const student = await studentRepository.findByUserId(userId);
+  if (student) {
+    sources.push(assessmentAttemptRepository.countByDay(student.id, since));
+    sources.push(interviewAttemptRepository.countByDay(student.id, since));
+  }
+
+  const perSource = await Promise.all(sources);
+  const merged = new Map();
+  for (const rows of perSource) {
+    for (const { date, count } of rows) {
+      merged.set(date, (merged.get(date) || 0) + count);
+    }
+  }
+
+  const days = Array.from(merged.entries())
+    .map(([date, count]) => ({ date, count }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  return { days };
+}
+
 // Never reveals whether `email` belongs to a real account — the controller
 // returns the same generic success message either way. Enumeration would let
 // an attacker build a list of valid accounts to target with credential
@@ -340,6 +385,7 @@ module.exports = {
   googleLogin,
   refresh,
   me,
+  activityHeatmap,
   forgotPassword,
   resetPassword,
   changeInitialPassword,
