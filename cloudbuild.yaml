@@ -137,6 +137,15 @@ steps:
       - --image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/node-api:${SHORT_SHA}
       - --region=${_REGION}
       - --allow-unauthenticated
+      # Cloud Run's default request timeout (300s) applies to a WebSocket
+      # connection's ENTIRE lifetime, not just the initial handshake — Cloud
+      # Run models a WS session as one long-lived HTTP request. Without this,
+      # every chat connection (src/websocket/chatServer.js) gets force-closed
+      # every 5 minutes, which the frontend's reconnect logic papers over
+      # (useReconnectingSocket.ts) but still means a mid-conversation drop +
+      # reconnect roughly every 5 minutes for anyone with chat open. 3600s is
+      # Cloud Run's own maximum.
+      - --timeout=3600
       # GOOGLE_CLIENT_ID: not secret (it's the OAuth audience, already public in every
       # frontend Google Identity Services request) — GOOGLE_CLIENT_SECRET is deliberately
       # NOT set here: src/utils/googleAuth.js only verifies ID tokens (audience check),
