@@ -22,6 +22,30 @@ class MessageRepository extends BaseRepository {
       .toArray();
     return docs.map((d) => this._toEntity(d)).reverse();
   }
+
+  // Every distinct user this person has exchanged at least one message with,
+  // in either direction — this is what lets a message actually SHOW UP for
+  // its recipient. Without it, the frontend's contact list is built purely
+  // from a role directory (GET /students, GET /users/), which never includes
+  // whoever actually messaged you (e.g. an institution admin broadcasting to
+  // students, who never appears in a student's own /students-scoped
+  // directory) — the message is correctly persisted and delivered over the
+  // socket, but there's nowhere in the UI it can appear until the sender is
+  // a selectable contact. See chat.service.js#getThreads, the caller.
+  async findPartnerIds(userId) {
+    const rows = await this.collection
+      .aggregate([
+        { $match: { $or: [{ sender_id: userId }, { receiver_id: userId }] } },
+        {
+          $project: {
+            partnerId: { $cond: [{ $eq: ['$sender_id', userId] }, '$receiver_id', '$sender_id'] },
+          },
+        },
+        { $group: { _id: '$partnerId' } },
+      ])
+      .toArray();
+    return rows.map((r) => r._id).filter(Boolean);
+  }
 }
 
 module.exports = new MessageRepository();

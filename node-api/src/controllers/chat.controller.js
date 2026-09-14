@@ -8,4 +8,9 @@ const history = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, result);
 });
 
-module.exports = { history };
+const threads = asyncHandler(async (req, res) => {
+  const result = await chatService.getThreads(req.user.id);
+  ApiResponse.ok(res, result);
+});
+
+module.exports = { history, threads };
