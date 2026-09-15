@@ -9,6 +9,11 @@ const { ROLES } = require('../config/constants');
 const { canActOnStudent } = require('../utils/authz');
 const ApiError = require('../utils/ApiError');
 
+// Rows returned by leaderboard() after ranking the full eligible pool —
+// keeps the response (and the frontend's un-paginated table) bounded without
+// reintroducing the recency-sampling bug a capped fetch caused before.
+const LEADERBOARD_DISPLAY_LIMIT = 100;
+
 // Fixed thresholds, checked every call to evaluate() — ported verbatim from
 // python-service's achievements.py. Idempotent per type (won't double-award)
 // but never revokes if a metric later regresses, same as the source: these
@@ -77,7 +82,16 @@ class AchievementService {
     const filters = { role: ROLES.STUDENT, status: 'approved' };
     if (scope === 'college' && actor.institutionId) filters.institution_id = actor.institutionId;
 
-    const { rows: users } = await userRepository.findAll({ page: 1, limit: 100, filters });
+    // limit: 0 (MongoDB driver convention for "no limit") — score isn't a
+    // stored field, so it can't be sorted in the query itself; ranking only
+    // happens after fetching, in JS, below. A capped fetch here (the old
+    // limit: 100) sorted by BaseRepository's default `created_at: -1` first,
+    // so it silently ranked only the 100 most-recently-created students
+    // nationwide rather than the true top scorers — a college that onboarded
+    // a large batch together could fill that entire window and crowd out
+    // every higher-scoring student everywhere else. The top-N slice below,
+    // after sorting by score, is what actually keeps the response bounded.
+    const { rows: users } = await userRepository.findAll({ page: 1, limit: 0, filters });
 
     const institutionCache = new Map();
     const rows = await Promise.all(
@@ -134,7 +148,10 @@ class AchievementService {
       row.rank = rank;
     });
 
-    return ranked;
+    // Rank numbers above are computed over the full pool so they stay
+    // accurate; only the response is capped, so a #87 is never mislabeled
+    // #1 just because everyone ranked above them got cut off first.
+    return ranked.slice(0, LEADERBOARD_DISPLAY_LIMIT);
   }
 }
 
