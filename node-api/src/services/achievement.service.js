@@ -119,8 +119,19 @@ class AchievementService {
     // python-service.
     const activeRows = rows.filter((r) => r.score > 0);
     const ranked = (activeRows.length > 0 ? activeRows : rows).sort((a, b) => b.score - a.score);
+    // Standard competition ranking ("1224"): tied scores share a rank, and
+    // the next distinct score's rank skips ahead by the number of ties
+    // rather than incrementing by one — otherwise equal scores were getting
+    // sequential ranks (and, on the frontend, different 🥇🥈🥉 medals) purely
+    // from array order, which misrepresents an actual tie.
+    let rank = 0;
+    let prevScore = null;
     ranked.forEach((row, i) => {
-      row.rank = i + 1;
+      if (row.score !== prevScore) {
+        rank = i + 1;
+        prevScore = row.score;
+      }
+      row.rank = rank;
     });
 
     return ranked;
