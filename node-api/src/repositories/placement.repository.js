@@ -1,9 +1,22 @@
 const BaseRepository = require('./BaseRepository');
 const { tableName, columns, defaults } = require('../models/placement.model');
+const { escapeRegex } = require('../utils/regex');
 
 class PlacementRepository extends BaseRepository {
   constructor() {
     super(tableName, columns, { defaults });
+  }
+
+  // Backs GET /search — same institution-agnostic-postings-are-still-visible
+  // reasoning as findAllForActorInstitution above.
+  async searchByTitleOrCompany(query, institutionId, limit = 10) {
+    const safe = escapeRegex(query);
+    const textMatch = { $or: [{ title: { $regex: safe, $options: 'i' } }, { company_name: { $regex: safe, $options: 'i' } }] };
+    const filter = institutionId
+      ? { $and: [textMatch, { $or: [{ institution_id: institutionId }, { institution_id: { $exists: false } }, { institution_id: null }] }] }
+      : textMatch;
+    const docs = await this.collection.find(filter).limit(limit).toArray();
+    return docs.map((d) => this._toEntity(d));
   }
 
   // Backs PlacementService#list for every non-super-admin actor. A plain

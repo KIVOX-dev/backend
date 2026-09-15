@@ -46,5 +46,6 @@ router.use('/leaderboard', require('./leaderboard.routes'));
 router.use('/dashboard', require('./dashboard.routes'));
 router.use('/batches', require('./batch.routes'));
 router.use('/chat', require('./chat.routes'));
+router.use('/search', require('./search.routes'));
 
 module.exports = router;

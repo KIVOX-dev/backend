@@ -148,11 +148,21 @@ class TestService extends BaseService {
       const student = studentById.get(r.student_id);
       const user = student ? userById.get(student.user_id) : null;
       const department = student ? departmentById.get(student.department_id) : null;
+      // max_score disambiguates when the fallback kicks in (the test this
+      // attempt belongs to was deleted after the fact — attempts are kept
+      // regardless, see assessmentAttempt.model.js) — otherwise every
+      // deleted test's attempts collapse into one identical-looking
+      // "Unknown test" label, which is what made the Results filter
+      // dropdown look broken: several genuinely different tests, all
+      // indistinguishable in the UI. The frontend's own filter/group-by
+      // uses test_id (always present, unlike the title), so this is purely
+      // about the human-readable label, not correctness of the grouping.
+      const test = testById.get(r.test_id);
       return {
         ...r,
         student_name: user?.full_name || 'Unknown student',
         roll_number: student?.roll_number || '—',
-        test_title: testById.get(r.test_id)?.title || 'Unknown test',
+        test_title: test?.title || `Unknown test (${r.max_score ?? '?'} pts)`,
         department_name: department?.name || '—',
       };
     });

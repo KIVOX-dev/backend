@@ -19,7 +19,16 @@ const update = Joi.object({
 });
 
 const submit = Joi.object({
-  answers: Joi.object().pattern(Joi.string().uuid(), Joi.string().max(2000)).required(),
+  // .allow('') — an unanswered question is a valid, expected submission
+  // (skipped, not wrong-shaped input): testAssignment.service.js#submitForAssignment
+  // already treats a falsy/empty answer as simply not scoring, never as an
+  // error. AptitudeTests.tsx sends every question's id with "" for whichever
+  // ones the student never selected an option for, so without .allow(''),
+  // Joi's default string rule (empty string not allowed) rejected the
+  // entire submission — one "is not allowed to be empty" per unanswered
+  // question — the moment a student submitted (or the timer auto-submitted)
+  // with anything left blank.
+  answers: Joi.object().pattern(Joi.string().uuid(), Joi.string().max(2000).allow('')).required(),
 });
 
 module.exports = { create, update, submit };
