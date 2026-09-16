@@ -67,12 +67,15 @@ class StudentProfileService {
     return profile;
   }
 
-  // Backs the AI Profile Summarizer (ProfileSummarizer.tsx) — computed
-  // fresh from this student's real assessment/interview/resume data on
-  // every call rather than an AI-generated narrative, so it's cheap to
-  // load and never says something that isn't actually true of this
-  // student's record. See the ai-service Resume Analyzer for the one place
-  // this app does call an LLM, if a real generated summary is wanted later.
+  // Backs the Performance Summary screen (ProfileSummarizer.tsx) — rule-based,
+  // not an LLM: computed fresh from this student's real assessment/interview/
+  // resume data on every call, so it's cheap to load and never says something
+  // that isn't actually true of this student's record. `focus_areas` below is
+  // what actually answers "what should I do next" — every entry names a real
+  // number (a category never attempted, a category under 60%, an exact
+  // missing resume section), not generic advice. See the ai-service Resume
+  // Analyzer for the one place this app does call an LLM, if a real
+  // generated narrative is wanted here later.
   async getSummary(actor) {
     const student = await studentRepository.findByUserId(actor.id);
     if (!student) throw ApiError.notFound('Profile not created yet');
@@ -134,6 +137,60 @@ class StudentProfileService {
 
     const idealRole = topSkill ? CATEGORY_META[topSkill.category]?.role || null : null;
 
+    // Concrete, specific things to do next — not just a single top/weakness
+    // pick (which is null whenever category data is thin, as it is here),
+    // but every category never attempted, every category scoring under 60%,
+    // and the exact resume sections still missing. Each one names the real
+    // number behind it so it reads as a fact about this student, not advice
+    // that could apply to anyone.
+    const focusAreas = [];
+
+    const attemptedCategories = new Set(byCategory.keys());
+    for (const [key, meta] of Object.entries(CATEGORY_META)) {
+      if (!attemptedCategories.has(key)) {
+        focusAreas.push({ severity: 'gap', text: `You haven't attempted any ${meta.label} practice tests yet — start here to build a baseline.` });
+      }
+    }
+
+    for (const stat of categoryStats) {
+      if (stat.avg_percentage < 60) {
+        focusAreas.push({
+          severity: 'weak',
+          text: `${stat.label} is averaging ${stat.avg_percentage}% across ${stat.attempts} attempt${stat.attempts === 1 ? '' : 's'} — your weakest scored area, worth more practice time.`,
+        });
+      }
+    }
+
+    // Real completed tests exist, but every one was an assigned test
+    // (no fixed category — see the loop above building byCategory), so
+    // there's genuine activity with nothing to show a skill breakdown for.
+    if (attempts.length > 0 && categoryStats.length === 0) {
+      focusAreas.push({
+        severity: 'gap',
+        text: `Your ${attempts.length} completed test${attempts.length === 1 ? '' : 's'} were assigned tests with no skill category — try Mock Practice to get a real strengths/weaknesses breakdown.`,
+      });
+    }
+
+    if (interviews.length === 0) {
+      focusAreas.push({ severity: 'gap', text: 'No mock interviews completed yet — try one to build interview confidence and get a baseline score.' });
+    } else if (interviewPct < 60) {
+      focusAreas.push({
+        severity: 'weak',
+        text: `Mock interview average is ${(interviewPct / 10).toFixed(1)}/10 across ${interviews.length} interview${interviews.length === 1 ? '' : 's'} — the score reflects how many questions you actually answered, so answer every one fully.`,
+      });
+    }
+
+    const missingSections = resume ? RESUME_SECTIONS.filter((s) => !isSectionFilled(resume[s])) : RESUME_SECTIONS;
+    if (missingSections.length > 0) {
+      const labels = missingSections.map((s) => s.charAt(0).toUpperCase() + s.slice(1));
+      focusAreas.push({
+        severity: resume ? 'weak' : 'gap',
+        text: resume
+          ? `Resume is missing: ${labels.join(', ')} — filling these in raises your resume completeness above ${resumePct}%.`
+          : `No resume started yet — build one in Resume Builder, starting with ${labels.join(', ')}.`,
+      });
+    }
+
     const name = actor.name || 'This student';
     let executiveSummary;
     if (!hasData) {
@@ -161,6 +218,7 @@ class StudentProfileService {
       interview_pct: interviewPct,
       resume_pct: resumePct,
       category_trends: categoryStats,
+      focus_areas: focusAreas,
     };
   }
 
