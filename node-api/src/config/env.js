@@ -47,6 +47,14 @@ module.exports = {
     // Must exactly match the "Authorization callback URL" registered on the
     // GitHub OAuth App — GitHub rejects the exchange otherwise.
     callbackUrl: process.env.GITHUB_CALLBACK_URL || '',
+    // A single personal access token for the TalentSnaps GitHub account
+    // itself — NOT per-student. Contribution calendars are public data on
+    // GitHub's GraphQL API; any authenticated token can read any public
+    // user's, so this one token (no special scopes needed) is enough to back
+    // every connected student's "My Activity" heatmap. Deliberately separate
+    // from clientId/clientSecret above, which are the OAuth App's connect
+    // flow — this one only ever makes read-only GraphQL queries.
+    appToken: process.env.GITHUB_APP_TOKEN || '',
   },
 
   // The FastAPI AI microservice (interview generation, resume AI features).

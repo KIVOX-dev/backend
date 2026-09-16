@@ -7,6 +7,7 @@ const interviewAttemptRepository = require('../repositories/interviewAttempt.rep
 const { hashPassword, verifyPassword } = require('../utils/password');
 const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../utils/jwt');
 const { verifyGoogleIdToken } = require('../utils/googleAuth');
+const { fetchContributionCalendar } = require('../utils/githubClient');
 const { generateRawToken, hashToken } = require('../utils/token');
 const { sendEmail } = require('./email.service');
 const { passwordResetTemplate, verificationTemplate } = require('./emailTemplates');
@@ -258,13 +259,28 @@ async function activityHeatmap(userId) {
   const user = await userRepository.findById(userId);
   if (!user) throw ApiError.notFound('User not found');
 
-  const since = new Date(Date.now() - HEATMAP_WINDOW_DAYS * 24 * 60 * 60 * 1000);
-  const sources = [activityLogRepository.countLoginsByDay(userId, since)];
-
   // student_id on assessment/interview attempts is the students collection's
   // own _id, not this user's id — see student.service.js's comment on the
   // same distinction. Only students have either collection at all.
   const student = await studentRepository.findByUserId(userId);
+
+  // A connected GitHub account's real contribution history is more
+  // informative than this platform's own (much sparser) login/test/interview
+  // count — swap to it when available. Best-effort: any failure (rate limit,
+  // GITHUB_APP_TOKEN unset, GitHub outage) falls through to the platform
+  // calculation below rather than breaking the whole "My Activity" screen
+  // over a heatmap that isn't the primary feature.
+  if (student?.github_username && env.github.appToken) {
+    try {
+      const days = await fetchContributionCalendar(student.github_username, env.github.appToken);
+      return { days, source: 'github' };
+    } catch (err) {
+      logger.error('Falling back to platform activity heatmap', { userId, error: err.message });
+    }
+  }
+
+  const since = new Date(Date.now() - HEATMAP_WINDOW_DAYS * 24 * 60 * 60 * 1000);
+  const sources = [activityLogRepository.countLoginsByDay(userId, since)];
   if (student) {
     sources.push(assessmentAttemptRepository.countByDay(student.id, since));
     sources.push(interviewAttemptRepository.countByDay(student.id, since));
@@ -282,7 +298,7 @@ async function activityHeatmap(userId) {
     .map(([date, count]) => ({ date, count }))
     .sort((a, b) => a.date.localeCompare(b.date));
 
-  return { days };
+  return { days, source: 'platform' };
 }
 
 // Never reveals whether `email` belongs to a real account — the controller

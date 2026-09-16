@@ -55,4 +55,47 @@ async function fetchGitHubUser(accessToken) {
   return { id: String(data.id), username: data.login, avatarUrl: data.avatar_url };
 }
 
-module.exports = { exchangeCodeForToken, fetchGitHubUser, GitHubOAuthError };
+// Contribution calendars are public GitHub data — any valid token can read
+// any public user's, so `appToken` here is always the app's own token (see
+// env.js's comment), never the individual student's. Returns a flat
+// {date, count}[] already shaped to match auth.service.js#activityHeatmap's
+// existing response contract, so the frontend needs no changes to consume it.
+async function fetchContributionCalendar(username, appToken) {
+  const query = `
+    query($login: String!) {
+      user(login: $login) {
+        contributionsCollection {
+          contributionCalendar {
+            weeks { contributionDays { date contributionCount } }
+          }
+        }
+      }
+    }
+  `;
+
+  const response = await fetchWithTimeout('https://api.github.com/graphql', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${appToken}`,
+      'Content-Type': 'application/json',
+      'User-Agent': 'talentsnaps-node-api',
+    },
+    body: JSON.stringify({ query, variables: { login: username } }),
+  });
+
+  const data = await response.json().catch(() => null);
+  const calendar = data?.data?.user?.contributionsCollection?.contributionCalendar;
+  if (!response.ok || !calendar) {
+    logger.error('GitHub contribution calendar fetch failed', {
+      status: response.status,
+      error: data && data.errors && data.errors[0] && data.errors[0].message,
+    });
+    throw new GitHubOAuthError('Could not fetch GitHub contributions');
+  }
+
+  return calendar.weeks
+    .flatMap((week) => week.contributionDays)
+    .map((day) => ({ date: day.date, count: day.contributionCount }));
+}
+
+module.exports = { exchangeCodeForToken, fetchGitHubUser, fetchContributionCalendar, GitHubOAuthError };
