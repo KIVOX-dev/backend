@@ -14,6 +14,11 @@ module.exports = {
     // it's used.
     'year_of_study', 'semester', 'section', 'phone', 'date_of_birth',
     'gender', 'address', 'profile_completed',
+    // Integrations tab — GitHub is a real OAuth connection (see
+    // services/githubAuth.service.js); github_id is GitHub's own numeric user
+    // id (stable across username changes), used to detect one GitHub account
+    // already linked to a different student.
+    'github_id', 'github_username', 'github_avatar_url', 'github_connected_at',
   ],
   defaults: { profile_completed: false },
 };

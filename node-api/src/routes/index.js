@@ -12,6 +12,10 @@ const router = express.Router();
 router.get('/', (req, res) => res.status(200).json({ name, version, status: 'ok' }));
 
 router.use('/auth', require('./auth.routes'));
+// Registered after the general /auth router — distinct '/github' prefix
+// never collides with it, but keeping it visually grouped with auth here
+// matches where GitHub's own redirect callback conceptually belongs.
+router.use('/auth/github', require('./githubAuth.routes'));
 router.use('/users', require('./user.routes'));
 router.use('/institutions', require('./institution.routes'));
 router.use('/departments', require('./department.routes'));

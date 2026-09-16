@@ -38,6 +38,17 @@ module.exports = {
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   },
 
+  // Lets a student connect their GitHub account from the Integrations tab.
+  // Optional, same philosophy as aiService/brevo below — githubAuth.service.js
+  // degrades to a 503 on /auth/github/connect rather than blocking boot when unset.
+  github: {
+    clientId: process.env.GITHUB_CLIENT_ID || '',
+    clientSecret: process.env.GITHUB_CLIENT_SECRET || '',
+    // Must exactly match the "Authorization callback URL" registered on the
+    // GitHub OAuth App — GitHub rejects the exchange otherwise.
+    callbackUrl: process.env.GITHUB_CALLBACK_URL || '',
+  },
+
   // The FastAPI AI microservice (interview generation, resume AI features).
   // Not required at startup — utils/aiServiceClient.js degrades gracefully
   // (local fallback) when unset or unreachable, same philosophy as groq above.
