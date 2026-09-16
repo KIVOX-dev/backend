@@ -7,6 +7,12 @@ const interviewAttemptRepository = require('../repositories/interviewAttempt.rep
 const resumeBuilderRepository = require('../repositories/resumeBuilder.repository');
 const testRepository = require('../repositories/test.repository');
 const ApiError = require('../utils/ApiError');
+const {
+  verifyLeetcodeUsername,
+  verifyHackerrankUsername,
+  verifyDribbbleUsername,
+  SocialProfileNotFoundError,
+} = require('../utils/socialProfileClient');
 
 // Category -> (display label, one plausible role a strength there points
 // toward). Deliberately simple/rule-based, not AI-generated — see
@@ -223,7 +229,41 @@ class StudentProfileService {
     if (data.gender) payload.gender = data.gender;
     if (data.address) payload.address = data.address;
 
+    // Unlike the fields above, these three support clearing (Disconnect
+    // sends ''), so each needs an explicit `!== undefined` check rather than
+    // the truthy checks above — a falsy '' must still reach `payload` (as
+    // null) instead of being silently skipped.
+    if (data.leetcodeUsername !== undefined) {
+      payload.leetcode_username = await this._verifyAndNormalize(data.leetcodeUsername, verifyLeetcodeUsername, 'LeetCode');
+    }
+    if (data.hackerrankUsername !== undefined) {
+      payload.hackerrank_username = await this._verifyAndNormalize(data.hackerrankUsername, verifyHackerrankUsername, 'HackerRank');
+    }
+    if (data.dribbbleUsername !== undefined) {
+      payload.dribbble_username = await this._verifyAndNormalize(data.dribbbleUsername, verifyDribbbleUsername, 'Dribbble');
+    }
+
     return studentRepository.updateById(existing.id, payload);
+  }
+
+  // Shared by the three best-effort-verified username fields above. An
+  // empty value clears the field (null); a non-empty one is checked against
+  // the real site — SocialProfileNotFoundError (the site definitively said
+  // "no such user") becomes a 400 the student sees; any other verification
+  // failure (timeout, site outage) is already swallowed inside verifyFn
+  // itself, so the username still saves.
+  async _verifyAndNormalize(rawValue, verifyFn, label) {
+    const value = (rawValue || '').trim();
+    if (!value) return null;
+    try {
+      await verifyFn(value);
+    } catch (err) {
+      if (err instanceof SocialProfileNotFoundError) {
+        throw ApiError.badRequest(`Couldn't find a ${label} user "${value}" — check the username and try again`);
+      }
+      throw err;
+    }
+    return value;
   }
 
   async _validateCollegeDepartment(collegeId, departmentId) {

@@ -19,6 +19,11 @@ module.exports = {
     // id (stable across username changes), used to detect one GitHub account
     // already linked to a different student.
     'github_id', 'github_username', 'github_avatar_url', 'github_connected_at',
+    // LeetCode/HackerRank/Dribbble have no public OAuth surface a third party
+    // can register against (unlike GitHub) — these are self-reported
+    // usernames, best-effort verified against each site at save time (see
+    // utils/socialProfileClient.js), not an authenticated connection.
+    'leetcode_username', 'hackerrank_username', 'dribbble_username',
   ],
   defaults: { profile_completed: false },
 };
