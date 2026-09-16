@@ -24,6 +24,10 @@ module.exports = {
     // usernames, best-effort verified against each site at save time (see
     // utils/socialProfileClient.js), not an authenticated connection.
     'leetcode_username', 'hackerrank_username', 'dribbble_username',
+    // Real OAuth connections, same pattern as github_* above.
+    'linkedin_id', 'linkedin_name', 'linkedin_email', 'linkedin_avatar_url', 'linkedin_connected_at',
+    'stackoverflow_id', 'stackoverflow_display_name', 'stackoverflow_reputation',
+    'stackoverflow_avatar_url', 'stackoverflow_profile_url', 'stackoverflow_connected_at',
   ],
   defaults: { profile_completed: false },
 };

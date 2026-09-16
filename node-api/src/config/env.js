@@ -57,6 +57,29 @@ module.exports = {
     appToken: process.env.GITHUB_APP_TOKEN || '',
   },
 
+  // Lets a student connect their LinkedIn identity — "Sign In with LinkedIn
+  // using OpenID Connect" only, not the old, now-restricted r_liteprofile/
+  // r_emailaddress scopes. Only verified name/email/photo are available at
+  // this scope tier; work history/skills require LinkedIn's separately
+  // gated Marketing Developer Platform partnership, which this app doesn't have.
+  linkedin: {
+    clientId: process.env.LINKEDIN_CLIENT_ID || '',
+    clientSecret: process.env.LINKEDIN_CLIENT_SECRET || '',
+    callbackUrl: process.env.LINKEDIN_CALLBACK_URL || '',
+  },
+
+  // Lets a student connect their Stack Overflow identity via Stack
+  // Exchange's real OAuth 2.0 (stackapps.com/apps/oauth/register). `key` is
+  // a separate "app key" Stack Exchange issues alongside client id/secret —
+  // required on every API call alongside the access token, not a substitute
+  // for client_secret.
+  stackexchange: {
+    clientId: process.env.STACKEXCHANGE_CLIENT_ID || '',
+    clientSecret: process.env.STACKEXCHANGE_CLIENT_SECRET || '',
+    key: process.env.STACKEXCHANGE_KEY || '',
+    callbackUrl: process.env.STACKEXCHANGE_CALLBACK_URL || '',
+  },
+
   // The FastAPI AI microservice (interview generation, resume AI features).
   // Not required at startup — utils/aiServiceClient.js degrades gracefully
   // (local fallback) when unset or unreachable, same philosophy as groq above.

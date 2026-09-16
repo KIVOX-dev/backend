@@ -16,6 +16,8 @@ router.use('/auth', require('./auth.routes'));
 // never collides with it, but keeping it visually grouped with auth here
 // matches where GitHub's own redirect callback conceptually belongs.
 router.use('/auth/github', require('./githubAuth.routes'));
+router.use('/auth/linkedin', require('./linkedinAuth.routes'));
+router.use('/auth/stackexchange', require('./stackexchangeAuth.routes'));
 router.use('/users', require('./user.routes'));
 router.use('/institutions', require('./institution.routes'));
 router.use('/departments', require('./department.routes'));

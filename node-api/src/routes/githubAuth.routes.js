@@ -14,7 +14,7 @@ router.get('/connect', authenticate, authorize(ROLES.STUDENT), githubAuthControl
 
 // Unauthenticated: GitHub redirects the browser straight here with no
 // Authorization header. Identity comes from the signed `state` param minted
-// by /connect (see utils/githubOAuthState.js), not from a session.
+// by /connect (see utils/oauthState.js), not from a session.
 router.get('/callback', authLimiter, githubAuthController.callback);
 
 router.delete('/disconnect', authenticate, authorize(ROLES.STUDENT), githubAuthController.disconnect);

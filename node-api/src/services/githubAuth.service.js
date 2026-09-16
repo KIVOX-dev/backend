@@ -1,5 +1,5 @@
 const studentRepository = require('../repositories/student.repository');
-const { signState, verifyState } = require('../utils/githubOAuthState');
+const { signState, verifyState } = require('../utils/oauthState');
 const { exchangeCodeForToken, fetchGitHubUser, GitHubOAuthError } = require('../utils/githubClient');
 const env = require('../config/env');
 const ApiError = require('../utils/ApiError');
@@ -16,7 +16,7 @@ class GithubAuthService {
   getAuthorizeUrl(actor) {
     if (!this.isConfigured()) throw ApiError.serviceUnavailable('GitHub integration is not configured');
 
-    const state = signState(actor.id);
+    const state = signState(actor.id, 'github');
     const params = new URLSearchParams({
       client_id: env.github.clientId,
       redirect_uri: env.github.callbackUrl,
@@ -44,7 +44,7 @@ class GithubAuthService {
 
     let userId;
     try {
-      userId = verifyState(state).sub;
+      userId = verifyState(state, 'github').sub;
     } catch {
       return `${target}&github=error&reason=expired`;
     }
