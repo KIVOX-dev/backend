@@ -34,11 +34,12 @@ class GithubAuthService {
   // GitHub/user-supplied text), so it's safe to place directly in the query
   // string with no further encoding.
   async handleCallback({ code, state, error }) {
-    // The frontend has no standalone /settings route — Settings is a
-    // client-side screen inside /learner (see uiStore.ts's activeScreen),
-    // not its own URL. `screen=settings` tells that page which screen to
-    // switch to on load; SettingsPanel.tsx itself reads `tab`/`github`/`reason`.
-    const target = `${env.frontendUrl}/learner?screen=settings&tab=integrations`;
+    // The frontend has no standalone /profile route — Profile (Integrations
+    // lives there, not Settings) is a client-side screen inside /learner (see
+    // uiStore.ts's activeScreen), not its own URL. `screen=profile-info`
+    // tells that page which screen to switch to on load; ProfilePanel.tsx
+    // itself reads `tab`/`github`/`reason`.
+    const target = `${env.frontendUrl}/learner?screen=profile-info&tab=integrations`;
     if (error) return `${target}&github=error&reason=denied`;
     if (!code || !state) return `${target}&github=error&reason=invalid_request`;
 

@@ -30,7 +30,9 @@ class LinkedinAuthService {
   }
 
   async handleCallback({ code, state, error }) {
-    const target = `${env.frontendUrl}/learner?screen=settings&tab=integrations`;
+    // Integrations lives on the Profile screen, not Settings — see
+    // githubAuth.service.js's comment on this same redirect shape.
+    const target = `${env.frontendUrl}/learner?screen=profile-info&tab=integrations`;
     if (error) return `${target}&linkedin=error&reason=denied`;
     if (!code || !state) return `${target}&linkedin=error&reason=invalid_request`;
 
