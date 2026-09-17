@@ -16,5 +16,12 @@ module.exports = {
     // correct_answer is stripped before ever reaching a student — see
     // course.controller.js#getLessonAssessment.
     'assessment_questions',
+    // At most one name from config/skillCatalog.js, matched against this
+    // lesson's own title the same moment assessment_questions is generated
+    // (both cached together, both derived from the same title, neither
+    // redone on a later visit) — null if no catalog skill matched. Passing
+    // this lesson's assessment progresses that skill's badge — see
+    // course.service.js#_awardSkillProgress.
+    'skill_name',
   ],
 };

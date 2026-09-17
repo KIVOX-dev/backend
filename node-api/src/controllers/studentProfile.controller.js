@@ -1,4 +1,5 @@
 const studentProfileService = require('../services/studentProfile.service');
+const studentSkillService = require('../services/studentSkill.service');
 const asyncHandler = require('../utils/asyncHandler');
 const ApiResponse = require('../utils/ApiResponse');
 const ApiError = require('../utils/ApiError');
@@ -47,4 +48,25 @@ const updateOwn = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, profile, 'Profile updated');
 });
 
-module.exports = { getOwn, createOwn, updateOwn, getSummary, getLeetcodeStats, getHackerrankStats, uploadAvatar, uploadCoverImage };
+const getSkillBadges = asyncHandler(async (req, res) => {
+  const badges = await studentSkillService.listBadges(req.user);
+  ApiResponse.ok(res, badges);
+});
+
+const getCertificates = asyncHandler(async (req, res) => {
+  const certificates = await studentSkillService.listCertificates(req.user);
+  ApiResponse.ok(res, certificates);
+});
+
+module.exports = {
+  getOwn,
+  createOwn,
+  updateOwn,
+  getSummary,
+  getLeetcodeStats,
+  getHackerrankStats,
+  uploadAvatar,
+  uploadCoverImage,
+  getSkillBadges,
+  getCertificates,
+};

@@ -43,6 +43,7 @@ router.use('/results', require('./result.routes'));
 router.use('/notifications', require('./notification.routes'));
 router.use('/resume', require('./resumeBuilder.routes')); // matches python-service's /resume path (file kept as resumeBuilder for history)
 router.use('/courses', require('./course.routes'));
+router.use('/certificates', require('./certificateVerification.routes'));
 router.use('/activity-logs', require('./activityLog.routes'));
 router.use('/user-data', require('./userData.routes'));
 router.use('/placement-records', require('./placementRecord.routes'));

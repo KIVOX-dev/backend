@@ -19,6 +19,8 @@ router.get('/', controller.getOwn);
 router.get('/summary', controller.getSummary);
 router.get('/leetcode-stats', controller.getLeetcodeStats);
 router.get('/hackerrank-stats', controller.getHackerrankStats);
+router.get('/skill-badges', controller.getSkillBadges);
+router.get('/certificates', controller.getCertificates);
 router.post('/', validate(schema.create), controller.createOwn);
 router.put('/', validate(schema.update), controller.updateOwn);
 router.post('/avatar', upload.any(), verifyAndUploadToGcs, controller.uploadAvatar);

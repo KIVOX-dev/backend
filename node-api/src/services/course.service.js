@@ -3,15 +3,25 @@ const lessonRepository = require('../repositories/lesson.repository');
 const lessonProgressRepository = require('../repositories/lessonProgress.repository');
 const lessonNoteRepository = require('../repositories/lessonNote.repository');
 const lessonAssessmentAttemptRepository = require('../repositories/lessonAssessmentAttempt.repository');
+const studentSkillBadgeRepository = require('../repositories/studentSkillBadge.repository');
+const studentCertificateRepository = require('../repositories/studentCertificate.repository');
 const studentRepository = require('../repositories/student.repository');
 const { parseYoutubeInput, fetchPlaylist, fetchSingleVideo, YoutubeApiError } = require('../utils/youtubeClient');
 const { callAiService } = require('../utils/aiServiceClient');
+const { matchSkill } = require('../config/skillCatalog');
 const ApiError = require('../utils/ApiError');
 const recordActivity = require('../utils/recordActivity');
 const logger = require('../utils/logger');
 const env = require('../config/env');
 
 const QUESTIONS_PER_LESSON = 10;
+// Matches the 60% pass mark already shown on the Assessment gate screen
+// (AssessmentWindow.tsx's "Pass Marks: 60%") — a passing attempt is what
+// counts toward a skill badge, not merely a completed one.
+const SKILL_PASS_PERCENTAGE = 60;
+// Distinct passing lessons of the same skill before it becomes a real,
+// LinkedIn-addable certificate — see _awardSkillProgress below.
+const BADGES_PER_CERTIFICATE = 5;
 
 async function requireStudent(actor) {
   const student = await studentRepository.findByUserId(actor.id);
@@ -246,7 +256,10 @@ class CourseService {
     let questions = lesson.assessment_questions;
     if (!Array.isArray(questions) || questions.length === 0) {
       questions = await this._generateQuestions(lesson.title);
-      await lessonRepository.updateById(lessonId, { assessment_questions: questions });
+      // Skill tagging happens right alongside question generation, from the
+      // same title, once — not re-derived at submit time — see
+      // config/skillCatalog.js and this lesson's own skill_name column.
+      await lessonRepository.updateById(lessonId, { assessment_questions: questions, skill_name: matchSkill(lesson.title) });
     }
 
     const latestAttempt = await lessonAssessmentAttemptRepository.findLatestForLesson(student.id, lessonId);
@@ -294,6 +307,7 @@ class CourseService {
     });
 
     const isMalpractice = Boolean(violations && violations.device_detected > 0);
+    const percentage = Math.round((score / questions.length) * 100);
     const attempt = await lessonAssessmentAttemptRepository.create({
       student_id: student.id,
       course_id: courseId,
@@ -301,7 +315,7 @@ class CourseService {
       answers,
       score,
       max_score: questions.length,
-      percentage: Math.round((score / questions.length) * 100),
+      percentage,
       violations: violations || undefined,
       status: isMalpractice ? 'malpractice' : 'completed',
     });
@@ -312,7 +326,50 @@ class CourseService {
       entityId: lessonId,
     });
 
-    return { attempt, graded };
+    const skillProgress = isMalpractice ? null : await this._awardSkillProgress(student, lesson, percentage);
+
+    return { attempt, graded, skill_progress: skillProgress };
+  }
+
+  // Fires after a genuine (non-malpractice) passing attempt. A student
+  // retaking a lesson they already passed doesn't inflate the count further
+  // (lesson_ids guards that) — only a NEW lesson tagged with this skill
+  // moves the count, and reaching BADGES_PER_CERTIFICATE issues one real
+  // certificate (see studentSkill.service.js for how that gets shown on the
+  // profile / added to LinkedIn).
+  async _awardSkillProgress(student, lesson, percentage) {
+    if (!lesson.skill_name || percentage < SKILL_PASS_PERCENTAGE) return null;
+
+    let badge = await studentSkillBadgeRepository.findOneForSkill(student.id, lesson.skill_name);
+    if (!badge) {
+      badge = await studentSkillBadgeRepository.create({ student_id: student.id, skill_name: lesson.skill_name });
+    }
+    if (badge.lesson_ids.includes(lesson.id)) {
+      return { skill_name: lesson.skill_name, badge_count: badge.badge_count, newly_earned: false, certificate_issued: badge.certificate_issued };
+    }
+
+    const nextLessonIds = [...badge.lesson_ids, lesson.id];
+    const nextCount = badge.badge_count + 1;
+    let certificateIssued = badge.certificate_issued;
+
+    if (!certificateIssued && nextCount >= BADGES_PER_CERTIFICATE) {
+      certificateIssued = true;
+      await studentCertificateRepository.create({ student_id: student.id, skill_name: lesson.skill_name, issued_at: new Date() });
+      await recordActivity({
+        userId: student.user_id,
+        action: 'skill_certificate_earned',
+        entityType: 'student_skill_badge',
+        entityId: badge.id,
+      });
+    }
+
+    await studentSkillBadgeRepository.updateById(badge.id, {
+      lesson_ids: nextLessonIds,
+      badge_count: nextCount,
+      certificate_issued: certificateIssued,
+    });
+
+    return { skill_name: lesson.skill_name, badge_count: nextCount, newly_earned: true, certificate_issued: certificateIssued };
   }
 
   // TestHistory.tsx's "Course Assessments" section — every lesson-quiz
