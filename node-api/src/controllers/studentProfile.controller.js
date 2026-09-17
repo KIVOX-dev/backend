@@ -12,6 +12,16 @@ const getSummary = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, summary);
 });
 
+const getLeetcodeStats = asyncHandler(async (req, res) => {
+  const stats = await studentProfileService.getLeetcodeStats(req.user);
+  ApiResponse.ok(res, stats);
+});
+
+const getHackerrankStats = asyncHandler(async (req, res) => {
+  const stats = await studentProfileService.getHackerrankStats(req.user);
+  ApiResponse.ok(res, stats);
+});
+
 const createOwn = asyncHandler(async (req, res) => {
   const profile = await studentProfileService.createOwn(req.user, req.body);
   ApiResponse.created(res, profile, 'Profile created');
@@ -22,4 +32,4 @@ const updateOwn = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, profile, 'Profile updated');
 });
 
-module.exports = { getOwn, createOwn, updateOwn, getSummary };
+module.exports = { getOwn, createOwn, updateOwn, getSummary, getLeetcodeStats, getHackerrankStats };

@@ -79,9 +79,115 @@ async function verifyDribbbleUsername(username) {
   }
 }
 
+// Real stats for the Integrations tab's HackerRank card — level/title/
+// follower count from the profile endpoint (see verifyHackerrankUsername
+// above for the same endpoint) plus per-skill badges (name, stars earned,
+// problems solved) from HackerRank's own public badges endpoint, verified
+// directly against real accounts to confirm the field shape before writing
+// this. Throws on failure (doesn't swallow) — same reasoning as
+// fetchLeetcodeStats below: this backs a screen the student is actively
+// looking at, not a background save.
+async function fetchHackerrankStats(username) {
+  const [profileResponse, badgesResponse] = await Promise.all([
+    fetchWithTimeout(`https://www.hackerrank.com/rest/contests/master/hackers/${encodeURIComponent(username)}/profile`, {
+      headers: { 'User-Agent': 'talentsnaps-node-api' },
+    }),
+    fetchWithTimeout(`https://www.hackerrank.com/rest/hackers/${encodeURIComponent(username)}/badges`, {
+      headers: { 'User-Agent': 'talentsnaps-node-api' },
+    }),
+  ]);
+
+  const profileData = await profileResponse.json().catch(() => null);
+  if (!profileResponse.ok || !profileData || !profileData.model) {
+    throw new SocialProfileNotFoundError(`No HackerRank user "${username}"`);
+  }
+  const badgesData = await badgesResponse.json().catch(() => null);
+
+  const model = profileData.model;
+  // e.g. "O(2<sup>N</sup>)" -> "O(2^N)" — HackerRank embeds HTML superscript
+  // tags in this field for its own site's rendering; strip them for plain text.
+  const title = model.title ? model.title.replace(/<sup>/g, '^').replace(/<\/sup>/g, '') : null;
+
+  return {
+    level: model.level ?? null,
+    title,
+    followers: model.followers_count ?? 0,
+    badges: (badgesData && Array.isArray(badgesData.models) ? badgesData.models : []).map((b) => ({
+      name: b.badge_name,
+      stars: b.stars ?? 0,
+      totalStars: b.total_stars ?? 0,
+      solved: b.solved ?? 0,
+      totalChallenges: b.total_challenges ?? 0,
+    })),
+  };
+}
+
+// Real stats, not just "connected as @x" — global rank, solved counts by
+// difficulty, and a submission calendar shaped identically to
+// auth.service.js#activityHeatmap's {date, count}[] contract (so the
+// frontend can reuse the same heatmap renderer built for GitHub). Throws
+// (rather than swallowing, unlike verifyLeetcodeUsername above) since this
+// is called on-demand by a screen the student is actively looking at, where
+// a stale-but-silent failure would be worse than a visible "couldn't load"
+// state — see studentProfile.service.js#getLeetcodeStats, the one caller.
+async function fetchLeetcodeStats(username) {
+  const response = await fetchWithTimeout('https://leetcode.com/graphql', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      query: `
+        query userStats($username: String!) {
+          matchedUser(username: $username) {
+            username
+            submitStats: submitStatsGlobal {
+              acSubmissionNum { difficulty count }
+            }
+            profile { ranking reputation }
+            submissionCalendar
+          }
+        }
+      `,
+      variables: { username },
+    }),
+  });
+
+  const data = await response.json().catch(() => null);
+  const user = data && data.data && data.data.matchedUser;
+  if (!response.ok || !user) {
+    throw new SocialProfileNotFoundError(`No LeetCode user "${username}"`);
+  }
+
+  const byDifficulty = Object.fromEntries((user.submitStats?.acSubmissionNum || []).map((d) => [d.difficulty, d.count]));
+
+  // submissionCalendar is a JSON-encoded string (unix-seconds -> count),
+  // not a nested GraphQL object — LeetCode's own quirk, not ours.
+  let calendar;
+  try {
+    calendar = JSON.parse(user.submissionCalendar || '{}');
+  } catch {
+    calendar = {};
+  }
+  const submissionCalendar = Object.entries(calendar).map(([timestamp, count]) => ({
+    date: new Date(Number(timestamp) * 1000).toISOString().slice(0, 10),
+    count: Number(count),
+  }));
+
+  return {
+    ranking: user.profile?.ranking ?? null,
+    reputation: user.profile?.reputation ?? null,
+    totalSolved: byDifficulty.All ?? 0,
+    easySolved: byDifficulty.Easy ?? 0,
+    mediumSolved: byDifficulty.Medium ?? 0,
+    hardSolved: byDifficulty.Hard ?? 0,
+    submissionCalendar,
+  };
+}
+
 module.exports = {
   verifyLeetcodeUsername,
   verifyHackerrankUsername,
   verifyDribbbleUsername,
+  fetchLeetcodeStats,
+  fetchHackerrankStats,
   SocialProfileNotFoundError,
 };

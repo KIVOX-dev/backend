@@ -11,6 +11,8 @@ const {
   verifyLeetcodeUsername,
   verifyHackerrankUsername,
   verifyDribbbleUsername,
+  fetchLeetcodeStats,
+  fetchHackerrankStats,
   SocialProfileNotFoundError,
 } = require('../utils/socialProfileClient');
 
@@ -65,6 +67,47 @@ class StudentProfileService {
     const profile = await studentRepository.findByUserId(actor.id);
     if (!profile) throw ApiError.notFound('Profile not created yet');
     return profile;
+  }
+
+  // Real stats for the Integrations tab's LeetCode card (global rank, solved
+  // counts, submission calendar) — fetched on-demand rather than folded into
+  // getOwn()/getSummary() above, since it's an extra outbound call to
+  // LeetCode that only the Integrations screen actually needs, not every
+  // profile load. Throws (doesn't swallow) on failure — unlike
+  // _verifyAndNormalize's save-time check, this backs a screen the student
+  // is actively looking at, where a silent stale result would be worse than
+  // a visible "couldn't load your LeetCode stats" error.
+  async getLeetcodeStats(actor) {
+    const student = await studentRepository.findByUserId(actor.id);
+    if (!student) throw ApiError.notFound('Profile not created yet');
+    if (!student.leetcode_username) throw ApiError.badRequest('Connect your LeetCode account first');
+
+    try {
+      return await fetchLeetcodeStats(student.leetcode_username);
+    } catch (err) {
+      if (err instanceof SocialProfileNotFoundError) {
+        throw ApiError.notFound(`LeetCode user "${student.leetcode_username}" not found`);
+      }
+      throw ApiError.serviceUnavailable("Couldn't load LeetCode stats right now — try again shortly");
+    }
+  }
+
+  // Same shape as getLeetcodeStats above, for the HackerRank card — level/
+  // title/followers plus real per-skill badges (name, stars earned, problems
+  // solved), verified directly against real accounts before writing this.
+  async getHackerrankStats(actor) {
+    const student = await studentRepository.findByUserId(actor.id);
+    if (!student) throw ApiError.notFound('Profile not created yet');
+    if (!student.hackerrank_username) throw ApiError.badRequest('Connect your HackerRank account first');
+
+    try {
+      return await fetchHackerrankStats(student.hackerrank_username);
+    } catch (err) {
+      if (err instanceof SocialProfileNotFoundError) {
+        throw ApiError.notFound(`HackerRank user "${student.hackerrank_username}" not found`);
+      }
+      throw ApiError.serviceUnavailable("Couldn't load HackerRank stats right now — try again shortly");
+    }
   }
 
   // Backs the Performance Summary screen (ProfileSummarizer.tsx) — rule-based,
