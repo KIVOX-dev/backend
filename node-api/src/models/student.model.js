@@ -28,6 +28,11 @@ module.exports = {
     'linkedin_id', 'linkedin_name', 'linkedin_email', 'linkedin_avatar_url', 'linkedin_connected_at',
     'stackoverflow_id', 'stackoverflow_display_name', 'stackoverflow_reputation',
     'stackoverflow_avatar_url', 'stackoverflow_profile_url', 'stackoverflow_connected_at',
+    // Student's own uploaded profile photo/cover banner (Google Cloud
+    // Storage URLs — see middlewares/upload.js#verifyAndUploadToGcs).
+    // Deliberately separate from users.avatar_url (a different, currently
+    // unused field on a different collection).
+    'avatar_url', 'cover_image_url',
   ],
   defaults: { profile_completed: false },
 };

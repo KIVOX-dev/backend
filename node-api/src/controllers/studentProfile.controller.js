@@ -1,6 +1,7 @@
 const studentProfileService = require('../services/studentProfile.service');
 const asyncHandler = require('../utils/asyncHandler');
 const ApiResponse = require('../utils/ApiResponse');
+const ApiError = require('../utils/ApiError');
 
 const getOwn = asyncHandler(async (req, res) => {
   const profile = await studentProfileService.getOwn(req.user);
@@ -22,6 +23,20 @@ const getHackerrankStats = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, stats);
 });
 
+const uploadAvatar = asyncHandler(async (req, res) => {
+  const file = (req.files || [])[0];
+  if (!file) throw ApiError.badRequest('No image uploaded');
+  const profile = await studentProfileService.uploadAvatar(req.user, file.publicUrl);
+  ApiResponse.ok(res, profile, 'Profile photo updated');
+});
+
+const uploadCoverImage = asyncHandler(async (req, res) => {
+  const file = (req.files || [])[0];
+  if (!file) throw ApiError.badRequest('No image uploaded');
+  const profile = await studentProfileService.uploadCoverImage(req.user, file.publicUrl);
+  ApiResponse.ok(res, profile, 'Cover image updated');
+});
+
 const createOwn = asyncHandler(async (req, res) => {
   const profile = await studentProfileService.createOwn(req.user, req.body);
   ApiResponse.created(res, profile, 'Profile created');
@@ -32,4 +47,4 @@ const updateOwn = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, profile, 'Profile updated');
 });
 
-module.exports = { getOwn, createOwn, updateOwn, getSummary, getLeetcodeStats, getHackerrankStats };
+module.exports = { getOwn, createOwn, updateOwn, getSummary, getLeetcodeStats, getHackerrankStats, uploadAvatar, uploadCoverImage };

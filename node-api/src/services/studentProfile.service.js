@@ -69,6 +69,18 @@ class StudentProfileService {
     return profile;
   }
 
+  async uploadAvatar(actor, publicUrl) {
+    const student = await studentRepository.findByUserId(actor.id);
+    if (!student) throw ApiError.notFound('Profile not created yet');
+    return studentRepository.updateById(student.id, { avatar_url: publicUrl });
+  }
+
+  async uploadCoverImage(actor, publicUrl) {
+    const student = await studentRepository.findByUserId(actor.id);
+    if (!student) throw ApiError.notFound('Profile not created yet');
+    return studentRepository.updateById(student.id, { cover_image_url: publicUrl });
+  }
+
   // Real stats for the Integrations tab's LeetCode card (global rank, solved
   // counts, submission calendar) — fetched on-demand rather than folded into
   // getOwn()/getSummary() above, since it's an extra outbound call to

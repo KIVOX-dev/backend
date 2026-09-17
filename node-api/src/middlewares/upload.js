@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const multer = require('multer');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
+const { uploadPublicFile } = require('../utils/gcsClient');
 
 // Mirrors python-service's uploads/profile layout so both the on-disk path and
 // the public /uploads/profile/<file> URL shape stay familiar across the migration.
@@ -136,10 +137,31 @@ const verifyAndPersist = asyncHandler(async (req, res, next) => {
   next();
 });
 
+// Same ALLOWED_TYPES magic-byte verification as verifyAndPersist above, but
+// uploads to Google Cloud Storage instead of local disk — Cloud Run's
+// filesystem is ephemeral (wiped on restart/redeploy/scale, never shared
+// across instances), so anything meant to actually persist (student
+// avatar/cover images, see studentProfile.routes.js) can't use the
+// local-disk pattern the onboarding profile-photo upload above uses. Sets
+// `file.publicUrl` on each entry instead of `file.filename`.
+const verifyAndUploadToGcs = asyncHandler(async (req, res, next) => {
+  for (const file of req.files || []) {
+    const rule = ALLOWED_TYPES[file.mimetype];
+    if (!rule || !rule.magic(file.buffer)) {
+      throw ApiError.badRequest(`"${file.originalname}" does not look like a valid ${file.mimetype.split('/')[1].toUpperCase()} file.`);
+    }
+    const ext = extensionOf(file.originalname);
+    const destination = `student-profile/${crypto.randomUUID()}${ext}`;
+    file.publicUrl = await uploadPublicFile(file.buffer, { destination, contentType: file.mimetype });
+  }
+  next();
+});
+
 module.exports = {
   upload,
   uploadDir,
   verifyAndPersist,
+  verifyAndUploadToGcs,
   documentUpload,
   documentUploadDir,
   verifyAndPersistDocument,

@@ -57,6 +57,17 @@ module.exports = {
     appToken: process.env.GITHUB_APP_TOKEN || '',
   },
 
+  // Student profile photo / cover banner uploads (middlewares/upload.js's
+  // verifyAndUploadToGcs, utils/gcsClient.js). Cloud Run's own filesystem is
+  // wiped on every restart/redeploy/scale event, so — unlike the existing
+  // onboarding profile-photo upload, which writes to local disk — anything
+  // meant to actually persist has to land in real cloud storage instead.
+  // Optional: uploads 503 until this is set, same philosophy as
+  // aiService/brevo above.
+  gcs: {
+    bucketName: process.env.GCS_BUCKET_NAME || '',
+  },
+
   // Lets a student connect their LinkedIn identity — "Sign In with LinkedIn
   // using OpenID Connect" only, not the old, now-restricted r_liteprofile/
   // r_emailaddress scopes. Only verified name/email/photo are available at

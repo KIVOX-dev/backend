@@ -5,6 +5,7 @@ const authorize = require('../middlewares/authorize');
 const validate = require('../middlewares/validate');
 const schema = require('../validations/studentProfile.validation');
 const { ROLES } = require('../config/constants');
+const { upload, verifyAndUploadToGcs } = require('../middlewares/upload');
 
 // Mounted at /students/profile in routes/index.js, registered BEFORE the
 // general /students router so this more specific prefix is matched first —
@@ -20,5 +21,7 @@ router.get('/leetcode-stats', controller.getLeetcodeStats);
 router.get('/hackerrank-stats', controller.getHackerrankStats);
 router.post('/', validate(schema.create), controller.createOwn);
 router.put('/', validate(schema.update), controller.updateOwn);
+router.post('/avatar', upload.any(), verifyAndUploadToGcs, controller.uploadAvatar);
+router.post('/cover', upload.any(), verifyAndUploadToGcs, controller.uploadCoverImage);
 
 module.exports = router;
