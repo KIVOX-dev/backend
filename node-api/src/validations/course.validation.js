@@ -26,6 +26,11 @@ const submitAssessment = Joi.object({
     tab_switches: Joi.number().integer().min(0),
     copy_paste: Joi.number().integer().min(0),
     screen_share_stopped: Joi.number().integer().min(0),
+    // Real-time object detection (MediaPipe, AssessmentWindow.tsx) spotting
+    // a phone/laptop/tv/remote in the camera frame — this one always ends
+    // the assessment immediately when it fires (submits whatever was
+    // answered so far), unlike the other three which are just counted.
+    device_detected: Joi.number().integer().min(0),
   }),
 });
 

@@ -11,9 +11,11 @@ module.exports = {
     'percentage',
     // Client-reported integrity signals from the proctored assessment window
     // (AssessmentWindow.tsx) — tab switches away from the window, copy/paste/cut
-    // attempts, and the screen-share stream ending early. Self-reported by the
-    // browser, not independently verified server-side (no recording is
-    // captured/stored) — a soft signal for the student's own review, not proof.
+    // attempts, the screen-share stream ending early, and a phone/laptop/tv/
+    // remote spotted in the camera via real-time MediaPipe object detection
+    // (device_detected — that one always ends the assessment on the spot).
+    // Self-reported by the browser, not independently verified server-side
+    // (no recording is captured/stored) — a soft signal, not proof.
     'violations',
   ],
 };
