@@ -19,6 +19,14 @@ const submitAssessment = Joi.object({
   // question order — course.service.js#submitLessonAssessment grades
   // positionally against the lesson's stored question order.
   answers: Joi.array().items(Joi.string().allow(null)).min(1).required(),
+  // Self-reported by AssessmentWindow.tsx's proctoring gate — see
+  // lessonAssessmentAttempt.model.js's comment on why this is a soft signal,
+  // not a verified one. Optional: a plain quiz submit (no gate) omits it.
+  violations: Joi.object({
+    tab_switches: Joi.number().integer().min(0),
+    copy_paste: Joi.number().integer().min(0),
+    screen_share_stopped: Joi.number().integer().min(0),
+  }),
 });
 
 module.exports = {

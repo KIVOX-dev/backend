@@ -252,7 +252,7 @@ class CourseService {
     return [{ question: `What is this lesson, "${title}", primarily about?`, options: ['A', 'B', 'C', 'D'], correct_answer: 'A' }];
   }
 
-  async submitLessonAssessment(actor, courseId, lessonId, answers) {
+  async submitLessonAssessment(actor, courseId, lessonId, answers, violations) {
     const student = await requireStudent(actor);
     const { lesson } = await requireOwnedLesson(student.id, courseId, lessonId);
 
@@ -278,6 +278,7 @@ class CourseService {
       score,
       max_score: questions.length,
       percentage: Math.round((score / questions.length) * 100),
+      violations: violations || undefined,
     });
     await recordActivity({ userId: actor.id, action: 'course_lesson_assessment', entityType: 'lesson', entityId: lessonId });
 

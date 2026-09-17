@@ -48,7 +48,13 @@ const getLessonAssessment = asyncHandler(async (req, res) => {
 });
 
 const submitLessonAssessment = asyncHandler(async (req, res) => {
-  const result = await courseService.submitLessonAssessment(req.user, req.params.id, req.params.lessonId, req.body.answers);
+  const result = await courseService.submitLessonAssessment(
+    req.user,
+    req.params.id,
+    req.params.lessonId,
+    req.body.answers,
+    req.body.violations
+  );
   ApiResponse.ok(res, result, 'Assessment submitted');
 });
 
