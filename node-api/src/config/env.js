@@ -91,6 +91,14 @@ module.exports = {
     callbackUrl: process.env.STACKEXCHANGE_CALLBACK_URL || '',
   },
 
+  // Powers "YouTube to Course" (Tools > YouTube to Course) — fetches video/
+  // playlist metadata via YouTube Data API v3. Optional, same philosophy as
+  // github/linkedin/stackexchange above — course.service.js degrades to a
+  // 503 on /courses/import until this is set.
+  youtube: {
+    apiKey: process.env.YOUTUBE_API_KEY || '',
+  },
+
   // The FastAPI AI microservice (interview generation, resume AI features).
   // Not required at startup — utils/aiServiceClient.js degrades gracefully
   // (local fallback) when unset or unreachable, same philosophy as groq above.

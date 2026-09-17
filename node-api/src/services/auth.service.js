@@ -4,6 +4,7 @@ const studentRepository = require('../repositories/student.repository');
 const activityLogRepository = require('../repositories/activityLog.repository');
 const assessmentAttemptRepository = require('../repositories/assessmentAttempt.repository');
 const interviewAttemptRepository = require('../repositories/interviewAttempt.repository');
+const lessonProgressRepository = require('../repositories/lessonProgress.repository');
 const { hashPassword, verifyPassword } = require('../utils/password');
 const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../utils/jwt');
 const { verifyGoogleIdToken } = require('../utils/googleAuth');
@@ -334,6 +335,7 @@ async function activityHeatmap(userId) {
   if (student) {
     sources.push(assessmentAttemptRepository.countByDay(student.id, since));
     sources.push(interviewAttemptRepository.countByDay(student.id, since));
+    sources.push(lessonProgressRepository.countByDay(student.id, since));
   }
 
   const perSource = await Promise.all(sources);
