@@ -14,7 +14,11 @@ const recordActivity = require('../utils/recordActivity');
 const logger = require('../utils/logger');
 const env = require('../config/env');
 
-const QUESTIONS_PER_LESSON = 10;
+const QUESTIONS_PER_LESSON = 25;
+// Flat total, not scaled per-question — matches AssessmentWindow.tsx's own
+// ASSESSMENT_DURATION_SECONDS constant (kept in sync manually; this is what
+// the gate screen's "Duration" row and the actual submit deadline use).
+const ASSESSMENT_DURATION_SECONDS = 5 * 60;
 // Matches the 60% pass mark already shown on the Assessment gate screen
 // (AssessmentWindow.tsx's "Pass Marks: 60%") — a passing attempt is what
 // counts toward a skill badge, not merely a completed one.
@@ -254,27 +258,49 @@ class CourseService {
     }
 
     let questions = lesson.assessment_questions;
+    let skillName = lesson.skill_name;
     if (!Array.isArray(questions) || questions.length === 0) {
       questions = await this._generateQuestions(lesson.title);
       // Skill tagging happens right alongside question generation, from the
       // same title, once — not re-derived at submit time — see
       // config/skillCatalog.js and this lesson's own skill_name column.
-      await lessonRepository.updateById(lessonId, { assessment_questions: questions, skill_name: matchSkill(lesson.title) });
+      skillName = matchSkill(lesson.title);
+      await lessonRepository.updateById(lessonId, { assessment_questions: questions, skill_name: skillName });
     }
 
-    const latestAttempt = await lessonAssessmentAttemptRepository.findLatestForLesson(student.id, lessonId);
+    const [latestAttempt, existingBadge] = await Promise.all([
+      lessonAssessmentAttemptRepository.findLatestForLesson(student.id, lessonId),
+      skillName ? studentSkillBadgeRepository.findOneForSkill(student.id, skillName) : null,
+    ]);
+
     return {
       questions: questions.map(({ question, options }) => ({ question, options })),
       latest_attempt: latestAttempt || null,
+      duration_seconds: ASSESSMENT_DURATION_SECONDS,
+      // Shown above the Start Assessment button so the student knows what
+      // passing this actually earns before they commit to it — null when
+      // the lesson's title didn't match anything in the skill catalog.
+      skill_progress: skillName
+        ? {
+            skill_name: skillName,
+            badge_count: existingBadge?.badge_count || 0,
+            certificate_issued: existingBadge?.certificate_issued || false,
+            badges_remaining: existingBadge?.certificate_issued ? 0 : Math.max(0, BADGES_PER_CERTIFICATE - (existingBadge?.badge_count || 0)),
+          }
+        : null,
     };
   }
 
   async _generateQuestions(title) {
     try {
+      // `count` is ai-service-specific to this call — test.service.js's own
+      // admin test-authoring endpoint omits it and still gets that route's
+      // original fixed 10, unaffected by this.
       const result = await callAiService('/v1/assessment/generate-questions', {
         title,
         type: 'youtube_lesson',
         difficulty: 'medium',
+        count: QUESTIONS_PER_LESSON,
       });
       const questions = Array.isArray(result?.questions) ? result.questions : [];
       if (questions.length > 0) return questions.slice(0, QUESTIONS_PER_LESSON);

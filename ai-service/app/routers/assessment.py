@@ -17,10 +17,11 @@ router = APIRouter(prefix="/v1/assessment", tags=["assessment"], dependencies=[D
 
 # Ported verbatim from node-api's test.service.js (itself ported from
 # python-service's assessments.py#generate_assessment_questions) — a single
-# placeholder question, not a full 10-question set, matching both prior
-# implementations exactly.
-QUESTION_GEN_SYSTEM_PROMPT = """You are an expert curriculum designer. Generate exactly 10
-multiple-choice questions as a raw JSON object: {"questions": [...]}. Each item must have
+# placeholder question, not a full set, matching both prior implementations
+# exactly, regardless of how many were actually requested.
+def _question_gen_system_prompt(count: int) -> str:
+    return f"""You are an expert curriculum designer. Generate exactly {count}
+multiple-choice questions as a raw JSON object: {{"questions": [...]}}. Each item must have
 "question" (string), "options" (array of exactly 4 strings), and "correct_answer" (string,
 must match one of the options). No markdown, no text outside the JSON."""
 
@@ -49,7 +50,14 @@ async def generate_questions(payload: GenerateAssessmentQuestionsRequest):
         detail["title"] = payload.title
         try:
             result = await groq_complete(
-                QUESTION_GEN_SYSTEM_PROMPT, user_prompt, temperature=0.7, max_tokens=2048, json_response=True
+                _question_gen_system_prompt(payload.count),
+                user_prompt,
+                temperature=0.7,
+                # ~200 tokens/question is a safe estimate for a 4-option MCQ
+                # + correct_answer; 2048 was tuned for the original fixed
+                # 10-question default and would truncate a larger `count`.
+                max_tokens=max(2048, payload.count * 220),
+                json_response=True,
             )
         except GroqError as exc:
             logger.error("Assessment question generation failed: %s", exc)
