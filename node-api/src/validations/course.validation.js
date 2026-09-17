@@ -29,8 +29,16 @@ const submitAssessment = Joi.object({
     // Real-time object detection (MediaPipe, AssessmentWindow.tsx) spotting
     // a phone/laptop/tv/remote in the camera frame — this one always ends
     // the assessment immediately when it fires (submits whatever was
-    // answered so far), unlike the other three which are just counted.
+    // answered so far) AND marks the attempt 'malpractice' (permanently
+    // blocks retaking — see course.service.js#submitLessonAssessment).
     device_detected: Joi.number().integer().min(0),
+    // Real-time pose detection: not exactly one person, not facing the
+    // camera, or not framed down to the chest. Two-strike, not zero-tolerance
+    // — reaching 2 also ends the assessment immediately, but does NOT mark
+    // 'malpractice' (retaking is still allowed), since these are plausibly
+    // innocent (bad webcam angle, briefly stepping away) in a way a phone
+    // appearing in frame just isn't.
+    framing_warnings: Joi.number().integer().min(0),
   }),
 });
 
