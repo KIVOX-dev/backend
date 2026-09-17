@@ -17,6 +17,13 @@ router.post(
 );
 router.post('/login', authLimiter, validate(schema.login), verifyTurnstile('login'), authController.login);
 router.post('/google', authLimiter, validate(schema.googleLogin), authController.googleLogin);
+
+// Explicit "Connect Google account" from Settings — same idToken shape as
+// /google above (validated by the same schema), but authenticated and
+// additive rather than login/signup.
+router.post('/google/link', authenticate, authLimiter, validate(schema.googleLogin), authController.googleLink);
+router.delete('/google/unlink', authenticate, authLimiter, authController.googleUnlink);
+
 router.post('/refresh', authLimiter, validate(schema.refresh), authController.refresh);
 router.get('/me', authenticate, authController.me);
 router.get('/me/activity-heatmap', authenticate, authController.activityHeatmap);

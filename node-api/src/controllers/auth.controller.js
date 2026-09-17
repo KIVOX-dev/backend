@@ -52,6 +52,16 @@ const googleLogin = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, withLegacyAuthFields(result), 'Login successful');
 });
 
+const googleLink = asyncHandler(async (req, res) => {
+  const user = await authService.googleLink(req.user, req.body.idToken);
+  ApiResponse.ok(res, { user }, 'Google account connected');
+});
+
+const googleUnlink = asyncHandler(async (req, res) => {
+  const user = await authService.googleUnlink(req.user);
+  ApiResponse.ok(res, { user }, 'Google account disconnected');
+});
+
 const refresh = asyncHandler(async (req, res) => {
   const token = req.body.refreshToken || req.body.refresh_token;
   const result = await authService.refresh(token);
@@ -108,6 +118,8 @@ module.exports = {
   register,
   login,
   googleLogin,
+  googleLink,
+  googleUnlink,
   refresh,
   me,
   activityHeatmap,

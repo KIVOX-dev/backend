@@ -193,11 +193,17 @@ async function googleLogin(idToken) {
   if (!user) {
     user = await userRepository.findByEmail(profile.email);
     if (user) {
-      user = await userRepository.updateById(user.id, { google_id: profile.googleId });
+      user = await userRepository.updateById(user.id, {
+        google_id: profile.googleId,
+        google_email: profile.email,
+        google_connected_at: new Date(),
+      });
     } else {
       user = await userRepository.create({
         email: profile.email,
         google_id: profile.googleId,
+        google_email: profile.email,
+        google_connected_at: new Date(),
         full_name: profile.fullName,
         role: ROLES.STUDENT,
         // Google already verified this address.
@@ -215,6 +221,50 @@ async function googleLogin(idToken) {
   await userRepository.updateById(user.id, { last_login_at: new Date() });
   await recordActivity({ userId: user.id, action: 'google_login', entityType: 'user', entityId: user.id });
   return { user: await withCollegeName(sanitizeUser(user)), ...issueTokens(user) };
+}
+
+// Explicit "Connect Google account" from Settings — distinct from
+// googleLogin()'s implicit attach-on-first-sign-in above in one important
+// way: this rejects outright if that Google account already belongs to a
+// *different* user, the same `already_linked` guard githubAuth/linkedinAuth
+// services use for their own connect flows, rather than silently taking over
+// whichever account happens to share that Google account's email.
+async function googleLink(actor, idToken) {
+  const profile = await verifyGoogleIdToken(idToken);
+
+  const existingOwner = await userRepository.findByGoogleId(profile.googleId);
+  if (existingOwner && existingOwner.id !== actor.id) {
+    throw ApiError.conflict('That Google account is already linked to another user');
+  }
+
+  const updated = await userRepository.updateById(actor.id, {
+    google_id: profile.googleId,
+    google_email: profile.email,
+    google_connected_at: new Date(),
+  });
+  await recordActivity({ userId: actor.id, action: 'google_link', entityType: 'user', entityId: actor.id });
+  return sanitizeUser(updated);
+}
+
+// A Google-only account (no password_hash — see googleLogin's create() call,
+// which never sets one) would be permanently locked out if it unlinked its
+// only sign-in method, so this is refused until the account has a password
+// of its own — set via the existing forgot-password flow, which works
+// whether or not a password_hash already exists.
+async function googleUnlink(actor) {
+  const user = await userRepository.findById(actor.id);
+  if (!user) throw ApiError.notFound('Account not found');
+  if (!user.password_hash) {
+    throw ApiError.badRequest('Set a password (via "Forgot password") before disconnecting Google, or you won\'t be able to sign in.');
+  }
+
+  const updated = await userRepository.updateById(actor.id, {
+    google_id: null,
+    google_email: null,
+    google_connected_at: null,
+  });
+  await recordActivity({ userId: actor.id, action: 'google_unlink', entityType: 'user', entityId: actor.id });
+  return sanitizeUser(updated);
 }
 
 async function refresh(refreshToken) {
@@ -399,6 +449,8 @@ module.exports = {
   register,
   login,
   googleLogin,
+  googleLink,
+  googleUnlink,
   refresh,
   me,
   activityHeatmap,

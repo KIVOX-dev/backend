@@ -3,6 +3,11 @@ module.exports = {
   columns: [
     'email', 'password_hash', 'google_id', 'full_name', 'phone',
     'role', 'institution_id', 'is_active', 'last_login_at',
+    // Set by auth.service.js#googleLink/googleUnlink (explicit "Connect
+    // Google account" in Settings) — google_id alone (also set implicitly by
+    // googleLogin on a first Google sign-in) doesn't carry the linked
+    // account's email or when the link was made.
+    'google_email', 'google_connected_at',
     // Ported from python-service's users.py:
     'status', 'is_email_verified', 'avatar_url', 'preferences', 'department',
     // Email verification + password reset (see authService.js). Only the
