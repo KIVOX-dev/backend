@@ -33,6 +33,12 @@ module.exports = {
     // Deliberately separate from users.avatar_url (a different, currently
     // unused field on a different collection).
     'avatar_url', 'cover_image_url',
+    // Career tab — self-reported, repeatable entries (see
+    // validations/studentProfile.validation.js's workExperienceEntry/
+    // educationEntry for shape). Distinct from year_of_study/department_id
+    // above, which are this student's single current-institution record;
+    // `education` here can hold prior schools too, same as any resume.
+    'work_experience', 'education',
   ],
   defaults: { profile_completed: false },
 };

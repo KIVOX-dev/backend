@@ -356,6 +356,13 @@ class StudentProfileService {
       payload.dribbble_username = await this._verifyAndNormalize(data.dribbbleUsername, verifyDribbbleUsername, 'Dribbble');
     }
 
+    // Full-array replacement, not per-entry — the frontend adds/edits/deletes
+    // one entry locally, then saves the whole updated array here. `[]` is
+    // truthy in JS, so this still correctly applies "deleted the last entry"
+    // (an empty array); only an actually-omitted field (undefined) is skipped.
+    if (data.workExperience) payload.work_experience = data.workExperience;
+    if (data.education) payload.education = data.education;
+
     return studentRepository.updateById(existing.id, payload);
   }
 
