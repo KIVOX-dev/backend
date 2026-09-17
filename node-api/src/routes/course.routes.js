@@ -25,6 +25,9 @@ router.use(authenticate, authorize(ROLES.STUDENT));
 
 router.post('/import', aiLimiter, validate(schema.importCourse), controller.importCourse);
 router.get('/', controller.list);
+// Static segment before ':id' — Express resolves overlapping routes by
+// registration order, not specificity (same hazard as test.routes.js).
+router.get('/assessment-history', controller.assessmentHistory);
 router.get('/:id', controller.getById);
 router.delete('/:id', controller.remove);
 

@@ -19,6 +19,14 @@ async function requireStudent(actor) {
   return student;
 }
 
+// A 'malpractice' attempt (device_detected fired during submitLessonAssessment
+// below) permanently blocks retaking that lesson's assessment — checked
+// before a new attempt can even be started, not just on submit, so the
+// student can't re-request a fresh question set to work around it.
+async function findMalpracticeAttempt(studentId, lessonId) {
+  return lessonAssessmentAttemptRepository.findOne({ student_id: studentId, lesson_id: lessonId, status: 'malpractice' });
+}
+
 // Every course/lesson-scoped endpoint needs both: the course must belong to
 // this student (never another student's, regardless of how the id was
 // obtained), and the lesson must actually belong to that course (guards
@@ -121,11 +129,13 @@ class CourseService {
     const course = await courseRepository.findById(courseId);
     if (!course || course.student_id !== student.id) throw ApiError.notFound('Course not found');
 
-    const [lessons, progressRows] = await Promise.all([
+    const [lessons, progressRows, latestAttempts] = await Promise.all([
       lessonRepository.findByCourseId(courseId),
       lessonProgressRepository.findByCourseForStudent(student.id, courseId),
+      lessonAssessmentAttemptRepository.findLatestPerLessonForCourse(student.id, courseId),
     ]);
     const progressByLesson = new Map(progressRows.map((p) => [p.lesson_id, p]));
+    const latestAttemptByLesson = new Map(latestAttempts.map((a) => [a.lesson_id, a]));
 
     const lessonsWithProgress = lessons.map((lesson) => {
       // Never leak assessment_questions[].correct_answer through the course
@@ -133,11 +143,16 @@ class CourseService {
       // stripped copy via getLessonAssessment() below.
       const { assessment_questions, ...lessonFields } = lesson;
       const progress = progressByLesson.get(lesson.id);
+      const latestAttempt = latestAttemptByLesson.get(lesson.id);
       return {
         ...lessonFields,
         has_assessment: Array.isArray(assessment_questions) && assessment_questions.length > 0,
         status: progress?.status || 'not_started',
         watched_seconds: progress?.watched_seconds || 0,
+        // 'blocked': malpractice attempt exists, cannot retake (see
+        // getLessonAssessment's block check). 'completed': a clean attempt
+        // exists. 'not_attempted': never taken, or never generated.
+        assessment_status: latestAttempt ? (latestAttempt.status === 'malpractice' ? 'blocked' : 'completed') : 'not_attempted',
       };
     });
     const completedCount = lessonsWithProgress.filter((l) => l.status === 'completed').length;
@@ -224,6 +239,10 @@ class CourseService {
     const student = await requireStudent(actor);
     const { lesson } = await requireOwnedLesson(student.id, courseId, lessonId);
 
+    if (await findMalpracticeAttempt(student.id, lessonId)) {
+      throw ApiError.forbidden('This assessment was disqualified for malpractice and cannot be retaken');
+    }
+
     let questions = lesson.assessment_questions;
     if (!Array.isArray(questions) || questions.length === 0) {
       questions = await this._generateQuestions(lesson.title);
@@ -256,6 +275,10 @@ class CourseService {
     const student = await requireStudent(actor);
     const { lesson } = await requireOwnedLesson(student.id, courseId, lessonId);
 
+    if (await findMalpracticeAttempt(student.id, lessonId)) {
+      throw ApiError.forbidden('This assessment was disqualified for malpractice and cannot be retaken');
+    }
+
     const questions = Array.isArray(lesson.assessment_questions) ? lesson.assessment_questions : [];
     if (questions.length === 0) throw ApiError.badRequest('No assessment has been generated for this lesson yet');
     if (!Array.isArray(answers) || answers.length !== questions.length) {
@@ -270,6 +293,7 @@ class CourseService {
       return { question: q.question, options: q.options, correct_answer: q.correct_answer, selected: selected ?? null, is_correct: isCorrect };
     });
 
+    const isMalpractice = Boolean(violations && violations.device_detected > 0);
     const attempt = await lessonAssessmentAttemptRepository.create({
       student_id: student.id,
       course_id: courseId,
@@ -279,10 +303,39 @@ class CourseService {
       max_score: questions.length,
       percentage: Math.round((score / questions.length) * 100),
       violations: violations || undefined,
+      status: isMalpractice ? 'malpractice' : 'completed',
     });
-    await recordActivity({ userId: actor.id, action: 'course_lesson_assessment', entityType: 'lesson', entityId: lessonId });
+    await recordActivity({
+      userId: actor.id,
+      action: isMalpractice ? 'course_lesson_assessment_malpractice' : 'course_lesson_assessment',
+      entityType: 'lesson',
+      entityId: lessonId,
+    });
 
     return { attempt, graded };
+  }
+
+  // TestHistory.tsx's "Course Assessments" section — every lesson-quiz
+  // attempt across every course this student has, newest first, with course/
+  // lesson titles joined in (the frontend only has ids from the attempt row
+  // itself, and fetching each course/lesson individually per attempt would
+  // be an N+1 query for what's otherwise one aggregate call).
+  async listAssessmentHistory(actor) {
+    const student = await requireStudent(actor);
+    const attempts = await lessonAssessmentAttemptRepository.findAllForStudent(student.id);
+    if (attempts.length === 0) return [];
+
+    const courseIds = [...new Set(attempts.map((a) => a.course_id))];
+    const lessonIds = [...new Set(attempts.map((a) => a.lesson_id))];
+    const [courses, lessons] = await Promise.all([courseRepository.findByIds(courseIds), lessonRepository.findByIds(lessonIds)]);
+    const courseById = new Map(courses.map((c) => [c.id, c]));
+    const lessonById = new Map(lessons.map((l) => [l.id, l]));
+
+    return attempts.map((attempt) => ({
+      ...attempt,
+      course_title: courseById.get(attempt.course_id)?.title || null,
+      lesson_title: lessonById.get(attempt.lesson_id)?.title || null,
+    }));
   }
 }
 

@@ -17,5 +17,12 @@ module.exports = {
     // Self-reported by the browser, not independently verified server-side
     // (no recording is captured/stored) — a soft signal, not proof.
     'violations',
+    // 'completed' | 'malpractice' — set server-side in
+    // course.service.js#submitLessonAssessment from violations.device_detected,
+    // never client-supplied. A 'malpractice' attempt permanently blocks
+    // retaking that lesson's assessment — see
+    // course.service.js#getLessonAssessment's block-check.
+    'status',
   ],
+  defaults: { status: 'completed' },
 };

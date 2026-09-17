@@ -12,6 +12,11 @@ const list = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, courses);
 });
 
+const assessmentHistory = asyncHandler(async (req, res) => {
+  const history = await courseService.listAssessmentHistory(req.user);
+  ApiResponse.ok(res, history);
+});
+
 const getById = asyncHandler(async (req, res) => {
   const course = await courseService.getById(req.user, req.params.id);
   ApiResponse.ok(res, course);
@@ -61,6 +66,7 @@ const submitLessonAssessment = asyncHandler(async (req, res) => {
 module.exports = {
   importCourse,
   list,
+  assessmentHistory,
   getById,
   remove,
   updateLessonProgress,
