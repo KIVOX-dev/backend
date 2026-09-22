@@ -2,7 +2,9 @@ const BaseService = require('./BaseService');
 const institutionRepository = require('../repositories/institution.repository');
 const departmentRepository = require('../repositories/department.repository');
 const ApiError = require('../utils/ApiError');
+const logger = require('../utils/logger');
 const { getDepartmentNames, codeFor, uniqueCode } = require('../utils/departmentCatalog');
+const { seedPracticeBankForInstitution } = require('../utils/practiceBankSeed');
 
 class InstitutionService extends BaseService {
   constructor() {
@@ -49,6 +51,20 @@ class InstitutionService extends BaseService {
         usedCodes.add(code);
         await departmentRepository.create({ institution_id: institution.id, name, code });
       }
+    }
+
+    // Best-effort, unlike departments above: a student can still register,
+    // log in, and use every other feature without the 4 practice-bank
+    // tests, so a read/insert failure here shouldn't fail institution
+    // creation itself — just log it loudly enough that it gets noticed and
+    // scripts/seedPracticeTests.js can be re-run for this institution.
+    try {
+      await seedPracticeBankForInstitution(institution.id);
+    } catch (err) {
+      logger.error('Failed to seed practice-bank tests for new institution', {
+        institutionId: institution.id,
+        error: err.message,
+      });
     }
 
     return institution;

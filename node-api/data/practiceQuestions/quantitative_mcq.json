@@ -1,0 +1,3004 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is 25% of 80?",
+      "options": ["15", "20", "25", "30"],
+      "answer": "B"
+    },
+    {
+      "id": 2,
+      "question": "If 2x + 5 = 15, find x",
+      "options": ["3", "4", "5", "6"],
+      "answer": "C"
+    },
+    {
+      "id": 3,
+      "question": "What is the square root of 144?",
+      "options": ["10", "11", "12", "13"],
+      "answer": "C"
+    },
+    {
+      "id": 4,
+      "question": "If a:b = 3:4 and b = 12, find a",
+      "options": ["6", "8", "9", "12"],
+      "answer": "C"
+    },
+    {
+      "id": 5,
+      "question": "What is 15% of 200?",
+      "options": ["20", "25", "30", "35"],
+      "answer": "C"
+    },
+    {
+      "id": 6,
+      "question": "Solve: 3x - 7 = 20",
+      "options": ["8", "9", "10", "11"],
+      "answer": "B"
+    },
+    {
+      "id": 7,
+      "question": "What is the area of a circle with radius 7?",
+      "options": ["49π", "50π", "54π", "56π"],
+      "answer": "A"
+    },
+    {
+      "id": 8,
+      "question": "If 5y + 3 = 28, find y",
+      "options": ["4", "5", "6", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 9,
+      "question": "What is 12² - 5²?",
+      "options": ["119", "120", "121", "122"],
+      "answer": "A"
+    },
+    {
+      "id": 10,
+      "question": "Find the perimeter of a square with side 6 cm",
+      "options": ["20 cm", "24 cm", "28 cm", "32 cm"],
+      "answer": "B"
+    },
+    {
+      "id": 11,
+      "question": "What is the average of 10, 20, 30, 40?",
+      "options": ["20", "25", "30", "35"],
+      "answer": "B"
+    },
+    {
+      "id": 12,
+      "question": "If x/2 = 8, find x",
+      "options": ["12", "14", "16", "18"],
+      "answer": "C"
+    },
+    {
+      "id": 13,
+      "question": "What is 40% of 150?",
+      "options": ["50", "55", "60", "65"],
+      "answer": "C"
+    },
+    {
+      "id": 14,
+      "question": "Solve: 4x + 6 = 34",
+      "options": ["5", "6", "7", "8"],
+      "answer": "D"
+    },
+    {
+      "id": 15,
+      "question": "What is the volume of a cube with side 5 cm?",
+      "options": ["75 cm³", "100 cm³", "125 cm³", "150 cm³"],
+      "answer": "C"
+    },
+    {
+      "id": 16,
+      "question": "If 2a = 18, find a",
+      "options": ["6", "7", "8", "9"],
+      "answer": "D"
+    },
+    {
+      "id": 17,
+      "question": "What is 8³?",
+      "options": ["256", "384", "512", "640"],
+      "answer": "C"
+    },
+    {
+      "id": 18,
+      "question": "Find the median of 5, 8, 12, 15, 20",
+      "options": ["10", "12", "14", "16"],
+      "answer": "B"
+    },
+    {
+      "id": 19,
+      "question": "What is 60% of 80?",
+      "options": ["40", "45", "48", "50"],
+      "answer": "C"
+    },
+    {
+      "id": 20,
+      "question": "If 3x - 5 = 10, find x",
+      "options": ["4", "5", "5.5", "6"],
+      "answer": "B"
+    },
+    {
+      "id": 21,
+      "question": "What is the LCM of 12 and 18?",
+      "options": ["24", "30", "36", "42"],
+      "answer": "C"
+    },
+    {
+      "id": 22,
+      "question": "If the ratio is 7:9 and the first number is 35, find the second",
+      "options": ["40", "45", "50", "55"],
+      "answer": "B"
+    },
+    {
+      "id": 23,
+      "question": "What is √256?",
+      "options": ["12", "14", "16", "18"],
+      "answer": "C"
+    },
+    {
+      "id": 24,
+      "question": "Solve: 2(x + 3) = 16",
+      "options": ["4", "5", "6", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 25,
+      "question": "What is the GCD of 24 and 36?",
+      "options": ["6", "8", "10", "12"],
+      "answer": "D"
+    },
+    {
+      "id": 26,
+      "question": "If a triangle has sides 3, 4, 5, what is its area?",
+      "options": ["4", "5", "6", "7"],
+      "answer": "C"
+    },
+    {
+      "id": 27,
+      "question": "What is 35% of 200?",
+      "options": ["60", "65", "70", "75"],
+      "answer": "C"
+    },
+    {
+      "id": 28,
+      "question": "Solve: 5x - 3 = 22",
+      "options": ["4", "5", "5.5", "6"],
+      "answer": "B"
+    },
+    {
+      "id": 29,
+      "question": "What is 9² + 7²?",
+      "options": ["130", "131", "132", "133"],
+      "answer": "A"
+    },
+    {
+      "id": 30,
+      "question": "If 2x + 3y = 13 and y = 1, find x",
+      "options": ["4", "5", "6", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 31,
+      "question": "What is the area of a rectangle with length 8 and width 5?",
+      "options": ["35", "40", "45", "50"],
+      "answer": "B"
+    },
+    {
+      "id": 32,
+      "question": "If x² = 64, find x (positive value)",
+      "options": ["6", "7", "8", "9"],
+      "answer": "C"
+    },
+    {
+      "id": 33,
+      "question": "What is 22% of 500?",
+      "options": ["100", "105", "110", "115"],
+      "answer": "C"
+    },
+    {
+      "id": 34,
+      "question": "Solve: 3(x - 2) = 15",
+      "options": ["5", "6", "7", "8"],
+      "answer": "D"
+    },
+    {
+      "id": 35,
+      "question": "What is the circumference of a circle with diameter 14?",
+      "options": ["42π", "44π", "48π", "50π"],
+      "answer": "B"
+    },
+    {
+      "id": 36,
+      "question": "If a = 5 and b = 3, what is a² + b²?",
+      "options": ["30", "32", "34", "36"],
+      "answer": "C"
+    },
+    {
+      "id": 37,
+      "question": "What is 17% of 300?",
+      "options": ["49", "50", "51", "52"],
+      "answer": "C"
+    },
+    {
+      "id": 38,
+      "question": "Solve: x/3 + 5 = 10",
+      "options": ["10", "12", "15", "18"],
+      "answer": "C"
+    },
+    {
+      "id": 39,
+      "question": "What is the mode of 2, 3, 3, 5, 7, 3, 9?",
+      "options": ["2", "3", "5", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 40,
+      "question": "If 4a + 2 = 18, find a",
+      "options": ["3", "4", "5", "6"],
+      "answer": "B"
+    },
+    {
+      "id": 41,
+      "question": "What is 10³?",
+      "options": ["100", "1000", "10000", "100000"],
+      "answer": "B"
+    },
+    {
+      "id": 42,
+      "question": "Find the sum of angles in a triangle",
+      "options": ["90°", "120°", "180°", "360°"],
+      "answer": "C"
+    },
+    {
+      "id": 43,
+      "question": "What is 45% of 120?",
+      "options": ["48", "50", "52", "54"],
+      "answer": "D"
+    },
+    {
+      "id": 44,
+      "question": "Solve: 6x - 9 = 21",
+      "options": ["4", "5", "6", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 45,
+      "question": "What is √121?",
+      "options": ["10", "11", "12", "13"],
+      "answer": "B"
+    },
+    {
+      "id": 46,
+      "question": "If 5x + 10 = 35, find x",
+      "options": ["3", "4", "5", "6"],
+      "answer": "C"
+    },
+    {
+      "id": 47,
+      "question": "What is 33.33% of 300?",
+      "options": ["90", "95", "100", "105"],
+      "answer": "C"
+    },
+    {
+      "id": 48,
+      "question": "Solve: 2x + 4 = 3x - 2",
+      "options": ["5", "6", "7", "8"],
+      "answer": "B"
+    },
+    {
+      "id": 49,
+      "question": "What is the area of a triangle with base 10 and height 8?",
+      "options": ["35", "40", "45", "50"],
+      "answer": "B"
+    },
+    {
+      "id": 50,
+      "question": "If x - 5 = 12, find x",
+      "options": ["15", "16", "17", "18"],
+      "answer": "D"
+    },
+    {
+      "id": 51,
+      "question": "What is 7 × 9?",
+      "options": ["56", "61", "63", "68"],
+      "answer": "C"
+    },
+    {
+      "id": 52,
+      "question": "If 3a - 7 = 8, find a",
+      "options": ["4", "5", "6", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 53,
+      "question": "What is 55% of 80?",
+      "options": ["40", "42", "44", "46"],
+      "answer": "C"
+    },
+    {
+      "id": 54,
+      "question": "Solve: x + 2x = 15",
+      "options": ["4", "5", "6", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 55,
+      "question": "What is 6⁴?",
+      "options": ["1024", "1296", "1536", "1728"],
+      "answer": "B"
+    },
+    {
+      "id": 56,
+      "question": "If the sum of two numbers is 20 and their difference is 4, find the larger number",
+      "options": ["10", "12", "14", "16"],
+      "answer": "B"
+    },
+    {
+      "id": 57,
+      "question": "What is 72% of 50?",
+      "options": ["32", "34", "36", "38"],
+      "answer": "C"
+    },
+    {
+      "id": 58,
+      "question": "Solve: 4x + 12 = 36",
+      "options": ["4", "5", "6", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 59,
+      "question": "What is the diagonal of a square with side 5?",
+      "options": ["5√2", "7√2", "10", "12"],
+      "answer": "A"
+    },
+    {
+      "id": 60,
+      "question": "If 8x - 4 = 20, find x",
+      "options": ["2", "2.5", "3", "3.5"],
+      "answer": "D"
+    },
+    {
+      "id": 61,
+      "question": "What is 1/2 + 1/3?",
+      "options": ["2/3", "3/5", "5/6", "7/6"],
+      "answer": "C"
+    },
+    {
+      "id": 62,
+      "question": "What is 18% of 250?",
+      "options": ["40", "42", "45", "48"],
+      "answer": "C"
+    },
+    {
+      "id": 63,
+      "question": "Solve: 5x - 10 = 3x + 4",
+      "options": ["5", "6", "7", "8"],
+      "answer": "D"
+    },
+    {
+      "id": 64,
+      "question": "What is 11²?",
+      "options": ["110", "121", "132", "143"],
+      "answer": "B"
+    },
+    {
+      "id": 65,
+      "question": "If 2x/3 = 10, find x",
+      "options": ["12", "14", "15", "18"],
+      "answer": "C"
+    },
+    {
+      "id": 66,
+      "question": "What is 26% of 150?",
+      "options": ["35", "37.5", "39", "41"],
+      "answer": "C"
+    },
+    {
+      "id": 67,
+      "question": "Solve: x/4 + 3 = 7",
+      "options": ["12", "14", "16", "18"],
+      "answer": "C"
+    },
+    {
+      "id": 68,
+      "question": "What is the perimeter of a rectangle with length 12 and width 8?",
+      "options": ["36", "38", "40", "42"],
+      "answer": "C"
+    },
+    {
+      "id": 69,
+      "question": "If a:b:c = 2:3:5 and a = 4, find c",
+      "options": ["8", "10", "12", "15"],
+      "answer": "B"
+    },
+    {
+      "id": 70,
+      "question": "What is √324?",
+      "options": ["16", "17", "18", "19"],
+      "answer": "C"
+    },
+    {
+      "id": 71,
+      "question": "What is 2/3 - 1/6?",
+      "options": ["1/6", "1/3", "1/2", "3/6"],
+      "answer": "C"
+    },
+    {
+      "id": 72,
+      "question": "What is 30% of 120?",
+      "options": ["30", "34", "36", "40"],
+      "answer": "C"
+    },
+    {
+      "id": 73,
+      "question": "Solve: 7x + 5 = 47",
+      "options": ["5", "6", "7", "8"],
+      "answer": "B"
+    },
+    {
+      "id": 74,
+      "question": "What is 13 + 27?",
+      "options": ["35", "38", "40", "42"],
+      "answer": "C"
+    },
+    {
+      "id": 75,
+      "question": "If x = 3, what is x³ + 2x²?",
+      "options": ["39", "40", "41", "42"],
+      "answer": "A"
+    },
+    {
+      "id": 76,
+      "question": "What is 50% of 360?",
+      "options": ["160", "170", "180", "190"],
+      "answer": "C"
+    },
+    {
+      "id": 77,
+      "question": "Solve: 2x - 3 = x + 5",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 78,
+      "question": "What is the area of a parallelogram with base 6 and height 4?",
+      "options": ["20", "24", "28", "32"],
+      "answer": "B"
+    },
+    {
+      "id": 79,
+      "question": "If 3x + 4 = 19, find x",
+      "options": ["4", "5", "6", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 80,
+      "question": "What is 3/4 × 8?",
+      "options": ["4", "5", "6", "7"],
+      "answer": "C"
+    },
+    {
+      "id": 81,
+      "question": "What is 28% of 200?",
+      "options": ["52", "54", "56", "58"],
+      "answer": "C"
+    },
+    {
+      "id": 82,
+      "question": "Solve: 9x - 18 = 0",
+      "options": ["1", "2", "3", "4"],
+      "answer": "B"
+    },
+    {
+      "id": 83,
+      "question": "What is 15 × 12?",
+      "options": ["150", "160", "180", "200"],
+      "answer": "C"
+    },
+    {
+      "id": 84,
+      "question": "If x² - 4 = 12, find x (positive)",
+      "options": ["3", "4", "5", "6"],
+      "answer": "B"
+    },
+    {
+      "id": 85,
+      "question": "What is 42% of 250?",
+      "options": ["100", "105", "110", "115"],
+      "answer": "B"
+    },
+    {
+      "id": 86,
+      "question": "Solve: 3x - 2 = 2x + 8",
+      "options": ["8", "9", "10", "11"],
+      "answer": "B"
+    },
+    {
+      "id": 87,
+      "question": "What is the sum of first 5 natural numbers?",
+      "options": ["12", "14", "15", "16"],
+      "answer": "C"
+    },
+    {
+      "id": 88,
+      "question": "If 6x + 3 = 27, find x",
+      "options": ["3", "4", "5", "6"],
+      "answer": "B"
+    },
+    {
+      "id": 89,
+      "question": "What is 5/6 + 1/3?",
+      "options": ["7/9", "5/6", "7/6", "8/6"],
+      "answer": "C"
+    },
+    {
+      "id": 90,
+      "question": "What is 65% of 100?",
+      "options": ["60", "62", "64", "65"],
+      "answer": "D"
+    },
+    {
+      "id": 91,
+      "question": "Solve: 2(x + 4) = 18",
+      "options": ["4", "5", "6", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 92,
+      "question": "What is 20² - 15²?",
+      "options": ["135", "137", "139", "141"],
+      "answer": "A"
+    },
+    {
+      "id": 93,
+      "question": "If a = 2, b = 3, what is (a + b)²?",
+      "options": ["20", "25", "30", "35"],
+      "answer": "B"
+    },
+    {
+      "id": 94,
+      "question": "What is 38% of 300?",
+      "options": ["108", "110", "112", "114"],
+      "answer": "D"
+    },
+    {
+      "id": 95,
+      "question": "Solve: 4x + 3 = 23",
+      "options": ["4", "5", "6", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 96,
+      "question": "What is 3/8 of 40?",
+      "options": ["12", "14", "15", "18"],
+      "answer": "C"
+    },
+    {
+      "id": 97,
+      "question": "What is the sum of angles in a quadrilateral?",
+      "options": ["180°", "270°", "360°", "450°"],
+      "answer": "C"
+    },
+    {
+      "id": 98,
+      "question": "If 5x - 8 = 17, find x",
+      "options": ["4", "5", "6", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 99,
+      "question": "What is 2⁷?",
+      "options": ["64", "128", "256", "512"],
+      "answer": "B"
+    },
+    {
+      "id": 100,
+      "question": "What is 3⁵?",
+      "options": ["81", "121", "169", "243"],
+      "answer": "D"
+    },
+    {
+      "id": 101,
+      "question": "If 7x + 2 = 30, find x",
+      "options": ["3", "4", "5", "6"],
+      "answer": "B"
+    },
+    {
+      "id": 102,
+      "question": "What is 24 ÷ 3/4?",
+      "options": ["16", "18", "32", "36"],
+      "answer": "C"
+    },
+    {
+      "id": 103,
+      "question": "What is 52% of 175?",
+      "options": ["85", "89", "91", "95"],
+      "answer": "C"
+    },
+    {
+      "id": 104,
+      "question": "Solve: x/5 - 3 = 2",
+      "options": ["20", "22", "24", "25"],
+      "answer": "D"
+    },
+    {
+      "id": 105,
+      "question": "What is 4/5 - 1/5?",
+      "options": ["1/5", "2/5", "3/5", "4/5"],
+      "answer": "C"
+    },
+    {
+      "id": 106,
+      "question": "What is 31% of 400?",
+      "options": ["118", "120", "122", "124"],
+      "answer": "D"
+    },
+    {
+      "id": 107,
+      "question": "Solve: 8x - 6 = 34",
+      "options": ["4", "5", "6", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 108,
+      "question": "What is the HCF of 48 and 64?",
+      "options": ["8", "12", "16", "20"],
+      "answer": "C"
+    },
+    {
+      "id": 109,
+      "question": "If x + 3x = 20, find x",
+      "options": ["4", "5", "6", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 110,
+      "question": "What is 7/10 as a percentage?",
+      "options": ["65%", "70%", "75%", "80%"],
+      "answer": "B"
+    },
+    {
+      "id": 111,
+      "question": "What is 15² - 12²?",
+      "options": ["79", "80", "81", "82"],
+      "answer": "C"
+    },
+    {
+      "id": 112,
+      "question": "If 2x + 9 = 25, find x",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 113,
+      "question": "What is 36% of 150?",
+      "options": ["50", "52", "54", "56"],
+      "answer": "C"
+    },
+    {
+      "id": 114,
+      "question": "Solve: 3(x - 1) = 12",
+      "options": ["4", "5", "6", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 115,
+      "question": "What is 1/3 + 1/4?",
+      "options": ["5/12", "7/12", "8/12", "9/12"],
+      "answer": "B"
+    },
+    {
+      "id": 116,
+      "question": "What is 5 × 5 × 5?",
+      "options": ["100", "115", "125", "135"],
+      "answer": "C"
+    },
+    {
+      "id": 117,
+      "question": "If 4x - 6 = 18, find x",
+      "options": ["5", "6", "7", "8"],
+      "answer": "B"
+    },
+    {
+      "id": 118,
+      "question": "What is 48% of 175?",
+      "options": ["82", "84", "86", "88"],
+      "answer": "B"
+    },
+    {
+      "id": 119,
+      "question": "Solve: x + 4 = 2x - 3",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 120,
+      "question": "What is √196?",
+      "options": ["12", "13", "14", "15"],
+      "answer": "C"
+    },
+    {
+      "id": 121,
+      "question": "If a - b = 5 and a + b = 15, find a",
+      "options": ["8", "9", "10", "12"],
+      "answer": "B"
+    },
+    {
+      "id": 122,
+      "question": "What is 2/7 of 49?",
+      "options": ["12", "13", "14", "15"],
+      "answer": "C"
+    },
+    {
+      "id": 123,
+      "question": "What is 44% of 250?",
+      "options": ["105", "107", "109", "111"],
+      "answer": "D"
+    },
+    {
+      "id": 124,
+      "question": "Solve: 6x + 4 = 40",
+      "options": ["5", "6", "7", "8"],
+      "answer": "B"
+    },
+    {
+      "id": 125,
+      "question": "What is the area of a circle with radius 5?",
+      "options": ["20π", "25π", "30π", "35π"],
+      "answer": "B"
+    },
+    {
+      "id": 126,
+      "question": "If 9x - 5 = 40, find x",
+      "options": ["4", "5", "5.5", "6"],
+      "answer": "B"
+    },
+    {
+      "id": 127,
+      "question": "What is 1/2 × 2/3?",
+      "options": ["1/3", "1/4", "1/5", "1/6"],
+      "answer": "A"
+    },
+    {
+      "id": 128,
+      "question": "What is 23% of 300?",
+      "options": ["65", "68", "69", "70"],
+      "answer": "C"
+    },
+    {
+      "id": 129,
+      "question": "Solve: 5x - 4 = 3x + 10",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 130,
+      "question": "What is 18² - 10²?",
+      "options": ["224", "226", "228", "230"],
+      "answer": "B"
+    },
+    {
+      "id": 131,
+      "question": "If x/6 = 4, find x",
+      "options": ["20", "22", "24", "26"],
+      "answer": "C"
+    },
+    {
+      "id": 132,
+      "question": "What is 3/5 + 1/10?",
+      "options": ["5/10", "6/10", "7/10", "8/10"],
+      "answer": "C"
+    },
+    {
+      "id": 133,
+      "question": "What is 39% of 200?",
+      "options": ["70", "72", "74", "78"],
+      "answer": "D"
+    },
+    {
+      "id": 134,
+      "question": "Solve: 2(x - 5) = 8",
+      "options": ["7", "8", "9", "10"],
+      "answer": "D"
+    },
+    {
+      "id": 135,
+      "question": "What is 6 × 7 × 2?",
+      "options": ["78", "80", "82", "84"],
+      "answer": "D"
+    },
+    {
+      "id": 136,
+      "question": "If 11x - 3 = 30, find x",
+      "options": ["2", "3", "4", "5"],
+      "answer": "B"
+    },
+    {
+      "id": 137,
+      "question": "What is 4/9 as a decimal (approx)?",
+      "options": ["0.38", "0.42", "0.44", "0.48"],
+      "answer": "C"
+    },
+    {
+      "id": 138,
+      "question": "What is 41% of 400?",
+      "options": ["154", "156", "158", "164"],
+      "answer": "D"
+    },
+    {
+      "id": 139,
+      "question": "Solve: x/2 + 4 = 10",
+      "options": ["10", "12", "14", "16"],
+      "answer": "B"
+    },
+    {
+      "id": 140,
+      "question": "What is 5/6 - 1/6?",
+      "options": ["2/3", "3/4", "4/5", "5/6"],
+      "answer": "A"
+    },
+    {
+      "id": 141,
+      "question": "What is 16 × 25?",
+      "options": ["300", "350", "400", "450"],
+      "answer": "C"
+    },
+    {
+      "id": 142,
+      "question": "If 7x + 6 = 48, find x",
+      "options": ["5", "6", "7", "8"],
+      "answer": "B"
+    },
+    {
+      "id": 143,
+      "question": "What is 19% of 500?",
+      "options": ["85", "90", "95", "100"],
+      "answer": "C"
+    },
+    {
+      "id": 144,
+      "question": "Solve: 3x + 5 = 2x + 12",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 145,
+      "question": "What is 8 + 16 ÷ 2?",
+      "options": ["12", "14", "16", "18"],
+      "answer": "B"
+    },
+    {
+      "id": 146,
+      "question": "If x² + 5 = 30, find x (positive)",
+      "options": ["4", "5", "6", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 147,
+      "question": "What is 7/8 - 3/8?",
+      "options": ["1/4", "1/3", "1/2", "2/3"],
+      "answer": "C"
+    },
+    {
+      "id": 148,
+      "question": "What is 27% of 600?",
+      "options": ["158", "160", "162", "168"],
+      "answer": "C"
+    },
+    {
+      "id": 149,
+      "question": "Solve: 4x - 8 = 2x + 4",
+      "options": ["4", "5", "6", "7"],
+      "answer": "C"
+    },
+    {
+      "id": 150,
+      "question": "What is √289?",
+      "options": ["15", "16", "17", "18"],
+      "answer": "C"
+    },
+    {
+      "id": 151,
+      "question": "If 3x + 7 = 22, find x",
+      "options": ["4", "5", "6", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 152,
+      "question": "What is 2/3 × 3/4?",
+      "options": ["1/2", "3/5", "4/7", "5/8"],
+      "answer": "A"
+    },
+    {
+      "id": 153,
+      "question": "What is 49% of 400?",
+      "options": ["190", "192", "194", "196"],
+      "answer": "D"
+    },
+    {
+      "id": 154,
+      "question": "Solve: x + 3x + 2x = 30",
+      "options": ["5", "6", "7", "8"],
+      "answer": "B"
+    },
+    {
+      "id": 155,
+      "question": "What is 12 × 8 ÷ 2?",
+      "options": ["42", "44", "46", "48"],
+      "answer": "D"
+    },
+    {
+      "id": 156,
+      "question": "If 6x - 9 = 33, find x",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 157,
+      "question": "What is 3/10 as a percentage?",
+      "options": ["25%", "30%", "35%", "40%"],
+      "answer": "B"
+    },
+    {
+      "id": 158,
+      "question": "What is 51% of 200?",
+      "options": ["98", "100", "102", "104"],
+      "answer": "C"
+    },
+    {
+      "id": 159,
+      "question": "Solve: 9x + 5 = 32",
+      "options": ["2", "3", "4", "5"],
+      "answer": "B"
+    },
+    {
+      "id": 160,
+      "question": "What is 5/12 + 1/12?",
+      "options": ["1/2", "7/12", "1/3", "2/3"],
+      "answer": "B"
+    },
+    {
+      "id": 161,
+      "question": "What is 32% of 250?",
+      "options": ["75", "78", "80", "82"],
+      "answer": "C"
+    },
+    {
+      "id": 162,
+      "question": "If 8x + 4 = 52, find x",
+      "options": ["5", "5.5", "6", "6.5"],
+      "answer": "C"
+    },
+    {
+      "id": 163,
+      "question": "What is 20 - 5 × 2?",
+      "options": ["10", "20", "30", "40"],
+      "answer": "A"
+    },
+    {
+      "id": 164,
+      "question": "Solve: 2x + 8 = 3x - 5",
+      "options": ["11", "12", "13", "14"],
+      "answer": "B"
+    },
+    {
+      "id": 165,
+      "question": "What is the LCM of 15 and 25?",
+      "options": ["50", "60", "70", "75"],
+      "answer": "D"
+    },
+    {
+      "id": 166,
+      "question": "If x/7 = 5, find x",
+      "options": ["30", "33", "35", "38"],
+      "answer": "C"
+    },
+    {
+      "id": 167,
+      "question": "What is 4/7 + 2/7?",
+      "options": ["5/7", "6/7", "7/7", "8/7"],
+      "answer": "B"
+    },
+    {
+      "id": 168,
+      "question": "What is 46% of 300?",
+      "options": ["134", "136", "138", "140"],
+      "answer": "C"
+    },
+    {
+      "id": 169,
+      "question": "Solve: 10x - 5 = 55",
+      "options": ["5", "6", "7", "8"],
+      "answer": "B"
+    },
+    {
+      "id": 170,
+      "question": "What is 14 + 6 × 3?",
+      "options": ["30", "32", "34", "36"],
+      "answer": "B"
+    },
+    {
+      "id": 171,
+      "question": "If 5x + 12 = 42, find x",
+      "options": ["5", "6", "7", "8"],
+      "answer": "B"
+    },
+    {
+      "id": 172,
+      "question": "What is 5/8 as a percentage?",
+      "options": ["60%", "62.5%", "65%", "67.5%"],
+      "answer": "B"
+    },
+    {
+      "id": 173,
+      "question": "What is 37% of 400?",
+      "options": ["140", "142", "144", "148"],
+      "answer": "D"
+    },
+    {
+      "id": 174,
+      "question": "Solve: 7x - 3 = 32",
+      "options": ["4", "5", "6", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 175,
+      "question": "What is 6/7 - 2/7?",
+      "options": ["2/7", "3/7", "4/7", "5/7"],
+      "answer": "C"
+    },
+    {
+      "id": 176,
+      "question": "What is the GCD of 30 and 45?",
+      "options": ["10", "12", "15", "20"],
+      "answer": "C"
+    },
+    {
+      "id": 177,
+      "question": "If 9x - 6 = 21, find x",
+      "options": ["2", "3", "4", "5"],
+      "answer": "B"
+    },
+    {
+      "id": 178,
+      "question": "What is 3 × 4 + 5?",
+      "options": ["12", "15", "17", "20"],
+      "answer": "C"
+    },
+    {
+      "id": 179,
+      "question": "What is 29% of 500?",
+      "options": ["140", "142", "145", "150"],
+      "answer": "C"
+    },
+    {
+      "id": 180,
+      "question": "Solve: 3x + 6 = 2x + 15",
+      "options": ["7", "8", "9", "10"],
+      "answer": "B"
+    },
+    {
+      "id": 181,
+      "question": "What is 1/4 + 3/4?",
+      "options": ["0.5", "0.75", "1", "1.25"],
+      "answer": "C"
+    },
+    {
+      "id": 182,
+      "question": "If 4x + 5 = 29, find x",
+      "options": ["5", "6", "7", "8"],
+      "answer": "B"
+    },
+    {
+      "id": 183,
+      "question": "What is 43% of 350?",
+      "options": ["148", "150", "150.5", "151"],
+      "answer": "D"
+    },
+    {
+      "id": 184,
+      "question": "Solve: x/3 + 4 = 9",
+      "options": ["12", "13", "14", "15"],
+      "answer": "D"
+    },
+    {
+      "id": 185,
+      "question": "What is 9/11 as a decimal (approx)?",
+      "options": ["0.78", "0.80", "0.82", "0.84"],
+      "answer": "C"
+    },
+    {
+      "id": 186,
+      "question": "What is the area of a trapezoid with parallel sides 5 and 7 and height 3?",
+      "options": ["15", "18", "20", "22"],
+      "answer": "B"
+    },
+    {
+      "id": 187,
+      "question": "If 12x - 4 = 44, find x",
+      "options": ["3", "4", "5", "6"],
+      "answer": "B"
+    },
+    {
+      "id": 188,
+      "question": "What is 2/9 of 27?",
+      "options": ["4", "5", "6", "7"],
+      "answer": "C"
+    },
+    {
+      "id": 189,
+      "question": "What is 34% of 500?",
+      "options": ["160", "165", "168", "170"],
+      "answer": "D"
+    },
+    {
+      "id": 190,
+      "question": "Solve: 5x + 7 = 3x + 21",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 191,
+      "question": "What is 18 ÷ 3 + 4?",
+      "options": ["10", "11", "12", "13"],
+      "answer": "A"
+    },
+    {
+      "id": 192,
+      "question": "If 2x + 15 = 35, find x",
+      "options": ["8", "9", "10", "11"],
+      "answer": "B"
+    },
+    {
+      "id": 193,
+      "question": "What is 7/9 + 1/9?",
+      "options": ["6/9", "7/9", "8/9", "9/9"],
+      "answer": "C"
+    },
+    {
+      "id": 194,
+      "question": "What is 53% of 200?",
+      "options": ["102", "104", "106", "108"],
+      "answer": "C"
+    },
+    {
+      "id": 195,
+      "question": "Solve: 8x + 3 = 35",
+      "options": ["3", "4", "5", "6"],
+      "answer": "B"
+    },
+    {
+      "id": 196,
+      "question": "What is 4/5 ÷ 2/5?",
+      "options": ["1", "1.5", "2", "2.5"],
+      "answer": "C"
+    },
+    {
+      "id": 197,
+      "question": "What is the sum of 1.5 + 2.75?",
+      "options": ["4", "4.15", "4.25", "4.5"],
+      "answer": "C"
+    },
+    {
+      "id": 198,
+      "question": "If 3x - 4 = 14, find x",
+      "options": ["5", "6", "7", "8"],
+      "answer": "B"
+    },
+    {
+      "id": 199,
+      "question": "What is 11% of 400?",
+      "options": ["40", "42", "44", "48"],
+      "answer": "C"
+    },
+    {
+      "id": 200,
+      "question": "Solve: 6x + 2 = 50",
+      "options": ["7", "8", "8.5", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 201,
+      "question": "What is the average of 12, 18, 24?",
+      "options": ["16", "17", "18", "19"],
+      "answer": "C"
+    },
+    {
+      "id": 202,
+      "question": "If x² = 100, find x (positive)",
+      "options": ["8", "9", "10", "11"],
+      "answer": "C"
+    },
+    {
+      "id": 203,
+      "question": "What is 3/4 ÷ 1/2?",
+      "options": ["0.5", "1", "1.5", "2"],
+      "answer": "C"
+    },
+    {
+      "id": 204,
+      "question": "What is 57% of 300?",
+      "options": ["168", "170", "171", "174"],
+      "answer": "C"
+    },
+    {
+      "id": 205,
+      "question": "Solve: 4x - 5 = 23",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 206,
+      "question": "What is 5 × 6 - 8?",
+      "options": ["20", "22", "24", "26"],
+      "answer": "B"
+    },
+    {
+      "id": 207,
+      "question": "If 7x + 4 = 53, find x",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 208,
+      "question": "What is 4/9 + 2/9?",
+      "options": ["5/9", "6/9", "7/9", "8/9"],
+      "answer": "B"
+    },
+    {
+      "id": 209,
+      "question": "What is 73% of 100?",
+      "options": ["70", "71", "72", "73"],
+      "answer": "D"
+    },
+    {
+      "id": 210,
+      "question": "Solve: 2x + 11 = 3x - 8",
+      "options": ["18", "19", "20", "21"],
+      "answer": "B"
+    },
+    {
+      "id": 211,
+      "question": "What is 15 - 3 × 2?",
+      "options": ["7", "8", "9", "10"],
+      "answer": "C"
+    },
+    {
+      "id": 212,
+      "question": "If 10x - 8 = 42, find x",
+      "options": ["4", "4.5", "5", "5.5"],
+      "answer": "C"
+    },
+    {
+      "id": 213,
+      "question": "What is 2/5 × 5/6?",
+      "options": ["1/3", "2/5", "2/6", "5/11"],
+      "answer": "A"
+    },
+    {
+      "id": 214,
+      "question": "What is 67% of 400?",
+      "options": ["260", "262", "264", "268"],
+      "answer": "D"
+    },
+    {
+      "id": 215,
+      "question": "Solve: 9x - 7 = 38",
+      "options": ["4", "5", "6", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 216,
+      "question": "What is 8/15 as a decimal (approx)?",
+      "options": ["0.50", "0.53", "0.56", "0.60"],
+      "answer": "B"
+    },
+    {
+      "id": 217,
+      "question": "What is the perimeter of a triangle with sides 5, 6, 7?",
+      "options": ["16", "17", "18", "19"],
+      "answer": "C"
+    },
+    {
+      "id": 218,
+      "question": "If 6x + 8 = 44, find x",
+      "options": ["5", "6", "7", "8"],
+      "answer": "B"
+    },
+    {
+      "id": 219,
+      "question": "What is 13 × 13?",
+      "options": ["160", "165", "169", "173"],
+      "answer": "C"
+    },
+    {
+      "id": 220,
+      "question": "What is 24% of 150?",
+      "options": ["32", "34", "36", "38"],
+      "answer": "C"
+    },
+    {
+      "id": 221,
+      "question": "Solve: 3x + 4 = 25",
+      "options": ["6", "7", "7.5", "8"],
+      "answer": "B"
+    },
+    {
+      "id": 222,
+      "question": "What is 3/5 - 1/10?",
+      "options": ["1/2", "9/10", "7/10", "4/5"],
+      "answer": "C"
+    },
+    {
+      "id": 223,
+      "question": "What is 1.2 + 3.8?",
+      "options": ["4.8", "5", "5.2", "5.5"],
+      "answer": "B"
+    },
+    {
+      "id": 224,
+      "question": "If 5x - 6 = 24, find x",
+      "options": ["5", "6", "7", "8"],
+      "answer": "B"
+    },
+    {
+      "id": 225,
+      "question": "What is 69% of 250?",
+      "options": ["170", "172.5", "175", "177.5"],
+      "answer": "B"
+    },
+    {
+      "id": 226,
+      "question": "Solve: x/4 + 6 = 11",
+      "options": ["16", "18", "20", "22"],
+      "answer": "C"
+    },
+    {
+      "id": 227,
+      "question": "What is 2.5 × 4?",
+      "options": ["8", "9", "10", "11"],
+      "answer": "C"
+    },
+    {
+      "id": 228,
+      "question": "If 8x + 6 = 62, find x",
+      "options": ["6", "6.5", "7", "7.5"],
+      "answer": "B"
+    },
+    {
+      "id": 229,
+      "question": "What is 3/7 + 2/7?",
+      "options": ["4/7", "5/7", "6/7", "7/7"],
+      "answer": "B"
+    },
+    {
+      "id": 230,
+      "question": "What is 81% of 200?",
+      "options": ["158", "160", "162", "164"],
+      "answer": "C"
+    },
+    {
+      "id": 231,
+      "question": "Solve: 5x + 8 = 4x + 16",
+      "options": ["6", "7", "8", "9"],
+      "answer": "C"
+    },
+    {
+      "id": 232,
+      "question": "What is 16 + 8 ÷ 2?",
+      "options": ["16", "18", "20", "22"],
+      "answer": "C"
+    },
+    {
+      "id": 233,
+      "question": "If 11x - 8 = 36, find x",
+      "options": ["3", "4", "5", "6"],
+      "answer": "B"
+    },
+    {
+      "id": 234,
+      "question": "What is 5/11 as a decimal (approx)?",
+      "options": ["0.40", "0.45", "0.50", "0.55"],
+      "answer": "B"
+    },
+    {
+      "id": 235,
+      "question": "What is 12² + 5²?",
+      "options": ["156", "157", "158", "159"],
+      "answer": "B"
+    },
+    {
+      "id": 236,
+      "question": "What is 91% of 300?",
+      "options": ["268", "270", "272", "273"],
+      "answer": "D"
+    },
+    {
+      "id": 237,
+      "question": "Solve: 7x - 4 = 45",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 238,
+      "question": "What is 9/14 as a decimal (approx)?",
+      "options": ["0.60", "0.62", "0.64", "0.66"],
+      "answer": "C"
+    },
+    {
+      "id": 239,
+      "question": "What is 3.5 - 1.2?",
+      "options": ["2", "2.2", "2.3", "2.5"],
+      "answer": "C"
+    },
+    {
+      "id": 240,
+      "question": "If 9x + 5 = 59, find x",
+      "options": ["5", "5.5", "6", "6.5"],
+      "answer": "C"
+    },
+    {
+      "id": 241,
+      "question": "What is 7/12 + 1/12?",
+      "options": ["2/3", "3/4", "5/6", "7/8"],
+      "answer": "A"
+    },
+    {
+      "id": 242,
+      "question": "What is 14% of 350?",
+      "options": ["45", "47", "49", "51"],
+      "answer": "C"
+    },
+    {
+      "id": 243,
+      "question": "Solve: 4x + 9 = 3x + 18",
+      "options": ["8", "9", "10", "11"],
+      "answer": "B"
+    },
+    {
+      "id": 244,
+      "question": "What is 100 - 7 × 8?",
+      "options": ["42", "43", "44", "45"],
+      "answer": "B"
+    },
+    {
+      "id": 245,
+      "question": "If 3x + 11 = 29, find x",
+      "options": ["5", "6", "7", "8"],
+      "answer": "B"
+    },
+    {
+      "id": 246,
+      "question": "What is 6/7 + 1/7?",
+      "options": ["6/7", "7/7", "8/7", "9/7"],
+      "answer": "B"
+    },
+    {
+      "id": 247,
+      "question": "What is 88% of 250?",
+      "options": ["215", "217", "219", "220"],
+      "answer": "D"
+    },
+    {
+      "id": 248,
+      "question": "Solve: x/5 + 6 = 12",
+      "options": ["25", "28", "30", "32"],
+      "answer": "C"
+    },
+    {
+      "id": 249,
+      "question": "What is 4.5 ÷ 1.5?",
+      "options": ["2", "2.5", "3", "3.5"],
+      "answer": "C"
+    },
+    {
+      "id": 250,
+      "question": "If 7x + 10 = 59, find x",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 251,
+      "question": "What is 5/9 - 1/9?",
+      "options": ["2/9", "3/9", "4/9", "5/9"],
+      "answer": "C"
+    },
+    {
+      "id": 252,
+      "question": "What is 47% of 600?",
+      "options": ["276", "278", "280", "282"],
+      "answer": "D"
+    },
+    {
+      "id": 253,
+      "question": "Solve: 10x - 12 = 48",
+      "options": ["5", "6", "7", "8"],
+      "answer": "B"
+    },
+    {
+      "id": 254,
+      "question": "What is 9/16 as a decimal?",
+      "options": ["0.50", "0.5625", "0.625", "0.70"],
+      "answer": "B"
+    },
+    {
+      "id": 255,
+      "question": "What is 2.25 × 2?",
+      "options": ["4", "4.25", "4.5", "5"],
+      "answer": "C"
+    },
+    {
+      "id": 256,
+      "question": "If 12x - 6 = 54, find x",
+      "options": ["4", "5", "6", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 257,
+      "question": "What is 8/11 + 3/11?",
+      "options": ["10/11", "11/11", "12/11", "13/11"],
+      "answer": "B"
+    },
+    {
+      "id": 258,
+      "question": "What is 36% of 500?",
+      "options": ["175", "177", "179", "180"],
+      "answer": "D"
+    },
+    {
+      "id": 259,
+      "question": "Solve: 6x + 7 = 5x + 15",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 260,
+      "question": "What is 24 ÷ 0.5?",
+      "options": ["12", "24", "36", "48"],
+      "answer": "D"
+    },
+    {
+      "id": 261,
+      "question": "If 4x + 13 = 33, find x",
+      "options": ["4", "5", "6", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 262,
+      "question": "What is 2/11 of 77?",
+      "options": ["12", "13", "14", "15"],
+      "answer": "C"
+    },
+    {
+      "id": 263,
+      "question": "What is 25% of 160?",
+      "options": ["35", "40", "45", "50"],
+      "answer": "B"
+    },
+    {
+      "id": 264,
+      "question": "Solve: 3x - 8 = 2x + 7",
+      "options": ["13", "14", "15", "16"],
+      "answer": "C"
+    },
+    {
+      "id": 265,
+      "question": "What is 5.5 + 2.5?",
+      "options": ["7", "7.5", "8", "8.5"],
+      "answer": "C"
+    },
+    {
+      "id": 266,
+      "question": "If 8x - 10 = 38, find x",
+      "options": ["5", "6", "7", "8"],
+      "answer": "B"
+    },
+    {
+      "id": 267,
+      "question": "What is 9/10 - 3/10?",
+      "options": ["3/5", "4/5", "5/6", "6/7"],
+      "answer": "A"
+    },
+    {
+      "id": 268,
+      "question": "What is 99% of 200?",
+      "options": ["196", "197", "198", "199"],
+      "answer": "C"
+    },
+    {
+      "id": 269,
+      "question": "Solve: 5x - 9 = 26",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 270,
+      "question": "What is 8.4 - 3.6?",
+      "options": ["4.4", "4.6", "4.8", "5"],
+      "answer": "C"
+    },
+    {
+      "id": 271,
+      "question": "If 2x + 20 = 40, find x",
+      "options": ["8", "9", "10", "11"],
+      "answer": "C"
+    },
+    {
+      "id": 272,
+      "question": "What is 11/13 as a decimal (approx)?",
+      "options": ["0.80", "0.82", "0.85", "0.88"],
+      "answer": "C"
+    },
+    {
+      "id": 273,
+      "question": "What is 3/4 + 1/4?",
+      "options": ["0.75", "1", "1.25", "1.5"],
+      "answer": "B"
+    },
+    {
+      "id": 274,
+      "question": "What is 63% of 400?",
+      "options": ["248", "250", "252", "254"],
+      "answer": "C"
+    },
+    {
+      "id": 275,
+      "question": "Solve: 7x + 8 = 71",
+      "options": ["8", "9", "10", "11"],
+      "answer": "B"
+    },
+    {
+      "id": 276,
+      "question": "What is 12 × 12?",
+      "options": ["140", "144", "148", "152"],
+      "answer": "B"
+    },
+    {
+      "id": 277,
+      "question": "If 6x - 7 = 41, find x",
+      "options": ["7", "8", "9", "10"],
+      "answer": "B"
+    },
+    {
+      "id": 278,
+      "question": "What is 1/3 × 2/5?",
+      "options": ["1/8", "2/15", "2/8", "3/10"],
+      "answer": "B"
+    },
+    {
+      "id": 279,
+      "question": "What is 21% of 700?",
+      "options": ["140", "142", "144", "147"],
+      "answer": "D"
+    },
+    {
+      "id": 280,
+      "question": "Solve: 4x + 11 = 39",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 281,
+      "question": "What is 15.5 - 8.5?",
+      "options": ["6", "6.5", "7", "7.5"],
+      "answer": "C"
+    },
+    {
+      "id": 282,
+      "question": "If 9x + 7 = 70, find x",
+      "options": ["6", "6.5", "7", "7.5"],
+      "answer": "C"
+    },
+    {
+      "id": 283,
+      "question": "What is 4/10 as a percentage?",
+      "options": ["35%", "40%", "45%", "50%"],
+      "answer": "B"
+    },
+    {
+      "id": 284,
+      "question": "What is 75% of 240?",
+      "options": ["170", "175", "180", "185"],
+      "answer": "C"
+    },
+    {
+      "id": 285,
+      "question": "Solve: 8x - 11 = 37",
+      "options": ["5", "6", "7", "8"],
+      "answer": "B"
+    },
+    {
+      "id": 286,
+      "question": "What is 6 × 6 × 6?",
+      "options": ["200", "212", "216", "230"],
+      "answer": "C"
+    },
+    {
+      "id": 287,
+      "question": "If 5x + 18 = 48, find x",
+      "options": ["5", "6", "7", "8"],
+      "answer": "B"
+    },
+    {
+      "id": 288,
+      "question": "What is 5/13 as a decimal (approx)?",
+      "options": ["0.35", "0.38", "0.40", "0.45"],
+      "answer": "C"
+    },
+    {
+      "id": 289,
+      "question": "What is 10/11 - 1/11?",
+      "options": ["8/11", "9/11", "10/11", "11/11"],
+      "answer": "B"
+    },
+    {
+      "id": 290,
+      "question": "What is 58% of 500?",
+      "options": ["285", "287", "290", "295"],
+      "answer": "C"
+    },
+    {
+      "id": 291,
+      "question": "Solve: 3x + 15 = 36",
+      "options": ["5", "6", "7", "8"],
+      "answer": "B"
+    },
+    {
+      "id": 292,
+      "question": "What is 9.6 ÷ 3?",
+      "options": ["3", "3.2", "3.4", "3.6"],
+      "answer": "B"
+    },
+    {
+      "id": 293,
+      "question": "If 10x + 6 = 76, find x",
+      "options": ["6", "6.5", "7", "7.5"],
+      "answer": "C"
+    },
+    {
+      "id": 294,
+      "question": "What is 3/8 + 1/8?",
+      "options": ["1/2", "3/4", "5/8", "7/8"],
+      "answer": "A"
+    },
+    {
+      "id": 295,
+      "question": "What is 85% of 180?",
+      "options": ["147", "149", "151", "153"],
+      "answer": "D"
+    },
+    {
+      "id": 296,
+      "question": "Solve: 6x - 5 = 49",
+      "options": ["8", "9", "10", "11"],
+      "answer": "B"
+    },
+    {
+      "id": 297,
+      "question": "What is 14 × 5?",
+      "options": ["60", "65", "70", "75"],
+      "answer": "C"
+    },
+    {
+      "id": 298,
+      "question": "If 7x - 9 = 47, find x",
+      "options": ["7", "8", "9", "10"],
+      "answer": "B"
+    },
+    {
+      "id": 299,
+      "question": "What is 7/15 as a decimal (approx)?",
+      "options": ["0.45", "0.47", "0.50", "0.53"],
+      "answer": "B"
+    },
+    {
+      "id": 300,
+      "question": "What is 32% of 350?",
+      "options": ["108", "110", "112", "115"],
+      "answer": "C"
+    },
+    {
+      "id": 301,
+      "question": "Solve: 9x + 6 = 69",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 302,
+      "question": "What is 7.2 × 2.5?",
+      "options": ["16", "17", "18", "19"],
+      "answer": "C"
+    },
+    {
+      "id": 303,
+      "question": "If 3x + 16 = 40, find x",
+      "options": ["7", "8", "9", "10"],
+      "answer": "B"
+    },
+    {
+      "id": 304,
+      "question": "What is 4/7 - 1/7?",
+      "options": ["1/7", "2/7", "3/7", "4/7"],
+      "answer": "C"
+    },
+    {
+      "id": 305,
+      "question": "What is 79% of 200?",
+      "options": ["152", "154", "156", "158"],
+      "answer": "D"
+    },
+    {
+      "id": 306,
+      "question": "Solve: 2x + 19 = 35",
+      "options": ["7", "8", "9", "10"],
+      "answer": "B"
+    },
+    {
+      "id": 307,
+      "question": "What is 11 × 11?",
+      "options": ["118", "121", "124", "127"],
+      "answer": "B"
+    },
+    {
+      "id": 308,
+      "question": "If 8x + 8 = 56, find x",
+      "options": ["5", "5.5", "6", "6.5"],
+      "answer": "C"
+    },
+    {
+      "id": 309,
+      "question": "What is 6/11 as a decimal (approx)?",
+      "options": ["0.50", "0.52", "0.54", "0.56"],
+      "answer": "C"
+    },
+    {
+      "id": 310,
+      "question": "What is 1/5 + 2/5?",
+      "options": ["2/5", "3/5", "4/5", "5/5"],
+      "answer": "B"
+    },
+    {
+      "id": 311,
+      "question": "What is 95% of 300?",
+      "options": ["282", "284", "285", "286"],
+      "answer": "C"
+    },
+    {
+      "id": 312,
+      "question": "Solve: 5x + 12 = 57",
+      "options": ["8", "9", "10", "11"],
+      "answer": "B"
+    },
+    {
+      "id": 313,
+      "question": "What is 6.75 - 2.25?",
+      "options": ["4", "4.25", "4.5", "4.75"],
+      "answer": "C"
+    },
+    {
+      "id": 314,
+      "question": "If 4x + 19 = 51, find x",
+      "options": ["7", "8", "8.5", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 315,
+      "question": "What is 3/11 + 5/11?",
+      "options": ["7/11", "8/11", "9/11", "10/11"],
+      "answer": "B"
+    },
+    {
+      "id": 316,
+      "question": "What is 40% of 125?",
+      "options": ["45", "48", "50", "52"],
+      "answer": "C"
+    },
+    {
+      "id": 317,
+      "question": "Solve: 7x + 12 = 54",
+      "options": ["5", "6", "7", "8"],
+      "answer": "B"
+    },
+    {
+      "id": 318,
+      "question": "What is 18 × 8?",
+      "options": ["138", "142", "144", "148"],
+      "answer": "C"
+    },
+    {
+      "id": 319,
+      "question": "If 2x + 25 = 45, find x",
+      "options": ["8", "9", "10", "11"],
+      "answer": "B"
+    },
+    {
+      "id": 320,
+      "question": "What is 9/20 as a percentage?",
+      "options": ["40%", "42%", "44%", "45%"],
+      "answer": "D"
+    },
+    {
+      "id": 321,
+      "question": "What is 68% of 450?",
+      "options": ["298", "300", "304", "306"],
+      "answer": "D"
+    },
+    {
+      "id": 322,
+      "question": "Solve: 4x - 7 = 33",
+      "options": ["9", "10", "11", "12"],
+      "answer": "B"
+    },
+    {
+      "id": 323,
+      "question": "What is 12.5 + 7.5?",
+      "options": ["18", "19", "20", "21"],
+      "answer": "C"
+    },
+    {
+      "id": 324,
+      "question": "If 6x + 12 = 54, find x",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 325,
+      "question": "What is 2/13 of 65?",
+      "options": ["8", "9", "10", "11"],
+      "answer": "C"
+    },
+    {
+      "id": 326,
+      "question": "What is 56% of 350?",
+      "options": ["190", "192", "194", "196"],
+      "answer": "D"
+    },
+    {
+      "id": 327,
+      "question": "Solve: 3x + 18 = 45",
+      "options": ["8", "9", "10", "11"],
+      "answer": "B"
+    },
+    {
+      "id": 328,
+      "question": "What is 5/6 × 3?",
+      "options": ["2", "2.3", "2.5", "2.8"],
+      "answer": "C"
+    },
+    {
+      "id": 329,
+      "question": "If 11x + 4 = 48, find x",
+      "options": ["3", "4", "5", "6"],
+      "answer": "B"
+    },
+    {
+      "id": 330,
+      "question": "What is 8/17 as a decimal (approx)?",
+      "options": ["0.44", "0.46", "0.48", "0.50"],
+      "answer": "C"
+    },
+    {
+      "id": 331,
+      "question": "What is 84% of 200?",
+      "options": ["163", "165", "167", "168"],
+      "answer": "D"
+    },
+    {
+      "id": 332,
+      "question": "Solve: 8x + 12 = 76",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 333,
+      "question": "What is 15 × 7?",
+      "options": ["100", "105", "110", "115"],
+      "answer": "B"
+    },
+    {
+      "id": 334,
+      "question": "If 9x - 12 = 51, find x",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 335,
+      "question": "What is 5/12 - 1/12?",
+      "options": ["1/3", "1/4", "5/12", "7/12"],
+      "answer": "A"
+    },
+    {
+      "id": 336,
+      "question": "What is 74% of 300?",
+      "options": ["218", "220", "222", "224"],
+      "answer": "C"
+    },
+    {
+      "id": 337,
+      "question": "Solve: 5x + 16 = 56",
+      "options": ["8", "9", "10", "11"],
+      "answer": "B"
+    },
+    {
+      "id": 338,
+      "question": "What is 9.8 - 4.3?",
+      "options": ["5", "5.2", "5.4", "5.5"],
+      "answer": "D"
+    },
+    {
+      "id": 339,
+      "question": "If 3x + 22 = 49, find x",
+      "options": ["8", "9", "9.5", "10"],
+      "answer": "B"
+    },
+    {
+      "id": 340,
+      "question": "What is 7/9 - 2/9?",
+      "options": ["3/9", "4/9", "5/9", "6/9"],
+      "answer": "C"
+    },
+    {
+      "id": 341,
+      "question": "What is 13% of 400?",
+      "options": ["50", "52", "54", "56"],
+      "answer": "C"
+    },
+    {
+      "id": 342,
+      "question": "Solve: 6x + 15 = 57",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 343,
+      "question": "What is 17 × 6?",
+      "options": ["98", "100", "102", "104"],
+      "answer": "C"
+    },
+    {
+      "id": 344,
+      "question": "If 10x - 6 = 64, find x",
+      "options": ["6", "6.5", "7", "7.5"],
+      "answer": "C"
+    },
+    {
+      "id": 345,
+      "question": "What is 12/25 as a percentage?",
+      "options": ["44%", "46%", "48%", "50%"],
+      "answer": "C"
+    },
+    {
+      "id": 346,
+      "question": "What is 62% of 400?",
+      "options": ["244", "246", "248", "250"],
+      "answer": "C"
+    },
+    {
+      "id": 347,
+      "question": "Solve: 4x + 20 = 52",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 348,
+      "question": "What is 3.6 ÷ 0.6?",
+      "options": ["4", "5", "6", "7"],
+      "answer": "C"
+    },
+    {
+      "id": 349,
+      "question": "If 7x + 14 = 63, find x",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 350,
+      "question": "What is 6/13 as a decimal (approx)?",
+      "options": ["0.42", "0.44", "0.46", "0.48"],
+      "answer": "C"
+    },
+    {
+      "id": 351,
+      "question": "What is 1/6 + 1/6?",
+      "options": ["1/6", "1/3", "1/2", "2/3"],
+      "answer": "B"
+    },
+    {
+      "id": 352,
+      "question": "What is 77% of 500?",
+      "options": ["380", "382", "385", "388"],
+      "answer": "C"
+    },
+    {
+      "id": 353,
+      "question": "Solve: 9x - 8 = 64",
+      "options": ["7", "8", "9", "10"],
+      "answer": "B"
+    },
+    {
+      "id": 354,
+      "question": "What is 19 × 4?",
+      "options": ["72", "74", "76", "80"],
+      "answer": "C"
+    },
+    {
+      "id": 355,
+      "question": "If 5x + 21 = 56, find x",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 356,
+      "question": "What is 4/15 as a decimal (approx)?",
+      "options": ["0.25", "0.27", "0.30", "0.33"],
+      "answer": "B"
+    },
+    {
+      "id": 357,
+      "question": "What is 87% of 250?",
+      "options": ["215", "217", "217.5", "219"],
+      "answer": "C"
+    },
+    {
+      "id": 358,
+      "question": "Solve: 7x - 6 = 50",
+      "options": ["7", "8", "9", "10"],
+      "answer": "B"
+    },
+    {
+      "id": 359,
+      "question": "What is 14.5 + 5.5?",
+      "options": ["19", "19.5", "20", "20.5"],
+      "answer": "C"
+    },
+    {
+      "id": 360,
+      "question": "If 8x - 7 = 57, find x",
+      "options": ["7", "8", "8.5", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 361,
+      "question": "What is 9/11 - 4/11?",
+      "options": ["3/11", "4/11", "5/11", "6/11"],
+      "answer": "C"
+    },
+    {
+      "id": 362,
+      "question": "What is 9% of 500?",
+      "options": ["40", "42", "44", "45"],
+      "answer": "D"
+    },
+    {
+      "id": 363,
+      "question": "Solve: 3x + 24 = 54",
+      "options": ["8", "9", "10", "11"],
+      "answer": "B"
+    },
+    {
+      "id": 364,
+      "question": "What is 21 × 5?",
+      "options": ["100", "105", "110", "115"],
+      "answer": "B"
+    },
+    {
+      "id": 365,
+      "question": "If 6x + 18 = 66, find x",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 366,
+      "question": "What is 7/16 as a decimal?",
+      "options": ["0.40", "0.42", "0.44", "0.45"],
+      "answer": "C"
+    },
+    {
+      "id": 367,
+      "question": "What is 54% of 550?",
+      "options": ["290", "292", "295", "297"],
+      "answer": "D"
+    },
+    {
+      "id": 368,
+      "question": "Solve: 5x + 20 = 60",
+      "options": ["7", "8", "9", "10"],
+      "answer": "B"
+    },
+    {
+      "id": 369,
+      "question": "What is 8.8 + 3.4?",
+      "options": ["11.8", "12", "12.2", "12.4"],
+      "answer": "C"
+    },
+    {
+      "id": 370,
+      "question": "If 4x + 24 = 60, find x",
+      "options": ["7", "8", "9", "10"],
+      "answer": "B"
+    },
+    {
+      "id": 371,
+      "question": "What is 8/15 + 1/15?",
+      "options": ["3/5", "2/3", "3/4", "4/5"],
+      "answer": "A"
+    },
+    {
+      "id": 372,
+      "question": "What is 71% of 200?",
+      "options": ["138", "140", "142", "144"],
+      "answer": "C"
+    },
+    {
+      "id": 373,
+      "question": "Solve: 2x + 28 = 50",
+      "options": ["10", "11", "12", "13"],
+      "answer": "B"
+    },
+    {
+      "id": 374,
+      "question": "What is 16 × 9?",
+      "options": ["140", "142", "144", "146"],
+      "answer": "C"
+    },
+    {
+      "id": 375,
+      "question": "If 9x + 12 = 75, find x",
+      "options": ["6", "6.5", "7", "7.5"],
+      "answer": "C"
+    },
+    {
+      "id": 376,
+      "question": "What is 9/13 as a decimal (approx)?",
+      "options": ["0.65", "0.67", "0.69", "0.71"],
+      "answer": "B"
+    },
+    {
+      "id": 377,
+      "question": "What is 64% of 350?",
+      "options": ["220", "222", "224", "226"],
+      "answer": "C"
+    },
+    {
+      "id": 378,
+      "question": "Solve: 10x + 8 = 68",
+      "options": ["5", "5.5", "6", "6.5"],
+      "answer": "C"
+    },
+    {
+      "id": 379,
+      "question": "What is 11.2 - 5.6?",
+      "options": ["5.2", "5.4", "5.6", "5.8"],
+      "answer": "C"
+    },
+    {
+      "id": 380,
+      "question": "If 3x + 27 = 48, find x",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 381,
+      "question": "What is 10/21 as a decimal (approx)?",
+      "options": ["0.45", "0.47", "0.50", "0.52"],
+      "answer": "B"
+    },
+    {
+      "id": 382,
+      "question": "What is 2/7 + 3/7?",
+      "options": ["5/7", "6/7", "7/7", "8/7"],
+      "answer": "B"
+    },
+    {
+      "id": 383,
+      "question": "What is 39% of 600?",
+      "options": ["230", "232", "234", "238"],
+      "answer": "C"
+    },
+    {
+      "id": 384,
+      "question": "Solve: 6x + 20 = 62",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 385,
+      "question": "What is 23 × 3?",
+      "options": ["67", "69", "71", "73"],
+      "answer": "B"
+    },
+    {
+      "id": 386,
+      "question": "If 7x + 18 = 67, find x",
+      "options": ["6", "7", "8", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 387,
+      "question": "What is 11/20 as a percentage?",
+      "options": ["50%", "52%", "54%", "55%"],
+      "answer": "D"
+    },
+    {
+      "id": 388,
+      "question": "What is 82% of 350?",
+      "options": ["282", "284", "286", "288"],
+      "answer": "C"
+    },
+    {
+      "id": 389,
+      "question": "Solve: 4x + 28 = 60",
+      "options": ["7", "8", "9", "10"],
+      "answer": "B"
+    },
+    {
+      "id": 390,
+      "question": "What is 7.5 × 2.2?",
+      "options": ["15", "15.5", "16", "16.5"],
+      "answer": "D"
+    },
+    {
+      "id": 391,
+      "question": "If 8x + 14 = 70, find x",
+      "options": ["6", "6.5", "7", "7.5"],
+      "answer": "C"
+    },
+    {
+      "id": 392,
+      "question": "What is 5/14 as a decimal (approx)?",
+      "options": ["0.33", "0.36", "0.40", "0.45"],
+      "answer": "B"
+    },
+    {
+      "id": 393,
+      "question": "What is 3/13 + 7/13?",
+      "options": ["8/13", "9/13", "10/13", "11/13"],
+      "answer": "C"
+    },
+    {
+      "id": 394,
+      "question": "What is 96% of 150?",
+      "options": ["142", "144", "146", "148"],
+      "answer": "B"
+    },
+    {
+      "id": 395,
+      "question": "Solve: 9x + 10 = 82",
+      "options": ["7", "8", "9", "10"],
+      "answer": "B"
+    },
+    {
+      "id": 396,
+      "question": "What is 22 × 4?",
+      "options": ["84", "86", "88", "90"],
+      "answer": "C"
+    },
+    {
+      "id": 397,
+      "question": "If 2x + 30 = 50, find x",
+      "options": ["8", "9", "10", "11"],
+      "answer": "B"
+    },
+    {
+      "id": 398,
+      "question": "What is 4/19 as a decimal (approx)?",
+      "options": ["0.18", "0.20", "0.22", "0.25"],
+      "answer": "C"
+    },
+    {
+      "id": 399,
+      "question": "What is 45% of 280?",
+      "options": ["124", "126", "128", "130"],
+      "answer": "B"
+    },
+    {
+      "id": 400,
+      "question": "Solve: 5x + 25 = 70",
+      "options": ["8", "9", "10", "11"],
+      "answer": "B"
+    },
+    {
+      "id": 401,
+      "question": "What is 13.5 - 6.8?",
+      "options": ["6.5", "6.7", "6.8", "6.9"],
+      "answer": "B"
+    },
+    {
+      "id": 402,
+      "question": "If 11x - 10 = 56, find x",
+      "options": ["5", "5.5", "6", "6.5"],
+      "answer": "C"
+    },
+    {
+      "id": 403,
+      "question": "What is 7/18 as a decimal (approx)?",
+      "options": ["0.36", "0.38", "0.39", "0.42"],
+      "answer": "C"
+    },
+    {
+      "id": 404,
+      "question": "What is 6/11 + 4/11?",
+      "options": ["9/11", "10/11", "11/11", "12/11"],
+      "answer": "B"
+    },
+    {
+      "id": 405,
+      "question": "What is 76% of 400?",
+      "options": ["300", "302", "304", "310"],
+      "answer": "C"
+    },
+    {
+      "id": 406,
+      "question": "Solve: 3x + 30 = 63",
+      "options": ["10", "11", "12", "13"],
+      "answer": "B"
+    },
+    {
+      "id": 407,
+      "question": "What is 26 × 2?",
+      "options": ["50", "52", "54", "56"],
+      "answer": "B"
+    },
+    {
+      "id": 408,
+      "question": "If 6x - 12 = 42, find x",
+      "options": ["8", "9", "10", "11"],
+      "answer": "B"
+    },
+    {
+      "id": 409,
+      "question": "What is 3/17 as a decimal (approx)?",
+      "options": ["0.17", "0.18", "0.20", "0.22"],
+      "answer": "B"
+    },
+    {
+      "id": 410,
+      "question": "What is 9/14 + 1/14?",
+      "options": ["5/7", "6/7", "7/7", "8/7"],
+      "answer": "A"
+    },
+    {
+      "id": 411,
+      "question": "What is 59% of 400?",
+      "options": ["234", "236", "238", "240"],
+      "answer": "B"
+    },
+    {
+      "id": 412,
+      "question": "Solve: 7x + 20 = 76",
+      "options": ["7", "8", "9", "10"],
+      "answer": "B"
+    },
+    {
+      "id": 413,
+      "question": "What is 9.2 × 1.5?",
+      "options": ["13", "13.5", "13.8", "14"],
+      "answer": "C"
+    },
+    {
+      "id": 414,
+      "question": "If 4x + 30 = 70, find x",
+      "options": ["9", "10", "11", "12"],
+      "answer": "B"
+    },
+    {
+      "id": 415,
+      "question": "What is 8/23 as a decimal (approx)?",
+      "options": ["0.33", "0.35", "0.37", "0.39"],
+      "answer": "C"
+    },
+    {
+      "id": 416,
+      "question": "What is 5/9 + 1/9?",
+      "options": ["5/9", "6/9", "7/9", "8/9"],
+      "answer": "B"
+    },
+    {
+      "id": 417,
+      "question": "What is 86% of 300?",
+      "options": ["254", "256", "258", "264"],
+      "answer": "C"
+    },
+    {
+      "id": 418,
+      "question": "Solve: 8x + 16 = 80",
+      "options": ["7", "8", "8.5", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 419,
+      "question": "What is 29 × 2?",
+      "options": ["54", "56", "58", "60"],
+      "answer": "C"
+    },
+    {
+      "id": 420,
+      "question": "If 5x + 24 = 64, find x",
+      "options": ["7", "8", "9", "10"],
+      "answer": "B"
+    },
+    {
+      "id": 421,
+      "question": "What is 6/17 as a decimal (approx)?",
+      "options": ["0.32", "0.34", "0.36", "0.38"],
+      "answer": "B"
+    },
+    {
+      "id": 422,
+      "question": "What is 2/9 + 4/9?",
+      "options": ["5/9", "6/9", "7/9", "8/9"],
+      "answer": "B"
+    },
+    {
+      "id": 423,
+      "question": "What is 41% of 700?",
+      "options": ["283", "285", "287", "290"],
+      "answer": "C"
+    },
+    {
+      "id": 424,
+      "question": "Solve: 2x + 35 = 59",
+      "options": ["11", "12", "13", "14"],
+      "answer": "B"
+    },
+    {
+      "id": 425,
+      "question": "What is 10.5 - 3.7?",
+      "options": ["6.5", "6.6", "6.7", "6.8"],
+      "answer": "D"
+    },
+    {
+      "id": 426,
+      "question": "If 9x - 14 = 58, find x",
+      "options": ["7", "8", "9", "10"],
+      "answer": "B"
+    },
+    {
+      "id": 427,
+      "question": "What is 11/17 as a decimal (approx)?",
+      "options": ["0.63", "0.65", "0.67", "0.69"],
+      "answer": "B"
+    },
+    {
+      "id": 428,
+      "question": "What is 4/11 + 5/11?",
+      "options": ["8/11", "9/11", "10/11", "11/11"],
+      "answer": "B"
+    },
+    {
+      "id": 429,
+      "question": "What is 72% of 250?",
+      "options": ["175", "177", "180", "182"],
+      "answer": "C"
+    },
+    {
+      "id": 430,
+      "question": "Solve: 6x + 24 = 78",
+      "options": ["8", "9", "9.5", "10"],
+      "answer": "B"
+    },
+    {
+      "id": 431,
+      "question": "What is 31 × 3?",
+      "options": ["90", "92", "93", "95"],
+      "answer": "C"
+    },
+    {
+      "id": 432,
+      "question": "If 3x + 32 = 59, find x",
+      "options": ["8", "9", "9.5", "10"],
+      "answer": "B"
+    },
+    {
+      "id": 433,
+      "question": "What is 9/25 as a percentage?",
+      "options": ["30%", "32%", "34%", "36%"],
+      "answer": "D"
+    },
+    {
+      "id": 434,
+      "question": "What is 89% of 200?",
+      "options": ["174", "176", "178", "180"],
+      "answer": "C"
+    },
+    {
+      "id": 435,
+      "question": "Solve: 5x + 28 = 78",
+      "options": ["9", "10", "11", "12"],
+      "answer": "B"
+    },
+    {
+      "id": 436,
+      "question": "What is 12.8 ÷ 4?",
+      "options": ["3", "3.2", "3.4", "3.6"],
+      "answer": "B"
+    },
+    {
+      "id": 437,
+      "question": "If 7x + 22 = 78, find x",
+      "options": ["7", "8", "8.5", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 438,
+      "question": "What is 13/21 as a decimal (approx)?",
+      "options": ["0.58", "0.60", "0.62", "0.65"],
+      "answer": "C"
+    },
+    {
+      "id": 439,
+      "question": "What is 3/8 - 1/8?",
+      "options": ["1/8", "1/4", "3/8", "1/2"],
+      "answer": "B"
+    },
+    {
+      "id": 440,
+      "question": "What is 55% of 180?",
+      "options": ["98", "99", "100", "101"],
+      "answer": "B"
+    },
+    {
+      "id": 441,
+      "question": "Solve: 4x + 32 = 76",
+      "options": ["10", "11", "11.5", "12"],
+      "answer": "B"
+    },
+    {
+      "id": 442,
+      "question": "What is 33 × 2?",
+      "options": ["62", "64", "66", "68"],
+      "answer": "C"
+    },
+    {
+      "id": 443,
+      "question": "If 8x - 16 = 56, find x",
+      "options": ["8", "9", "10", "11"],
+      "answer": "B"
+    },
+    {
+      "id": 444,
+      "question": "What is 5/19 as a decimal (approx)?",
+      "options": ["0.25", "0.26", "0.28", "0.30"],
+      "answer": "C"
+    },
+    {
+      "id": 445,
+      "question": "What is 7/10 + 2/10?",
+      "options": ["8/10", "9/10", "10/10", "11/10"],
+      "answer": "B"
+    },
+    {
+      "id": 446,
+      "question": "What is 65% of 180?",
+      "options": ["114", "116", "117", "119"],
+      "answer": "C"
+    },
+    {
+      "id": 447,
+      "question": "Solve: 3x + 36 = 69",
+      "options": ["10", "11", "11.5", "12"],
+      "answer": "B"
+    },
+    {
+      "id": 448,
+      "question": "What is 27 × 4?",
+      "options": ["106", "108", "110", "112"],
+      "answer": "B"
+    },
+    {
+      "id": 449,
+      "question": "If 6x + 22 = 70, find x",
+      "options": ["7", "8", "8.5", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 450,
+      "question": "What is 12/19 as a decimal (approx)?",
+      "options": ["0.60", "0.62", "0.64", "0.66"],
+      "answer": "B"
+    },
+    {
+      "id": 451,
+      "question": "What is 8/9 + 1/9?",
+      "options": ["8/9", "9/9", "10/9", "11/9"],
+      "answer": "B"
+    },
+    {
+      "id": 452,
+      "question": "What is 66% of 300?",
+      "options": ["194", "196", "198", "200"],
+      "answer": "C"
+    },
+    {
+      "id": 453,
+      "question": "Solve: 9x + 16 = 88",
+      "options": ["7", "8", "8.5", "9"],
+      "answer": "B"
+    },
+    {
+      "id": 454,
+      "question": "What is 35 × 2?",
+      "options": ["68", "70", "72", "74"],
+      "answer": "B"
+    },
+    {
+      "id": 455,
+      "question": "If 4x + 36 = 80, find x",
+      "options": ["10", "11", "12", "13"],
+      "answer": "B"
+    },
+    {
+      "id": 456,
+      "question": "What is 15/23 as a decimal (approx)?",
+      "options": ["0.60", "0.63", "0.65", "0.68"],
+      "answer": "B"
+    },
+    {
+      "id": 457,
+      "question": "What is 1/7 + 2/7?",
+      "options": ["2/7", "3/7", "4/7", "5/7"],
+      "answer": "B"
+    },
+    {
+      "id": 458,
+      "question": "What is 58% of 350?",
+      "options": ["198", "200", "202", "204"],
+      "answer": "C"
+    },
+    {
+      "id": 459,
+      "question": "Solve: 7x + 24 = 94",
+      "options": ["9", "10", "11", "12"],
+      "answer": "B"
+    },
+    {
+      "id": 460,
+      "question": "What is 14.4 ÷ 3.6?",
+      "options": ["3", "3.5", "4", "4.5"],
+      "answer": "C"
+    },
+    {
+      "id": 461,
+      "question": "If 10x + 8 = 78, find x",
+      "options": ["6", "6.5", "7", "7.5"],
+      "answer": "C"
+    },
+    {
+      "id": 462,
+      "question": "What is 9/19 as a decimal (approx)?",
+      "options": ["0.45", "0.47", "0.49", "0.52"],
+      "answer": "C"
+    },
+    {
+      "id": 463,
+      "question": "What is 5/7 + 1/7?",
+      "options": ["5/7", "6/7", "7/7", "8/7"],
+      "answer": "B"
+    },
+    {
+      "id": 464,
+      "question": "What is 78% of 350?",
+      "options": ["271", "273", "275", "278"],
+      "answer": "C"
+    },
+    {
+      "id": 465,
+      "question": "Solve: 5x + 32 = 87",
+      "options": ["10", "11", "12", "13"],
+      "answer": "B"
+    },
+    {
+      "id": 466,
+      "question": "What is 39 × 2?",
+      "options": ["76", "78", "80", "82"],
+      "answer": "B"
+    },
+    {
+      "id": 467,
+      "question": "If 2x + 38 = 64, find x",
+      "options": ["11", "12", "13", "14"],
+      "answer": "B"
+    },
+    {
+      "id": 468,
+      "question": "What is 14/27 as a decimal (approx)?",
+      "options": ["0.50", "0.52", "0.54", "0.56"],
+      "answer": "B"
+    },
+    {
+      "id": 469,
+      "question": "What is 10/13 - 3/13?",
+      "options": ["5/13", "6/13", "7/13", "8/13"],
+      "answer": "C"
+    },
+    {
+      "id": 470,
+      "question": "What is 93% of 400?",
+      "options": ["368", "370", "372", "376"],
+      "answer": "C"
+    },
+    {
+      "id": 471,
+      "question": "Solve: 8x + 20 = 92",
+      "options": ["8", "9", "9.5", "10"],
+      "answer": "B"
+    },
+    {
+      "id": 472,
+      "question": "What is 16.8 ÷ 2.8?",
+      "options": ["5", "5.5", "6", "6.5"],
+      "answer": "C"
+    },
+    {
+      "id": 473,
+      "question": "If 3x + 39 = 72, find x",
+      "options": ["10", "11", "12", "13"],
+      "answer": "B"
+    },
+    {
+      "id": 474,
+      "question": "What is 17/29 as a decimal (approx)?",
+      "options": ["0.56", "0.58", "0.60", "0.62"],
+      "answer": "B"
+    },
+    {
+      "id": 475,
+      "question": "What is 11/12 - 5/12?",
+      "options": ["4/12", "5/12", "6/12", "7/12"],
+      "answer": "C"
+    },
+    {
+      "id": 476,
+      "question": "What is 44% of 475?",
+      "options": ["205", "207", "209", "211"],
+      "answer": "C"
+    },
+    {
+      "id": 477,
+      "question": "Solve: 6x + 28 = 88",
+      "options": ["9", "10", "11", "12"],
+      "answer": "B"
+    },
+    {
+      "id": 478,
+      "question": "What is 43 × 2?",
+      "options": ["84", "86", "88", "90"],
+      "answer": "C"
+    },
+    {
+      "id": 479,
+      "question": "If 7x + 26 = 89, find x",
+      "options": ["8", "8.5", "9", "9.5"],
+      "answer": "C"
+    },
+    {
+      "id": 480,
+      "question": "What is 20/31 as a decimal (approx)?",
+      "options": ["0.60", "0.62", "0.64", "0.66"],
+      "answer": "B"
+    },
+    {
+      "id": 481,
+      "question": "What is 6/7 + 1/7?",
+      "options": ["6/7", "7/7", "8/7", "9/7"],
+      "answer": "B"
+    },
+    {
+      "id": 482,
+      "question": "What is 48% of 525?",
+      "options": ["246", "248", "250", "252"],
+      "answer": "C"
+    },
+    {
+      "id": 483,
+      "question": "Solve: 4x + 40 = 92",
+      "options": ["12", "13", "14", "15"],
+      "answer": "B"
+    },
+    {
+      "id": 484,
+      "question": "What is 18.9 ÷ 2.7?",
+      "options": ["6", "6.5", "7", "7.5"],
+      "answer": "C"
+    },
+    {
+      "id": 485,
+      "question": "If 9x - 18 = 72, find x",
+      "options": ["9", "10", "11", "12"],
+      "answer": "B"
+    },
+    {
+      "id": 486,
+      "question": "What is 23/37 as a decimal (approx)?",
+      "options": ["0.60", "0.62", "0.64", "0.66"],
+      "answer": "B"
+    },
+    {
+      "id": 487,
+      "question": "What is 12/13 - 7/13?",
+      "options": ["3/13", "4/13", "5/13", "6/13"],
+      "answer": "C"
+    },
+    {
+      "id": 488,
+      "question": "What is 52% of 425?",
+      "options": ["220", "222", "224", "226"],
+      "answer": "B"
+    },
+    {
+      "id": 489,
+      "question": "Solve: 5x + 36 = 101",
+      "options": ["12", "13", "14", "15"],
+      "answer": "B"
+    },
+    {
+      "id": 490,
+      "question": "What is 47 × 2?",
+      "options": ["90", "92", "94", "96"],
+      "answer": "C"
+    },
+    {
+      "id": 491,
+      "question": "If 5x + 30 = 80, find x",
+      "options": ["9", "10", "11", "12"],
+      "answer": "B"
+    },
+    {
+      "id": 492,
+      "question": "What is 26/41 as a decimal (approx)?",
+      "options": ["0.62", "0.63", "0.64", "0.65"],
+      "answer": "B"
+    },
+    {
+      "id": 493,
+      "question": "What is 3/5 + 1/5?",
+      "options": ["3/5", "4/5", "5/5", "6/5"],
+      "answer": "B"
+    },
+    {
+      "id": 494,
+      "question": "What is 37% of 850?",
+      "options": ["312", "314", "315", "317"],
+      "answer": "C"
+    },
+    {
+      "id": 495,
+      "question": "Solve: 7x + 30 = 107",
+      "options": ["10", "11", "12", "13"],
+      "answer": "B"
+    },
+    {
+      "id": 496,
+      "question": "What is 20.4 ÷ 3.4?",
+      "options": ["5.5", "6", "6.5", "7"],
+      "answer": "B"
+    },
+    {
+      "id": 497,
+      "question": "If 6x + 30 = 90, find x",
+      "options": ["9", "10", "11", "12"],
+      "answer": "B"
+    },
+    {
+      "id": 498,
+      "question": "What is 29/47 as a decimal (approx)?",
+      "options": ["0.60", "0.61", "0.62", "0.64"],
+      "answer": "B"
+    },
+    {
+      "id": 499,
+      "question": "What is 14/15 - 8/15?",
+      "options": ["4/15", "5/15", "6/15", "7/15"],
+      "answer": "C"
+    },
+    {
+      "id": 500,
+      "question": "What is 41% of 900?",
+      "options": ["365", "368", "369", "372"],
+      "answer": "C"
+    }
+  ]
+}

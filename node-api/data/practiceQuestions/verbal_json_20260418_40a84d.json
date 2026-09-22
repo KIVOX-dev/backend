@@ -1,0 +1,3002 @@
+[
+  {
+    "id": 1,
+    "question": "Choose the synonym of 'Abate'.",
+    "options": ["Increase", "Reduce", "Expand", "Enhance"],
+    "answer": "Reduce"
+  },
+  {
+    "id": 2,
+    "question": "Choose the antonym of 'Benevolent'.",
+    "options": ["Kind", "Malevolent", "Generous", "Altruistic"],
+    "answer": "Malevolent"
+  },
+  {
+    "id": 3,
+    "question": "Fill in the blank: She is ______ to music while studying.",
+    "options": ["listening", "hearing", "listened", "hear"],
+    "answer": "listening"
+  },
+  {
+    "id": 4,
+    "question": "Identify the correctly spelled word.",
+    "options": ["Accommodate", "Acommodate", "Accommodatte", "Acomodate"],
+    "answer": "Accommodate"
+  },
+  {
+    "id": 5,
+    "question": "Select the word which means 'a person who speaks two languages'.",
+    "options": ["Linguist", "Bilingual", "Polyglot", "Verbalist"],
+    "answer": "Bilingual"
+  },
+  {
+    "id": 6,
+    "question": "Choose the correct preposition: He is interested ______ learning French.",
+    "options": ["for", "to", "in", "on"],
+    "answer": "in"
+  },
+  {
+    "id": 7,
+    "question": "What is the plural of 'Cactus'?",
+    "options": ["Cacti", "Cactuses", "Both A and B", "Cactus"],
+    "answer": "Both A and B"
+  },
+  {
+    "id": 8,
+    "question": "Select the odd one out.",
+    "options": ["Apple", "Mango", "Orange", "Carrot"],
+    "answer": "Carrot"
+  },
+  {
+    "id": 9,
+    "question": "Choose the correct meaning of 'Ephemeral'.",
+    "options": ["Eternal", "Short-lived", "Powerful", "Weak"],
+    "answer": "Short-lived"
+  },
+  {
+    "id": 10,
+    "question": "Fill in the blank: Neither of the boys ______ present.",
+    "options": ["are", "were", "is", "have"],
+    "answer": "is"
+  },
+  {
+    "id": 11,
+    "question": "Which of the following is a collective noun?",
+    "options": ["Team", "Run", "Red", "Quickly"],
+    "answer": "Team"
+  },
+  {
+    "id": 12,
+    "question": "Antonym of 'Frequent'.",
+    "options": ["Often", "Rare", "Common", "Regular"],
+    "answer": "Rare"
+  },
+  {
+    "id": 13,
+    "question": "Identify the tense: 'She has completed her assignment.'",
+    "options": ["Present Perfect", "Past Perfect", "Present Continuous", "Simple Past"],
+    "answer": "Present Perfect"
+  },
+  {
+    "id": 14,
+    "question": "Synonym of 'Brave'.",
+    "options": ["Cowardly", "Fearless", "Timid", "Weak"],
+    "answer": "Fearless"
+  },
+  {
+    "id": 15,
+    "question": "Fill in the blank: I prefer tea ______ coffee.",
+    "options": ["than", "to", "from", "then"],
+    "answer": "to"
+  },
+  {
+    "id": 16,
+    "question": "Choose the correct article: He is ______ honest man.",
+    "options": ["a", "an", "the", "none"],
+    "answer": "an"
+  },
+  {
+    "id": 17,
+    "question": "What is the past tense of 'Fly'?",
+    "options": ["Flied", "Flown", "Flew", "Flying"],
+    "answer": "Flew"
+  },
+  {
+    "id": 18,
+    "question": "Select the word that is misspelled.",
+    "options": ["Necessary", "Neccessary", "Necessery", "Necessarry"],
+    "answer": "Neccessary"
+  },
+  {
+    "id": 19,
+    "question": "Meaning of 'Gullible'.",
+    "options": ["Disbelieving", "Easily fooled", "Intelligent", "Suspicious"],
+    "answer": "Easily fooled"
+  },
+  {
+    "id": 20,
+    "question": "Antonym of 'Expand'.",
+    "options": ["Grow", "Shrink", "Increase", "Spread"],
+    "answer": "Shrink"
+  },
+  {
+    "id": 21,
+    "question": "Fill in the blank: If I ______ you, I would apologize.",
+    "options": ["was", "were", "am", "is"],
+    "answer": "were"
+  },
+  {
+    "id": 22,
+    "question": "Choose the synonym of 'Jubilant'.",
+    "options": ["Sad", "Joyful", "Angry", "Calm"],
+    "answer": "Joyful"
+  },
+  {
+    "id": 23,
+    "question": "Which word means 'to make something less severe'?",
+    "options": ["Aggravate", "Alleviate", "Intensify", "Worsen"],
+    "answer": "Alleviate"
+  },
+  {
+    "id": 24,
+    "question": "Identify the adverb: 'She runs very fast.'",
+    "options": ["She", "Runs", "Very", "Fast"],
+    "answer": "Very"
+  },
+  {
+    "id": 25,
+    "question": "Opposite of 'Polite'.",
+    "options": ["Rude", "Gentle", "Mannerly", "Courteous"],
+    "answer": "Rude"
+  },
+  {
+    "id": 26,
+    "question": "Fill in the blank: The jury ______ divided in their opinion.",
+    "options": ["was", "were", "is", "has"],
+    "answer": "were"
+  },
+  {
+    "id": 27,
+    "question": "Synonym of 'Lethargic'.",
+    "options": ["Energetic", "Sluggish", "Active", "Brisk"],
+    "answer": "Sluggish"
+  },
+  {
+    "id": 28,
+    "question": "Choose the correctly punctuated sentence.",
+    "options": ["Where are you going?", "Where are you going.", "Where are you going!", "where are you going?"],
+    "answer": "Where are you going?"
+  },
+  {
+    "id": 29,
+    "question": "Meaning of 'Ambiguous'.",
+    "options": ["Clear", "Unclear", "Direct", "Obvious"],
+    "answer": "Unclear"
+  },
+  {
+    "id": 30,
+    "question": "Antonym of 'Temporary'.",
+    "options": ["Short-term", "Permanent", "Brief", "Fleeting"],
+    "answer": "Permanent"
+  },
+  {
+    "id": 31,
+    "question": "Fill in the blank: She ______ to the party if she had time.",
+    "options": ["would come", "will come", "came", "comes"],
+    "answer": "would come"
+  },
+  {
+    "id": 32,
+    "question": "Which is a proper noun?",
+    "options": ["City", "River", "John", "Mountain"],
+    "answer": "John"
+  },
+  {
+    "id": 33,
+    "question": "Synonym of 'Rich'.",
+    "options": ["Wealthy", "Poor", "Needy", "Destitute"],
+    "answer": "Wealthy"
+  },
+  {
+    "id": 34,
+    "question": "Antonym of 'Dull'.",
+    "options": ["Sharp", "Boring", "Blunt", "Slow"],
+    "answer": "Sharp"
+  },
+  {
+    "id": 35,
+    "question": "Fill in the blank: The team ______ playing well.",
+    "options": ["is", "are", "were", "have"],
+    "answer": "is"
+  },
+  {
+    "id": 36,
+    "question": "Select the word that means 'a speech delivered without preparation'.",
+    "options": ["Extempore", "Memorized", "Scripted", "Written"],
+    "answer": "Extempore"
+  },
+  {
+    "id": 37,
+    "question": "Identify the error: 'Each of the players were given a medal.'",
+    "options": ["Each of", "players", "were", "medal"],
+    "answer": "were"
+  },
+  {
+    "id": 38,
+    "question": "Meaning of 'Frugal'.",
+    "options": ["Wasteful", "Economical", "Generous", "Lavish"],
+    "answer": "Economical"
+  },
+  {
+    "id": 39,
+    "question": "Opposite of 'Lazy'.",
+    "options": ["Idle", "Active", "Sluggish", "Indolent"],
+    "answer": "Active"
+  },
+  {
+    "id": 40,
+    "question": "Synonym of 'Obvious'.",
+    "options": ["Hidden", "Clear", "Vague", "Unclear"],
+    "answer": "Clear"
+  },
+  {
+    "id": 41,
+    "question": "Fill in the blank: He is capable ______ doing better work.",
+    "options": ["for", "to", "of", "in"],
+    "answer": "of"
+  },
+  {
+    "id": 42,
+    "question": "Which word is an adjective?",
+    "options": ["Beautifully", "Beauty", "Beautiful", "Beautify"],
+    "answer": "Beautiful"
+  },
+  {
+    "id": 43,
+    "question": "Antonym of 'Victory'.",
+    "options": ["Triumph", "Success", "Defeat", "Win"],
+    "answer": "Defeat"
+  },
+  {
+    "id": 44,
+    "question": "Meaning of 'Hostile'.",
+    "options": ["Friendly", "Unfriendly", "Warm", "Kind"],
+    "answer": "Unfriendly"
+  },
+  {
+    "id": 45,
+    "question": "Fill in the blank: I look forward ______ from you.",
+    "options": ["to hear", "hearing", "to hearing", "hear"],
+    "answer": "to hearing"
+  },
+  {
+    "id": 46,
+    "question": "Synonym of 'Quick'.",
+    "options": ["Slow", "Fast", "Lazy", "Steady"],
+    "answer": "Fast"
+  },
+  {
+    "id": 47,
+    "question": "Identify the correct passive form: 'They are building a house.'",
+    "options": ["A house is being built by them.", "A house was built by them.", "A house is built by them.", "A house has been built."],
+    "answer": "A house is being built by them."
+  },
+  {
+    "id": 48,
+    "question": "Antonym of 'Ancient'.",
+    "options": ["Old", "Modern", "Aged", "Archaic"],
+    "answer": "Modern"
+  },
+  {
+    "id": 49,
+    "question": "Fill in the blank: She is senior ______ me.",
+    "options": ["than", "to", "from", "then"],
+    "answer": "to"
+  },
+  {
+    "id": 50,
+    "question": "Meaning of 'Contradict'.",
+    "options": ["Agree", "Deny", "Support", "Confirm"],
+    "answer": "Deny"
+  },
+  {
+    "id": 51,
+    "question": "Choose the synonym of 'Proud'.",
+    "options": ["Humble", "Arrogant", "Modest", "Shy"],
+    "answer": "Arrogant"
+  },
+  {
+    "id": 52,
+    "question": "Antonym of 'Artificial'.",
+    "options": ["Synthetic", "Natural", "Fake", "Man-made"],
+    "answer": "Natural"
+  },
+  {
+    "id": 53,
+    "question": "Fill in the blank: The police ______ arrested the thief.",
+    "options": ["has", "have", "is", "are"],
+    "answer": "have"
+  },
+  {
+    "id": 54,
+    "question": "Which word is a verb?",
+    "options": ["Running", "Runner", "Run", "Both A and C"],
+    "answer": "Both A and C"
+  },
+  {
+    "id": 55,
+    "question": "Meaning of 'Diligent'.",
+    "options": ["Lazy", "Hardworking", "Careless", "Negligent"],
+    "answer": "Hardworking"
+  },
+  {
+    "id": 56,
+    "question": "Antonym of 'Increase'.",
+    "options": ["Grow", "Decrease", "Expand", "Rise"],
+    "answer": "Decrease"
+  },
+  {
+    "id": 57,
+    "question": "Fill in the blank: She prevented me ______ going there.",
+    "options": ["from", "to", "for", "in"],
+    "answer": "from"
+  },
+  {
+    "id": 58,
+    "question": "Synonym of 'Quiet'.",
+    "options": ["Noisy", "Silent", "Loud", "Boisterous"],
+    "answer": "Silent"
+  },
+  {
+    "id": 59,
+    "question": "Identify the correct spelling.",
+    "options": ["Recieve", "Receive", "Receeve", "Recive"],
+    "answer": "Receive"
+  },
+  {
+    "id": 60,
+    "question": "Meaning of 'Abandon'.",
+    "options": ["Keep", "Leave", "Hold", "Retain"],
+    "answer": "Leave"
+  },
+  {
+    "id": 61,
+    "question": "Antonym of 'Expand'.",
+    "options": ["Contract", "Grow", "Enlarge", "Stretch"],
+    "answer": "Contract"
+  },
+  {
+    "id": 62,
+    "question": "Fill in the blank: He has been waiting ______ two hours.",
+    "options": ["since", "for", "from", "by"],
+    "answer": "for"
+  },
+  {
+    "id": 63,
+    "question": "Synonym of 'Famous'.",
+    "options": ["Unknown", "Renowned", "Obscure", "Anonymous"],
+    "answer": "Renowned"
+  },
+  {
+    "id": 64,
+    "question": "Choose the correct word: 'The weather is ______ today.'",
+    "options": ["pleased", "pleasant", "pleasing", "pleasure"],
+    "answer": "pleasant"
+  },
+  {
+    "id": 65,
+    "question": "Antonym of 'Strong'.",
+    "options": ["Powerful", "Weak", "Sturdy", "Tough"],
+    "answer": "Weak"
+  },
+  {
+    "id": 66,
+    "question": "Meaning of 'Reluctant'.",
+    "options": ["Willing", "Unwilling", "Eager", "Ready"],
+    "answer": "Unwilling"
+  },
+  {
+    "id": 67,
+    "question": "Fill in the blank: He is accustomed ______ waking up early.",
+    "options": ["to", "with", "for", "by"],
+    "answer": "to"
+  },
+  {
+    "id": 68,
+    "question": "Synonym of 'Big'.",
+    "options": ["Small", "Large", "Tiny", "Minute"],
+    "answer": "Large"
+  },
+  {
+    "id": 69,
+    "question": "Identify the error: 'The news are good.'",
+    "options": ["The", "news", "are", "good"],
+    "answer": "are"
+  },
+  {
+    "id": 70,
+    "question": "Antonym of 'Cheap'.",
+    "options": ["Inexpensive", "Costly", "Affordable", "Low-priced"],
+    "answer": "Costly"
+  },
+  {
+    "id": 71,
+    "question": "Meaning of 'Appreciate'.",
+    "options": ["Criticize", "Value", "Hate", "Ignore"],
+    "answer": "Value"
+  },
+  {
+    "id": 72,
+    "question": "Fill in the blank: She succeeded ______ passing the exam.",
+    "options": ["to", "in", "for", "at"],
+    "answer": "in"
+  },
+  {
+    "id": 73,
+    "question": "Synonym of 'Difficult'.",
+    "options": ["Easy", "Hard", "Simple", "Effortless"],
+    "answer": "Hard"
+  },
+  {
+    "id": 74,
+    "question": "Antonym of 'Love'.",
+    "options": ["Affection", "Hate", "Adore", "Like"],
+    "answer": "Hate"
+  },
+  {
+    "id": 75,
+    "question": "Choose the correct article: ______ Ganga is a holy river.",
+    "options": ["A", "An", "The", "None"],
+    "answer": "The"
+  },
+  {
+    "id": 76,
+    "question": "Meaning of 'Courage'.",
+    "options": ["Fear", "Bravery", "Timidity", "Cowardice"],
+    "answer": "Bravery"
+  },
+  {
+    "id": 77,
+    "question": "Fill in the blank: He is not capable ______ doing this.",
+    "options": ["to", "of", "for", "in"],
+    "answer": "of"
+  },
+  {
+    "id": 78,
+    "question": "Synonym of 'Happy'.",
+    "options": ["Sad", "Joyful", "Gloomy", "Depressed"],
+    "answer": "Joyful"
+  },
+  {
+    "id": 79,
+    "question": "Antonym of 'Dark'.",
+    "options": ["Light", "Gloomy", "Dim", "Shadowy"],
+    "answer": "Light"
+  },
+  {
+    "id": 80,
+    "question": "Identify the correct sentence.",
+    "options": ["She don't like tea.", "She doesn't like tea.", "She doesn't likes tea.", "She don't likes tea."],
+    "answer": "She doesn't like tea."
+  },
+  {
+    "id": 81,
+    "question": "Meaning of 'Generous'.",
+    "options": ["Stingy", "Kind", "Greedy", "Selfish"],
+    "answer": "Kind"
+  },
+  {
+    "id": 82,
+    "question": "Fill in the blank: He died ______ cancer.",
+    "options": ["from", "of", "with", "by"],
+    "answer": "of"
+  },
+  {
+    "id": 83,
+    "question": "Synonym of 'Begin'.",
+    "options": ["End", "Start", "Finish", "Stop"],
+    "answer": "Start"
+  },
+  {
+    "id": 84,
+    "question": "Antonym of 'Smooth'.",
+    "options": ["Rough", "Flat", "Even", "Soft"],
+    "answer": "Rough"
+  },
+  {
+    "id": 85,
+    "question": "Choose the correct word: 'He gave a ______ speech.'",
+    "options": ["bore", "bored", "boring", "boringly"],
+    "answer": "boring"
+  },
+  {
+    "id": 86,
+    "question": "Meaning of 'Urgent'.",
+    "options": ["Trivial", "Important", "Minor", "Unimportant"],
+    "answer": "Important"
+  },
+  {
+    "id": 87,
+    "question": "Fill in the blank: She is good ______ mathematics.",
+    "options": ["in", "at", "on", "for"],
+    "answer": "at"
+  },
+  {
+    "id": 88,
+    "question": "Synonym of 'Strange'.",
+    "options": ["Normal", "Odd", "Common", "Usual"],
+    "answer": "Odd"
+  },
+  {
+    "id": 89,
+    "question": "Antonym of 'Full'.",
+    "options": ["Empty", "Complete", "Entire", "Total"],
+    "answer": "Empty"
+  },
+  {
+    "id": 90,
+    "question": "Identify the error: 'He has gone to the temple yesterday.'",
+    "options": ["has gone", "to", "the", "yesterday"],
+    "answer": "has gone"
+  },
+  {
+    "id": 91,
+    "question": "Meaning of 'Hesitate'.",
+    "options": ["Decide quickly", "Pause", "Act immediately", "Rush"],
+    "answer": "Pause"
+  },
+  {
+    "id": 92,
+    "question": "Fill in the blank: He is fond ______ music.",
+    "options": ["of", "off", "for", "in"],
+    "answer": "of"
+  },
+  {
+    "id": 93,
+    "question": "Synonym of 'Rich'.",
+    "options": ["Poor", "Wealthy", "Needy", "Impoverished"],
+    "answer": "Wealthy"
+  },
+  {
+    "id": 94,
+    "question": "Antonym of 'Accept'.",
+    "options": ["Receive", "Take", "Reject", "Agree"],
+    "answer": "Reject"
+  },
+  {
+    "id": 95,
+    "question": "Choose the correct spelling.",
+    "options": ["Neice", "Niece", "Neece", "Neicee"],
+    "answer": "Niece"
+  },
+  {
+    "id": 96,
+    "question": "Meaning of 'Compassion'.",
+    "options": ["Indifference", "Cruelty", "Sympathy", "Harshness"],
+    "answer": "Sympathy"
+  },
+  {
+    "id": 97,
+    "question": "Fill in the blank: She insisted ______ going there.",
+    "options": ["on", "in", "to", "for"],
+    "answer": "on"
+  },
+  {
+    "id": 98,
+    "question": "Synonym of 'Angry'.",
+    "options": ["Calm", "Peaceful", "Furious", "Pleased"],
+    "answer": "Furious"
+  },
+  {
+    "id": 99,
+    "question": "Antonym of 'Wild'.",
+    "options": ["Tame", "Untamed", "Fierce", "Savage"],
+    "answer": "Tame"
+  },
+  {
+    "id": 100,
+    "question": "Identify the correct sentence.",
+    "options": ["He is a M.A. student.", "He is an M.A. student.", "He is the M.A. student.", "He is M.A. student."],
+    "answer": "He is an M.A. student."
+  },
+  {
+    "id": 101,
+    "question": "Meaning of 'Exhausted'.",
+    "options": ["Energetic", "Tired", "Fresh", "Lively"],
+    "answer": "Tired"
+  },
+  {
+    "id": 102,
+    "question": "Fill in the blank: He apologized ______ his mistake.",
+    "options": ["for", "to", "on", "by"],
+    "answer": "for"
+  },
+  {
+    "id": 103,
+    "question": "Synonym of 'Beautiful'.",
+    "options": ["Ugly", "Attractive", "Hideous", "Plain"],
+    "answer": "Attractive"
+  },
+  {
+    "id": 104,
+    "question": "Antonym of 'Laugh'.",
+    "options": ["Smile", "Giggle", "Cry", "Chuckle"],
+    "answer": "Cry"
+  },
+  {
+    "id": 105,
+    "question": "Choose the correct article: He is ______ European.",
+    "options": ["a", "an", "the", "none"],
+    "answer": "a"
+  },
+  {
+    "id": 106,
+    "question": "Meaning of 'Destiny'.",
+    "options": ["Chance", "Fate", "Accident", "Luck"],
+    "answer": "Fate"
+  },
+  {
+    "id": 107,
+    "question": "Fill in the blank: He prevented me ______ entering the room.",
+    "options": ["from", "to", "for", "in"],
+    "answer": "from"
+  },
+  {
+    "id": 108,
+    "question": "Synonym of 'Small'.",
+    "options": ["Large", "Tiny", "Big", "Huge"],
+    "answer": "Tiny"
+  },
+  {
+    "id": 109,
+    "question": "Antonym of 'Love'.",
+    "options": ["Like", "Adore", "Hate", "Cherish"],
+    "answer": "Hate"
+  },
+  {
+    "id": 110,
+    "question": "Identify the error: 'The scenery of Kashmir are beautiful.'",
+    "options": ["The scenery", "of Kashmir", "are", "beautiful"],
+    "answer": "are"
+  },
+  {
+    "id": 111,
+    "question": "Meaning of 'Eager'.",
+    "options": ["Reluctant", "Enthusiastic", "Unwilling", "Indifferent"],
+    "answer": "Enthusiastic"
+  },
+  {
+    "id": 112,
+    "question": "Fill in the blank: He is not familiar ______ this place.",
+    "options": ["to", "with", "for", "at"],
+    "answer": "with"
+  },
+  {
+    "id": 113,
+    "question": "Synonym of 'Old'.",
+    "options": ["New", "Aged", "Young", "Modern"],
+    "answer": "Aged"
+  },
+  {
+    "id": 114,
+    "question": "Antonym of 'Fast'.",
+    "options": ["Quick", "Slow", "Rapid", "Swift"],
+    "answer": "Slow"
+  },
+  {
+    "id": 115,
+    "question": "Choose the correct word: 'She spoke ______.'",
+    "options": ["quiet", "quietly", "quieten", "quietness"],
+    "answer": "quietly"
+  },
+  {
+    "id": 116,
+    "question": "Meaning of 'Enemy'.",
+    "options": ["Friend", "Ally", "Foe", "Supporter"],
+    "answer": "Foe"
+  },
+  {
+    "id": 117,
+    "question": "Fill in the blank: He is married ______ my sister.",
+    "options": ["to", "with", "by", "for"],
+    "answer": "to"
+  },
+  {
+    "id": 118,
+    "question": "Synonym of 'Loud'.",
+    "options": ["Noisy", "Silent", "Quiet", "Peaceful"],
+    "answer": "Noisy"
+  },
+  {
+    "id": 119,
+    "question": "Antonym of 'Bright'.",
+    "options": ["Dull", "Shiny", "Glowing", "Radiant"],
+    "answer": "Dull"
+  },
+  {
+    "id": 120,
+    "question": "Identify the correct passive: 'She writes a letter.'",
+    "options": ["A letter is written by her.", "A letter was written by her.", "A letter is being written.", "A letter has been written."],
+    "answer": "A letter is written by her."
+  },
+  {
+    "id": 121,
+    "question": "Meaning of 'Humble'.",
+    "options": ["Proud", "Modest", "Arrogant", "Boastful"],
+    "answer": "Modest"
+  },
+  {
+    "id": 122,
+    "question": "Fill in the blank: He is addicted ______ smoking.",
+    "options": ["to", "of", "for", "in"],
+    "answer": "to"
+  },
+  {
+    "id": 123,
+    "question": "Synonym of 'Cry'.",
+    "options": ["Laugh", "Weep", "Smile", "Giggle"],
+    "answer": "Weep"
+  },
+  {
+    "id": 124,
+    "question": "Antonym of 'Victory'.",
+    "options": ["Win", "Success", "Defeat", "Triumph"],
+    "answer": "Defeat"
+  },
+  {
+    "id": 125,
+    "question": "Choose the correct spelling.",
+    "options": ["Seperate", "Separate", "Seperete", "Seprate"],
+    "answer": "Separate"
+  },
+  {
+    "id": 126,
+    "question": "Meaning of 'Fragile'.",
+    "options": ["Strong", "Breakable", "Tough", "Sturdy"],
+    "answer": "Breakable"
+  },
+  {
+    "id": 127,
+    "question": "Fill in the blank: She is anxious ______ her results.",
+    "options": ["about", "for", "in", "to"],
+    "answer": "about"
+  },
+  {
+    "id": 128,
+    "question": "Synonym of 'Start'.",
+    "options": ["End", "Begin", "Finish", "Stop"],
+    "answer": "Begin"
+  },
+  {
+    "id": 129,
+    "question": "Antonym of 'Clean'.",
+    "options": ["Dirty", "Neat", "Tidy", "Pure"],
+    "answer": "Dirty"
+  },
+  {
+    "id": 130,
+    "question": "Identify the error: 'He is one of the best student in the class.'",
+    "options": ["He is", "one of", "the best student", "in the class"],
+    "answer": "the best student"
+  },
+  {
+    "id": 131,
+    "question": "Meaning of 'Artificial'.",
+    "options": ["Natural", "Man-made", "Real", "Genuine"],
+    "answer": "Man-made"
+  },
+  {
+    "id": 132,
+    "question": "Fill in the blank: He is concerned ______ his son's future.",
+    "options": ["about", "for", "with", "in"],
+    "answer": "about"
+  },
+  {
+    "id": 133,
+    "question": "Synonym of 'Rich'.",
+    "options": ["Affluent", "Poor", "Needy", "Destitute"],
+    "answer": "Affluent"
+  },
+  {
+    "id": 134,
+    "question": "Antonym of 'Broad'.",
+    "options": ["Wide", "Narrow", "Large", "Expansive"],
+    "answer": "Narrow"
+  },
+  {
+    "id": 135,
+    "question": "Choose the correct word: 'This is a ______ issue.'",
+    "options": ["complicated", "complicate", "complication", "complicating"],
+    "answer": "complicated"
+  },
+  {
+    "id": 136,
+    "question": "Meaning of 'Abrupt'.",
+    "options": ["Gradual", "Sudden", "Slow", "Expected"],
+    "answer": "Sudden"
+  },
+  {
+    "id": 137,
+    "question": "Fill in the blank: She is capable ______ handling the situation.",
+    "options": ["of", "to", "in", "for"],
+    "answer": "of"
+  },
+  {
+    "id": 138,
+    "question": "Synonym of 'Help'.",
+    "options": ["Hinder", "Assist", "Obstruct", "Block"],
+    "answer": "Assist"
+  },
+  {
+    "id": 139,
+    "question": "Antonym of 'Cruel'.",
+    "options": ["Kind", "Brutal", "Harsh", "Savage"],
+    "answer": "Kind"
+  },
+  {
+    "id": 140,
+    "question": "Identify the correct sentence.",
+    "options": ["He go to school daily.", "He goes to school daily.", "He going to school daily.", "He gone to school daily."],
+    "answer": "He goes to school daily."
+  },
+  {
+    "id": 141,
+    "question": "Meaning of 'Eliminate'.",
+    "options": ["Include", "Remove", "Add", "Insert"],
+    "answer": "Remove"
+  },
+  {
+    "id": 142,
+    "question": "Fill in the blank: He is similar ______ his father.",
+    "options": ["to", "with", "like", "as"],
+    "answer": "to"
+  },
+  {
+    "id": 143,
+    "question": "Synonym of 'Late'.",
+    "options": ["Early", "Tardy", "Prompt", "Punctual"],
+    "answer": "Tardy"
+  },
+  {
+    "id": 144,
+    "question": "Antonym of 'Gain'.",
+    "options": ["Profit", "Loss", "Benefit", "Advantage"],
+    "answer": "Loss"
+  },
+  {
+    "id": 145,
+    "question": "Choose the correct spelling.",
+    "options": ["Maintainance", "Maintenance", "Maintenence", "Maintanance"],
+    "answer": "Maintenance"
+  },
+  {
+    "id": 146,
+    "question": "Meaning of 'Obvious'.",
+    "options": ["Hidden", "Clear", "Secret", "Concealed"],
+    "answer": "Clear"
+  },
+  {
+    "id": 147,
+    "question": "Fill in the blank: He is different ______ his brother.",
+    "options": ["than", "to", "from", "then"],
+    "answer": "from"
+  },
+  {
+    "id": 148,
+    "question": "Synonym of 'Wealthy'.",
+    "options": ["Poor", "Rich", "Needy", "Impoverished"],
+    "answer": "Rich"
+  },
+  {
+    "id": 149,
+    "question": "Antonym of 'Young'.",
+    "options": ["Old", "New", "Fresh", "Youthful"],
+    "answer": "Old"
+  },
+  {
+    "id": 150,
+    "question": "Identify the error: 'Neither of them are coming.'",
+    "options": ["Neither", "of them", "are", "coming"],
+    "answer": "are"
+  },
+  {
+    "id": 151,
+    "question": "Meaning of 'Reliable'.",
+    "options": ["Unreliable", "Dependable", "Untrustworthy", "Fickle"],
+    "answer": "Dependable"
+  },
+  {
+    "id": 152,
+    "question": "Fill in the blank: She is good ______ singing.",
+    "options": ["in", "at", "on", "for"],
+    "answer": "at"
+  },
+  {
+    "id": 153,
+    "question": "Synonym of 'Smart'.",
+    "options": ["Dull", "Intelligent", "Stupid", "Slow"],
+    "answer": "Intelligent"
+  },
+  {
+    "id": 154,
+    "question": "Antonym of 'Increase'.",
+    "options": ["Rise", "Decrease", "Grow", "Expand"],
+    "answer": "Decrease"
+  },
+  {
+    "id": 155,
+    "question": "Choose the correct word: 'She is ______ in music.'",
+    "options": ["interest", "interesting", "interested", "interests"],
+    "answer": "interested"
+  },
+  {
+    "id": 156,
+    "question": "Meaning of 'Dangerous'.",
+    "options": ["Safe", "Risky", "Secure", "Harmless"],
+    "answer": "Risky"
+  },
+  {
+    "id": 157,
+    "question": "Fill in the blank: He is not aware ______ the rules.",
+    "options": ["to", "of", "for", "with"],
+    "answer": "of"
+  },
+  {
+    "id": 158,
+    "question": "Synonym of 'Large'.",
+    "options": ["Small", "Big", "Tiny", "Minute"],
+    "answer": "Big"
+  },
+  {
+    "id": 159,
+    "question": "Antonym of 'Always'.",
+    "options": ["Never", "Forever", "Constantly", "Perpetually"],
+    "answer": "Never"
+  },
+  {
+    "id": 160,
+    "question": "Identify the correct passive: 'The boy broke the window.'",
+    "options": ["The window is broken by the boy.", "The window was broken by the boy.", "The window has been broken.", "The window is being broken."],
+    "answer": "The window was broken by the boy."
+  },
+  {
+    "id": 161,
+    "question": "Meaning of 'Urgent'.",
+    "options": ["Trivial", "Minor", "Pressing", "Unimportant"],
+    "answer": "Pressing"
+  },
+  {
+    "id": 162,
+    "question": "Fill in the blank: He is jealous ______ his friend's success.",
+    "options": ["of", "at", "with", "for"],
+    "answer": "of"
+  },
+  {
+    "id": 163,
+    "question": "Synonym of 'Strong'.",
+    "options": ["Weak", "Powerful", "Frail", "Feeble"],
+    "answer": "Powerful"
+  },
+  {
+    "id": 164,
+    "question": "Antonym of 'Rich'.",
+    "options": ["Wealthy", "Poor", "Affluent", "Prosperous"],
+    "answer": "Poor"
+  },
+  {
+    "id": 165,
+    "question": "Choose the correct spelling.",
+    "options": ["Occasion", "Ocasion", "Occassion", "Ocassion"],
+    "answer": "Occasion"
+  },
+  {
+    "id": 166,
+    "question": "Meaning of 'Contribute'.",
+    "options": ["Take", "Give", "Remove", "Withdraw"],
+    "answer": "Give"
+  },
+  {
+    "id": 167,
+    "question": "Fill in the blank: He is confident ______ his abilities.",
+    "options": ["about", "of", "in", "on"],
+    "answer": "of"
+  },
+  {
+    "id": 168,
+    "question": "Synonym of 'Finish'.",
+    "options": ["Start", "Complete", "Begin", "Initiate"],
+    "answer": "Complete"
+  },
+  {
+    "id": 169,
+    "question": "Antonym of 'Natural'.",
+    "options": ["Artificial", "Real", "Genuine", "Original"],
+    "answer": "Artificial"
+  },
+  {
+    "id": 170,
+    "question": "Identify the error: 'The poet and singer are coming.'",
+    "options": ["The poet", "and singer", "are", "coming"],
+    "answer": "are"
+  },
+  {
+    "id": 171,
+    "question": "Meaning of 'Comprehend'.",
+    "options": ["Misunderstand", "Understand", "Ignore", "Overlook"],
+    "answer": "Understand"
+  },
+  {
+    "id": 172,
+    "question": "Fill in the blank: He is not fit ______ this job.",
+    "options": ["to", "for", "in", "by"],
+    "answer": "for"
+  },
+  {
+    "id": 173,
+    "question": "Synonym of 'Fast'.",
+    "options": ["Slow", "Quick", "Lazy", "Steady"],
+    "answer": "Quick"
+  },
+  {
+    "id": 174,
+    "question": "Antonym of 'Light'.",
+    "options": ["Heavy", "Weightless", "Airy", "Floating"],
+    "answer": "Heavy"
+  },
+  {
+    "id": 175,
+    "question": "Choose the correct word: 'He is a ______ worker.'",
+    "options": ["hard", "hardly", "hardiness", "harden"],
+    "answer": "hard"
+  },
+  {
+    "id": 176,
+    "question": "Meaning of 'Abundant'.",
+    "options": ["Scarce", "Plentiful", "Rare", "Lacking"],
+    "answer": "Plentiful"
+  },
+  {
+    "id": 177,
+    "question": "Fill in the blank: He is famous ______ his honesty.",
+    "options": ["for", "by", "with", "in"],
+    "answer": "for"
+  },
+  {
+    "id": 178,
+    "question": "Synonym of 'Sad'.",
+    "options": ["Happy", "Unhappy", "Joyful", "Cheerful"],
+    "answer": "Unhappy"
+  },
+  {
+    "id": 179,
+    "question": "Antonym of 'Deep'.",
+    "options": ["Shallow", "Profound", "Bottomless", "Abyssal"],
+    "answer": "Shallow"
+  },
+  {
+    "id": 180,
+    "question": "Identify the correct sentence.",
+    "options": ["He has a two years old son.", "He has a two-year-old son.", "He has a two year old son.", "He has a two-years-old son."],
+    "answer": "He has a two-year-old son."
+  },
+  {
+    "id": 181,
+    "question": "Meaning of 'Persuade'.",
+    "options": ["Dissuade", "Convince", "Discourage", "Deter"],
+    "answer": "Convince"
+  },
+  {
+    "id": 182,
+    "question": "Fill in the blank: He is proud ______ his wealth.",
+    "options": ["for", "of", "in", "with"],
+    "answer": "of"
+  },
+  {
+    "id": 183,
+    "question": "Synonym of 'Careful'.",
+    "options": ["Careless", "Cautious", "Reckless", "Negligent"],
+    "answer": "Cautious"
+  },
+  {
+    "id": 184,
+    "question": "Antonym of 'Accept'.",
+    "options": ["Receive", "Reject", "Take", "Agree"],
+    "answer": "Reject"
+  },
+  {
+    "id": 185,
+    "question": "Choose the correct spelling.",
+    "options": ["Privilege", "Priviledge", "Privelege", "Privilige"],
+    "answer": "Privilege"
+  },
+  {
+    "id": 186,
+    "question": "Meaning of 'Genuine'.",
+    "options": ["Fake", "Real", "Artificial", "Counterfeit"],
+    "answer": "Real"
+  },
+  {
+    "id": 187,
+    "question": "Fill in the blank: He is angry ______ me.",
+    "options": ["on", "with", "at", "for"],
+    "answer": "with"
+  },
+  {
+    "id": 188,
+    "question": "Synonym of 'Quiet'.",
+    "options": ["Noisy", "Silent", "Loud", "Boisterous"],
+    "answer": "Silent"
+  },
+  {
+    "id": 189,
+    "question": "Antonym of 'Poverty'.",
+    "options": ["Wealth", "Need", "Scarcity", "Lack"],
+    "answer": "Wealth"
+  },
+  {
+    "id": 190,
+    "question": "Identify the error: 'The news are true.'",
+    "options": ["The", "news", "are", "true"],
+    "answer": "are"
+  },
+  {
+    "id": 191,
+    "question": "Meaning of 'Flexible'.",
+    "options": ["Rigid", "Bendable", "Stiff", "Hard"],
+    "answer": "Bendable"
+  },
+  {
+    "id": 192,
+    "question": "Fill in the blank: He is responsible ______ the project.",
+    "options": ["for", "to", "in", "on"],
+    "answer": "for"
+  },
+  {
+    "id": 193,
+    "question": "Synonym of 'Clean'.",
+    "options": ["Dirty", "Tidy", "Filthy", "Grubby"],
+    "answer": "Tidy"
+  },
+  {
+    "id": 194,
+    "question": "Antonym of 'Better'.",
+    "options": ["Worse", "Superior", "Finer", "Greater"],
+    "answer": "Worse"
+  },
+  {
+    "id": 195,
+    "question": "Choose the correct word: 'He is ______ to succeed.'",
+    "options": ["like", "likely", "likable", "alike"],
+    "answer": "likely"
+  },
+  {
+    "id": 196,
+    "question": "Meaning of 'Hesitant'.",
+    "options": ["Decisive", "Uncertain", "Confident", "Sure"],
+    "answer": "Uncertain"
+  },
+  {
+    "id": 197,
+    "question": "Fill in the blank: He is blessed ______ a good memory.",
+    "options": ["by", "with", "for", "in"],
+    "answer": "with"
+  },
+  {
+    "id": 198,
+    "question": "Synonym of 'Rare'.",
+    "options": ["Common", "Uncommon", "Frequent", "Regular"],
+    "answer": "Uncommon"
+  },
+  {
+    "id": 199,
+    "question": "Antonym of 'Permanent'.",
+    "options": ["Temporary", "Eternal", "Everlasting", "Perpetual"],
+    "answer": "Temporary"
+  },
+  {
+    "id": 200,
+    "question": "Identify the correct passive: 'She will help you.'",
+    "options": ["You will be helped by her.", "You are helped by her.", "You were helped by her.", "You have been helped."],
+    "answer": "You will be helped by her."
+  },
+  {
+    "id": 201,
+    "question": "Meaning of 'Cautious'.",
+    "options": ["Careless", "Careful", "Reckless", "Negligent"],
+    "answer": "Careful"
+  },
+  {
+    "id": 202,
+    "question": "Fill in the blank: He is weak ______ Mathematics.",
+    "options": ["in", "at", "on", "for"],
+    "answer": "in"
+  },
+  {
+    "id": 203,
+    "question": "Synonym of 'Clear'.",
+    "options": ["Vague", "Obvious", "Unclear", "Ambiguous"],
+    "answer": "Obvious"
+  },
+  {
+    "id": 204,
+    "question": "Antonym of 'Honest'.",
+    "options": ["Truthful", "Dishonest", "Sincere", "Genuine"],
+    "answer": "Dishonest"
+  },
+  {
+    "id": 205,
+    "question": "Choose the correct spelling.",
+    "options": ["Definitely", "Definately", "Definitley", "Definently"],
+    "answer": "Definitely"
+  },
+  {
+    "id": 206,
+    "question": "Meaning of 'Anonymous'.",
+    "options": ["Known", "Nameless", "Famous", "Renowned"],
+    "answer": "Nameless"
+  },
+  {
+    "id": 207,
+    "question": "Fill in the blank: He is strict ______ his children.",
+    "options": ["to", "with", "on", "at"],
+    "answer": "with"
+  },
+  {
+    "id": 208,
+    "question": "Synonym of 'Polite'.",
+    "options": ["Rude", "Courteous", "Impudent", "Disrespectful"],
+    "answer": "Courteous"
+  },
+  {
+    "id": 209,
+    "question": "Antonym of 'Expand'.",
+    "options": ["Shrink", "Grow", "Increase", "Enlarge"],
+    "answer": "Shrink"
+  },
+  {
+    "id": 210,
+    "question": "Identify the error: 'He is the tallest of the two brothers.'",
+    "options": ["He is", "the tallest", "of the two", "brothers"],
+    "answer": "the tallest"
+  },
+  {
+    "id": 211,
+    "question": "Meaning of 'Explicit'.",
+    "options": ["Vague", "Clear", "Ambiguous", "Unclear"],
+    "answer": "Clear"
+  },
+  {
+    "id": 212,
+    "question": "Fill in the blank: He is familiar ______ this topic.",
+    "options": ["to", "with", "of", "for"],
+    "answer": "with"
+  },
+  {
+    "id": 213,
+    "question": "Synonym of 'Dangerous'.",
+    "options": ["Safe", "Risky", "Secure", "Harmless"],
+    "answer": "Risky"
+  },
+  {
+    "id": 214,
+    "question": "Antonym of 'Friend'.",
+    "options": ["Ally", "Enemy", "Companion", "Partner"],
+    "answer": "Enemy"
+  },
+  {
+    "id": 215,
+    "question": "Choose the correct word: 'He spoke ______.'",
+    "options": ["loud", "loudly", "loudness", "louden"],
+    "answer": "loudly"
+  },
+  {
+    "id": 216,
+    "question": "Meaning of 'Relevant'.",
+    "options": ["Irrelevant", "Related", "Unrelated", "Inappropriate"],
+    "answer": "Related"
+  },
+  {
+    "id": 217,
+    "question": "Fill in the blank: He is not satisfied ______ his job.",
+    "options": ["with", "at", "for", "in"],
+    "answer": "with"
+  },
+  {
+    "id": 218,
+    "question": "Synonym of 'Famous'.",
+    "options": ["Unknown", "Renowned", "Obscure", "Anonymous"],
+    "answer": "Renowned"
+  },
+  {
+    "id": 219,
+    "question": "Antonym of 'Rise'.",
+    "options": ["Fall", "Ascend", "Climb", "Increase"],
+    "answer": "Fall"
+  },
+  {
+    "id": 220,
+    "question": "Identify the correct sentence.",
+    "options": ["She does not have any money.", "She does not have no money.", "She does not have none money.", "She does not have any moneys."],
+    "answer": "She does not have any money."
+  },
+  {
+    "id": 221,
+    "question": "Meaning of 'Artificial'.",
+    "options": ["Natural", "Synthetic", "Real", "Genuine"],
+    "answer": "Synthetic"
+  },
+  {
+    "id": 222,
+    "question": "Fill in the blank: He is not guilty ______ the crime.",
+    "options": ["of", "for", "in", "at"],
+    "answer": "of"
+  },
+  {
+    "id": 223,
+    "question": "Synonym of 'Strong'.",
+    "options": ["Weak", "Powerful", "Frail", "Feeble"],
+    "answer": "Powerful"
+  },
+  {
+    "id": 224,
+    "question": "Antonym of 'Remember'.",
+    "options": ["Recall", "Forget", "Recollect", "Remind"],
+    "answer": "Forget"
+  },
+  {
+    "id": 225,
+    "question": "Choose the correct spelling.",
+    "options": ["Embarrass", "Embarass", "Embarras", "Embaras"],
+    "answer": "Embarrass"
+  },
+  {
+    "id": 226,
+    "question": "Meaning of 'Frequent'.",
+    "options": ["Rare", "Often", "Seldom", "Infrequent"],
+    "answer": "Often"
+  },
+  {
+    "id": 227,
+    "question": "Fill in the blank: He is not eligible ______ this post.",
+    "options": ["to", "for", "in", "by"],
+    "answer": "for"
+  },
+  {
+    "id": 228,
+    "question": "Synonym of 'Help'.",
+    "options": ["Hinder", "Assist", "Obstruct", "Block"],
+    "answer": "Assist"
+  },
+  {
+    "id": 229,
+    "question": "Antonym of 'Sour'.",
+    "options": ["Bitter", "Sweet", "Tangy", "Sharp"],
+    "answer": "Sweet"
+  },
+  {
+    "id": 230,
+    "question": "Identify the error: 'He is more taller than his brother.'",
+    "options": ["He is", "more taller", "than his", "brother"],
+    "answer": "more taller"
+  },
+  {
+    "id": 231,
+    "question": "Meaning of 'Vague'.",
+    "options": ["Clear", "Unclear", "Exact", "Precise"],
+    "answer": "Unclear"
+  },
+  {
+    "id": 232,
+    "question": "Fill in the blank: He is not interested ______ sports.",
+    "options": ["in", "for", "at", "to"],
+    "answer": "in"
+  },
+  {
+    "id": 233,
+    "question": "Synonym of 'Old'.",
+    "options": ["New", "Aged", "Young", "Modern"],
+    "answer": "Aged"
+  },
+  {
+    "id": 234,
+    "question": "Antonym of 'Open'.",
+    "options": ["Shut", "Close", "Both A and B", "Unlock"],
+    "answer": "Both A and B"
+  },
+  {
+    "id": 235,
+    "question": "Choose the correct word: 'He is a ______ person.'",
+    "options": ["kind", "kindly", "kindness", "kinder"],
+    "answer": "kind"
+  },
+  {
+    "id": 236,
+    "question": "Meaning of 'Abandon'.",
+    "options": ["Keep", "Leave", "Hold", "Retain"],
+    "answer": "Leave"
+  },
+  {
+    "id": 237,
+    "question": "Fill in the blank: He is not worthy ______ praise.",
+    "options": ["of", "for", "to", "in"],
+    "answer": "of"
+  },
+  {
+    "id": 238,
+    "question": "Synonym of 'Brave'.",
+    "options": ["Cowardly", "Fearless", "Timid", "Weak"],
+    "answer": "Fearless"
+  },
+  {
+    "id": 239,
+    "question": "Antonym of 'Soft'.",
+    "options": ["Hard", "Gentle", "Mild", "Tender"],
+    "answer": "Hard"
+  },
+  {
+    "id": 240,
+    "question": "Identify the correct passive: 'He is writing a letter.'",
+    "options": ["A letter is written by him.", "A letter is being written by him.", "A letter was written by him.", "A letter has been written."],
+    "answer": "A letter is being written by him."
+  },
+  {
+    "id": 241,
+    "question": "Meaning of 'Dull'.",
+    "options": ["Sharp", "Boring", "Interesting", "Exciting"],
+    "answer": "Boring"
+  },
+  {
+    "id": 242,
+    "question": "Fill in the blank: He is famous ______ his novels.",
+    "options": ["for", "by", "with", "in"],
+    "answer": "for"
+  },
+  {
+    "id": 243,
+    "question": "Synonym of 'Large'.",
+    "options": ["Small", "Huge", "Tiny", "Minute"],
+    "answer": "Huge"
+  },
+  {
+    "id": 244,
+    "question": "Antonym of 'Always'.",
+    "options": ["Never", "Forever", "Constantly", "Eternally"],
+    "answer": "Never"
+  },
+  {
+    "id": 245,
+    "question": "Choose the correct spelling.",
+    "options": ["Neccessary", "Necessary", "Neccesary", "Necesary"],
+    "answer": "Necessary"
+  },
+  {
+    "id": 246,
+    "question": "Meaning of 'Urgent'.",
+    "options": ["Trivial", "Pressing", "Minor", "Unimportant"],
+    "answer": "Pressing"
+  },
+  {
+    "id": 247,
+    "question": "Fill in the blank: He is related ______ me.",
+    "options": ["to", "with", "by", "from"],
+    "answer": "to"
+  },
+  {
+    "id": 248,
+    "question": "Synonym of 'Rich'.",
+    "options": ["Wealthy", "Poor", "Needy", "Destitute"],
+    "answer": "Wealthy"
+  },
+  {
+    "id": 249,
+    "question": "Antonym of 'Foolish'.",
+    "options": ["Wise", "Stupid", "Silly", "Dull"],
+    "answer": "Wise"
+  },
+  {
+    "id": 250,
+    "question": "Identify the error: 'Each of the students have a book.'",
+    "options": ["Each of", "the students", "have", "a book"],
+    "answer": "have"
+  },
+  {
+    "id": 251,
+    "question": "Meaning of 'Compassion'.",
+    "options": ["Cruelty", "Sympathy", "Indifference", "Harshness"],
+    "answer": "Sympathy"
+  },
+  {
+    "id": 252,
+    "question": "Fill in the blank: He is addicted ______ smoking.",
+    "options": ["to", "of", "for", "in"],
+    "answer": "to"
+  },
+  {
+    "id": 253,
+    "question": "Synonym of 'Quiet'.",
+    "options": ["Silent", "Noisy", "Loud", "Boisterous"],
+    "answer": "Silent"
+  },
+  {
+    "id": 254,
+    "question": "Antonym of 'Peace'.",
+    "options": ["War", "Harmony", "Tranquility", "Calm"],
+    "answer": "War"
+  },
+  {
+    "id": 255,
+    "question": "Choose the correct word: 'She is ______ to me.'",
+    "options": ["kind", "kindly", "kindness", "kinden"],
+    "answer": "kind"
+  },
+  {
+    "id": 256,
+    "question": "Meaning of 'Hesitate'.",
+    "options": ["Decide quickly", "Pause", "Act immediately", "Rush"],
+    "answer": "Pause"
+  },
+  {
+    "id": 257,
+    "question": "Fill in the blank: He is not capable ______ doing this.",
+    "options": ["to", "of", "for", "in"],
+    "answer": "of"
+  },
+  {
+    "id": 258,
+    "question": "Synonym of 'Beautiful'.",
+    "options": ["Ugly", "Attractive", "Hideous", "Plain"],
+    "answer": "Attractive"
+  },
+  {
+    "id": 259,
+    "question": "Antonym of 'Laugh'.",
+    "options": ["Smile", "Cry", "Giggle", "Chuckle"],
+    "answer": "Cry"
+  },
+  {
+    "id": 260,
+    "question": "Identify the correct sentence.",
+    "options": ["She goes to school everyday.", "She go to school everyday.", "She going to school everyday.", "She gone to school everyday."],
+    "answer": "She goes to school everyday."
+  },
+  {
+    "id": 261,
+    "question": "Meaning of 'Exhausted'.",
+    "options": ["Energetic", "Tired", "Fresh", "Lively"],
+    "answer": "Tired"
+  },
+  {
+    "id": 262,
+    "question": "Fill in the blank: He is angry ______ me.",
+    "options": ["on", "with", "at", "for"],
+    "answer": "with"
+  },
+  {
+    "id": 263,
+    "question": "Synonym of 'Cry'.",
+    "options": ["Laugh", "Weep", "Smile", "Giggle"],
+    "answer": "Weep"
+  },
+  {
+    "id": 264,
+    "question": "Antonym of 'Victory'.",
+    "options": ["Win", "Defeat", "Success", "Triumph"],
+    "answer": "Defeat"
+  },
+  {
+    "id": 265,
+    "question": "Choose the correct spelling.",
+    "options": ["Seperate", "Separate", "Seperete", "Seprate"],
+    "answer": "Separate"
+  },
+  {
+    "id": 266,
+    "question": "Meaning of 'Fragile'.",
+    "options": ["Strong", "Breakable", "Tough", "Sturdy"],
+    "answer": "Breakable"
+  },
+  {
+    "id": 267,
+    "question": "Fill in the blank: She is anxious ______ her results.",
+    "options": ["about", "for", "in", "to"],
+    "answer": "about"
+  },
+  {
+    "id": 268,
+    "question": "Synonym of 'Start'.",
+    "options": ["End", "Begin", "Finish", "Stop"],
+    "answer": "Begin"
+  },
+  {
+    "id": 269,
+    "question": "Antonym of 'Clean'.",
+    "options": ["Dirty", "Neat", "Tidy", "Pure"],
+    "answer": "Dirty"
+  },
+  {
+    "id": 270,
+    "question": "Identify the error: 'He is one of the best student in the class.'",
+    "options": ["He is", "one of", "the best student", "in the class"],
+    "answer": "the best student"
+  },
+  {
+    "id": 271,
+    "question": "Meaning of 'Artificial'.",
+    "options": ["Natural", "Man-made", "Real", "Genuine"],
+    "answer": "Man-made"
+  },
+  {
+    "id": 272,
+    "question": "Fill in the blank: He is concerned ______ his son's future.",
+    "options": ["about", "for", "with", "in"],
+    "answer": "about"
+  },
+  {
+    "id": 273,
+    "question": "Synonym of 'Rich'.",
+    "options": ["Affluent", "Poor", "Needy", "Destitute"],
+    "answer": "Affluent"
+  },
+  {
+    "id": 274,
+    "question": "Antonym of 'Broad'.",
+    "options": ["Wide", "Narrow", "Large", "Expansive"],
+    "answer": "Narrow"
+  },
+  {
+    "id": 275,
+    "question": "Choose the correct word: 'This is a ______ issue.'",
+    "options": ["complicated", "complicate", "complication", "complicating"],
+    "answer": "complicated"
+  },
+  {
+    "id": 276,
+    "question": "Meaning of 'Abrupt'.",
+    "options": ["Gradual", "Sudden", "Slow", "Expected"],
+    "answer": "Sudden"
+  },
+  {
+    "id": 277,
+    "question": "Fill in the blank: She is capable ______ handling the situation.",
+    "options": ["of", "to", "in", "for"],
+    "answer": "of"
+  },
+  {
+    "id": 278,
+    "question": "Synonym of 'Help'.",
+    "options": ["Hinder", "Assist", "Obstruct", "Block"],
+    "answer": "Assist"
+  },
+  {
+    "id": 279,
+    "question": "Antonym of 'Cruel'.",
+    "options": ["Kind", "Brutal", "Harsh", "Savage"],
+    "answer": "Kind"
+  },
+  {
+    "id": 280,
+    "question": "Identify the correct passive: 'She writes a letter.'",
+    "options": ["A letter is written by her.", "A letter was written by her.", "A letter is being written.", "A letter has been written."],
+    "answer": "A letter is written by her."
+  },
+  {
+    "id": 281,
+    "question": "Meaning of 'Eliminate'.",
+    "options": ["Include", "Remove", "Add", "Insert"],
+    "answer": "Remove"
+  },
+  {
+    "id": 282,
+    "question": "Fill in the blank: He is similar ______ his father.",
+    "options": ["to", "with", "like", "as"],
+    "answer": "to"
+  },
+  {
+    "id": 283,
+    "question": "Synonym of 'Late'.",
+    "options": ["Early", "Tardy", "Prompt", "Punctual"],
+    "answer": "Tardy"
+  },
+  {
+    "id": 284,
+    "question": "Antonym of 'Gain'.",
+    "options": ["Profit", "Loss", "Benefit", "Advantage"],
+    "answer": "Loss"
+  },
+  {
+    "id": 285,
+    "question": "Choose the correct spelling.",
+    "options": ["Maintainance", "Maintenance", "Maintenence", "Maintanance"],
+    "answer": "Maintenance"
+  },
+  {
+    "id": 286,
+    "question": "Meaning of 'Obvious'.",
+    "options": ["Hidden", "Clear", "Secret", "Concealed"],
+    "answer": "Clear"
+  },
+  {
+    "id": 287,
+    "question": "Fill in the blank: He is different ______ his brother.",
+    "options": ["than", "to", "from", "then"],
+    "answer": "from"
+  },
+  {
+    "id": 288,
+    "question": "Synonym of 'Wealthy'.",
+    "options": ["Poor", "Rich", "Needy", "Impoverished"],
+    "answer": "Rich"
+  },
+  {
+    "id": 289,
+    "question": "Antonym of 'Young'.",
+    "options": ["Old", "New", "Fresh", "Youthful"],
+    "answer": "Old"
+  },
+  {
+    "id": 290,
+    "question": "Identify the error: 'Neither of them are coming.'",
+    "options": ["Neither", "of them", "are", "coming"],
+    "answer": "are"
+  },
+  {
+    "id": 291,
+    "question": "Meaning of 'Reliable'.",
+    "options": ["Unreliable", "Dependable", "Untrustworthy", "Fickle"],
+    "answer": "Dependable"
+  },
+  {
+    "id": 292,
+    "question": "Fill in the blank: She is good ______ singing.",
+    "options": ["in", "at", "on", "for"],
+    "answer": "at"
+  },
+  {
+    "id": 293,
+    "question": "Synonym of 'Smart'.",
+    "options": ["Dull", "Intelligent", "Stupid", "Slow"],
+    "answer": "Intelligent"
+  },
+  {
+    "id": 294,
+    "question": "Antonym of 'Increase'.",
+    "options": ["Rise", "Decrease", "Grow", "Expand"],
+    "answer": "Decrease"
+  },
+  {
+    "id": 295,
+    "question": "Choose the correct word: 'She is ______ in music.'",
+    "options": ["interest", "interesting", "interested", "interests"],
+    "answer": "interested"
+  },
+  {
+    "id": 296,
+    "question": "Meaning of 'Dangerous'.",
+    "options": ["Safe", "Risky", "Secure", "Harmless"],
+    "answer": "Risky"
+  },
+  {
+    "id": 297,
+    "question": "Fill in the blank: He is not aware ______ the rules.",
+    "options": ["to", "of", "for", "with"],
+    "answer": "of"
+  },
+  {
+    "id": 298,
+    "question": "Synonym of 'Large'.",
+    "options": ["Small", "Big", "Tiny", "Minute"],
+    "answer": "Big"
+  },
+  {
+    "id": 299,
+    "question": "Antonym of 'Always'.",
+    "options": ["Never", "Forever", "Constantly", "Perpetually"],
+    "answer": "Never"
+  },
+  {
+    "id": 300,
+    "question": "Identify the correct passive: 'The boy broke the window.'",
+    "options": ["The window is broken by the boy.", "The window was broken by the boy.", "The window has been broken.", "The window is being broken."],
+    "answer": "The window was broken by the boy."
+  },
+  {
+    "id": 301,
+    "question": "Meaning of 'Urgent'.",
+    "options": ["Trivial", "Minor", "Pressing", "Unimportant"],
+    "answer": "Pressing"
+  },
+  {
+    "id": 302,
+    "question": "Fill in the blank: He is jealous ______ his friend's success.",
+    "options": ["of", "at", "with", "for"],
+    "answer": "of"
+  },
+  {
+    "id": 303,
+    "question": "Synonym of 'Strong'.",
+    "options": ["Weak", "Powerful", "Frail", "Feeble"],
+    "answer": "Powerful"
+  },
+  {
+    "id": 304,
+    "question": "Antonym of 'Rich'.",
+    "options": ["Wealthy", "Poor", "Affluent", "Prosperous"],
+    "answer": "Poor"
+  },
+  {
+    "id": 305,
+    "question": "Choose the correct spelling.",
+    "options": ["Occasion", "Ocasion", "Occassion", "Ocassion"],
+    "answer": "Occasion"
+  },
+  {
+    "id": 306,
+    "question": "Meaning of 'Contribute'.",
+    "options": ["Take", "Give", "Remove", "Withdraw"],
+    "answer": "Give"
+  },
+  {
+    "id": 307,
+    "question": "Fill in the blank: He is confident ______ his abilities.",
+    "options": ["about", "of", "in", "on"],
+    "answer": "of"
+  },
+  {
+    "id": 308,
+    "question": "Synonym of 'Finish'.",
+    "options": ["Start", "Complete", "Begin", "Initiate"],
+    "answer": "Complete"
+  },
+  {
+    "id": 309,
+    "question": "Antonym of 'Natural'.",
+    "options": ["Artificial", "Real", "Genuine", "Original"],
+    "answer": "Artificial"
+  },
+  {
+    "id": 310,
+    "question": "Identify the error: 'The poet and singer are coming.'",
+    "options": ["The poet", "and singer", "are", "coming"],
+    "answer": "are"
+  },
+  {
+    "id": 311,
+    "question": "Meaning of 'Comprehend'.",
+    "options": ["Misunderstand", "Understand", "Ignore", "Overlook"],
+    "answer": "Understand"
+  },
+  {
+    "id": 312,
+    "question": "Fill in the blank: He is not fit ______ this job.",
+    "options": ["to", "for", "in", "by"],
+    "answer": "for"
+  },
+  {
+    "id": 313,
+    "question": "Synonym of 'Fast'.",
+    "options": ["Slow", "Quick", "Lazy", "Steady"],
+    "answer": "Quick"
+  },
+  {
+    "id": 314,
+    "question": "Antonym of 'Light'.",
+    "options": ["Heavy", "Weightless", "Airy", "Floating"],
+    "answer": "Heavy"
+  },
+  {
+    "id": 315,
+    "question": "Choose the correct word: 'He is a ______ worker.'",
+    "options": ["hard", "hardly", "hardiness", "harden"],
+    "answer": "hard"
+  },
+  {
+    "id": 316,
+    "question": "Meaning of 'Abundant'.",
+    "options": ["Scarce", "Plentiful", "Rare", "Lacking"],
+    "answer": "Plentiful"
+  },
+  {
+    "id": 317,
+    "question": "Fill in the blank: He is famous ______ his honesty.",
+    "options": ["for", "by", "with", "in"],
+    "answer": "for"
+  },
+  {
+    "id": 318,
+    "question": "Synonym of 'Sad'.",
+    "options": ["Happy", "Unhappy", "Joyful", "Cheerful"],
+    "answer": "Unhappy"
+  },
+  {
+    "id": 319,
+    "question": "Antonym of 'Deep'.",
+    "options": ["Shallow", "Profound", "Bottomless", "Abyssal"],
+    "answer": "Shallow"
+  },
+  {
+    "id": 320,
+    "question": "Identify the correct sentence.",
+    "options": ["He has a two years old son.", "He has a two-year-old son.", "He has a two year old son.", "He has a two-years-old son."],
+    "answer": "He has a two-year-old son."
+  },
+  {
+    "id": 321,
+    "question": "Meaning of 'Persuade'.",
+    "options": ["Dissuade", "Convince", "Discourage", "Deter"],
+    "answer": "Convince"
+  },
+  {
+    "id": 322,
+    "question": "Fill in the blank: He is proud ______ his wealth.",
+    "options": ["for", "of", "in", "with"],
+    "answer": "of"
+  },
+  {
+    "id": 323,
+    "question": "Synonym of 'Careful'.",
+    "options": ["Careless", "Cautious", "Reckless", "Negligent"],
+    "answer": "Cautious"
+  },
+  {
+    "id": 324,
+    "question": "Antonym of 'Accept'.",
+    "options": ["Receive", "Reject", "Take", "Agree"],
+    "answer": "Reject"
+  },
+  {
+    "id": 325,
+    "question": "Choose the correct spelling.",
+    "options": ["Privilege", "Priviledge", "Privelege", "Privilige"],
+    "answer": "Privilege"
+  },
+  {
+    "id": 326,
+    "question": "Meaning of 'Genuine'.",
+    "options": ["Fake", "Real", "Artificial", "Counterfeit"],
+    "answer": "Real"
+  },
+  {
+    "id": 327,
+    "question": "Fill in the blank: He is angry ______ me.",
+    "options": ["on", "with", "at", "for"],
+    "answer": "with"
+  },
+  {
+    "id": 328,
+    "question": "Synonym of 'Quiet'.",
+    "options": ["Noisy", "Silent", "Loud", "Boisterous"],
+    "answer": "Silent"
+  },
+  {
+    "id": 329,
+    "question": "Antonym of 'Poverty'.",
+    "options": ["Wealth", "Need", "Scarcity", "Lack"],
+    "answer": "Wealth"
+  },
+  {
+    "id": 330,
+    "question": "Identify the error: 'The news are true.'",
+    "options": ["The", "news", "are", "true"],
+    "answer": "are"
+  },
+  {
+    "id": 331,
+    "question": "Meaning of 'Flexible'.",
+    "options": ["Rigid", "Bendable", "Stiff", "Hard"],
+    "answer": "Bendable"
+  },
+  {
+    "id": 332,
+    "question": "Fill in the blank: He is responsible ______ the project.",
+    "options": ["for", "to", "in", "on"],
+    "answer": "for"
+  },
+  {
+    "id": 333,
+    "question": "Synonym of 'Clean'.",
+    "options": ["Dirty", "Tidy", "Filthy", "Grubby"],
+    "answer": "Tidy"
+  },
+  {
+    "id": 334,
+    "question": "Antonym of 'Better'.",
+    "options": ["Worse", "Superior", "Finer", "Greater"],
+    "answer": "Worse"
+  },
+  {
+    "id": 335,
+    "question": "Choose the correct word: 'He is ______ to succeed.'",
+    "options": ["like", "likely", "likable", "alike"],
+    "answer": "likely"
+  },
+  {
+    "id": 336,
+    "question": "Meaning of 'Hesitant'.",
+    "options": ["Decisive", "Uncertain", "Confident", "Sure"],
+    "answer": "Uncertain"
+  },
+  {
+    "id": 337,
+    "question": "Fill in the blank: He is blessed ______ a good memory.",
+    "options": ["by", "with", "for", "in"],
+    "answer": "with"
+  },
+  {
+    "id": 338,
+    "question": "Synonym of 'Rare'.",
+    "options": ["Common", "Uncommon", "Frequent", "Regular"],
+    "answer": "Uncommon"
+  },
+  {
+    "id": 339,
+    "question": "Antonym of 'Permanent'.",
+    "options": ["Temporary", "Eternal", "Everlasting", "Perpetual"],
+    "answer": "Temporary"
+  },
+  {
+    "id": 340,
+    "question": "Identify the correct passive: 'She will help you.'",
+    "options": ["You will be helped by her.", "You are helped by her.", "You were helped by her.", "You have been helped."],
+    "answer": "You will be helped by her."
+  },
+  {
+    "id": 341,
+    "question": "Meaning of 'Cautious'.",
+    "options": ["Careless", "Careful", "Reckless", "Negligent"],
+    "answer": "Careful"
+  },
+  {
+    "id": 342,
+    "question": "Fill in the blank: He is weak ______ Mathematics.",
+    "options": ["in", "at", "on", "for"],
+    "answer": "in"
+  },
+  {
+    "id": 343,
+    "question": "Synonym of 'Clear'.",
+    "options": ["Vague", "Obvious", "Unclear", "Ambiguous"],
+    "answer": "Obvious"
+  },
+  {
+    "id": 344,
+    "question": "Antonym of 'Honest'.",
+    "options": ["Truthful", "Dishonest", "Sincere", "Genuine"],
+    "answer": "Dishonest"
+  },
+  {
+    "id": 345,
+    "question": "Choose the correct spelling.",
+    "options": ["Definitely", "Definately", "Definitley", "Definently"],
+    "answer": "Definitely"
+  },
+  {
+    "id": 346,
+    "question": "Meaning of 'Anonymous'.",
+    "options": ["Known", "Nameless", "Famous", "Renowned"],
+    "answer": "Nameless"
+  },
+  {
+    "id": 347,
+    "question": "Fill in the blank: He is strict ______ his children.",
+    "options": ["to", "with", "on", "at"],
+    "answer": "with"
+  },
+  {
+    "id": 348,
+    "question": "Synonym of 'Polite'.",
+    "options": ["Rude", "Courteous", "Impudent", "Disrespectful"],
+    "answer": "Courteous"
+  },
+  {
+    "id": 349,
+    "question": "Antonym of 'Expand'.",
+    "options": ["Shrink", "Grow", "Increase", "Enlarge"],
+    "answer": "Shrink"
+  },
+  {
+    "id": 350,
+    "question": "Identify the error: 'He is the tallest of the two brothers.'",
+    "options": ["He is", "the tallest", "of the two", "brothers"],
+    "answer": "the tallest"
+  },
+  {
+    "id": 351,
+    "question": "Meaning of 'Explicit'.",
+    "options": ["Vague", "Clear", "Ambiguous", "Unclear"],
+    "answer": "Clear"
+  },
+  {
+    "id": 352,
+    "question": "Fill in the blank: He is familiar ______ this topic.",
+    "options": ["to", "with", "of", "for"],
+    "answer": "with"
+  },
+  {
+    "id": 353,
+    "question": "Synonym of 'Dangerous'.",
+    "options": ["Safe", "Risky", "Secure", "Harmless"],
+    "answer": "Risky"
+  },
+  {
+    "id": 354,
+    "question": "Antonym of 'Friend'.",
+    "options": ["Ally", "Enemy", "Companion", "Partner"],
+    "answer": "Enemy"
+  },
+  {
+    "id": 355,
+    "question": "Choose the correct word: 'He spoke ______.'",
+    "options": ["loud", "loudly", "loudness", "louden"],
+    "answer": "loudly"
+  },
+  {
+    "id": 356,
+    "question": "Meaning of 'Relevant'.",
+    "options": ["Irrelevant", "Related", "Unrelated", "Inappropriate"],
+    "answer": "Related"
+  },
+  {
+    "id": 357,
+    "question": "Fill in the blank: He is not satisfied ______ his job.",
+    "options": ["with", "at", "for", "in"],
+    "answer": "with"
+  },
+  {
+    "id": 358,
+    "question": "Synonym of 'Famous'.",
+    "options": ["Unknown", "Renowned", "Obscure", "Anonymous"],
+    "answer": "Renowned"
+  },
+  {
+    "id": 359,
+    "question": "Antonym of 'Rise'.",
+    "options": ["Fall", "Ascend", "Climb", "Increase"],
+    "answer": "Fall"
+  },
+  {
+    "id": 360,
+    "question": "Identify the correct sentence.",
+    "options": ["She does not have any money.", "She does not have no money.", "She does not have none money.", "She does not have any moneys."],
+    "answer": "She does not have any money."
+  },
+  {
+    "id": 361,
+    "question": "Meaning of 'Artificial'.",
+    "options": ["Natural", "Synthetic", "Real", "Genuine"],
+    "answer": "Synthetic"
+  },
+  {
+    "id": 362,
+    "question": "Fill in the blank: He is not guilty ______ the crime.",
+    "options": ["of", "for", "in", "at"],
+    "answer": "of"
+  },
+  {
+    "id": 363,
+    "question": "Synonym of 'Strong'.",
+    "options": ["Weak", "Powerful", "Frail", "Feeble"],
+    "answer": "Powerful"
+  },
+  {
+    "id": 364,
+    "question": "Antonym of 'Remember'.",
+    "options": ["Recall", "Forget", "Recollect", "Remind"],
+    "answer": "Forget"
+  },
+  {
+    "id": 365,
+    "question": "Choose the correct spelling.",
+    "options": ["Embarrass", "Embarass", "Embarras", "Embaras"],
+    "answer": "Embarrass"
+  },
+  {
+    "id": 366,
+    "question": "Meaning of 'Frequent'.",
+    "options": ["Rare", "Often", "Seldom", "Infrequent"],
+    "answer": "Often"
+  },
+  {
+    "id": 367,
+    "question": "Fill in the blank: He is not eligible ______ this post.",
+    "options": ["to", "for", "in", "by"],
+    "answer": "for"
+  },
+  {
+    "id": 368,
+    "question": "Synonym of 'Help'.",
+    "options": ["Hinder", "Assist", "Obstruct", "Block"],
+    "answer": "Assist"
+  },
+  {
+    "id": 369,
+    "question": "Antonym of 'Sour'.",
+    "options": ["Bitter", "Sweet", "Tangy", "Sharp"],
+    "answer": "Sweet"
+  },
+  {
+    "id": 370,
+    "question": "Identify the error: 'He is more taller than his brother.'",
+    "options": ["He is", "more taller", "than his", "brother"],
+    "answer": "more taller"
+  },
+  {
+    "id": 371,
+    "question": "Meaning of 'Vague'.",
+    "options": ["Clear", "Unclear", "Exact", "Precise"],
+    "answer": "Unclear"
+  },
+  {
+    "id": 372,
+    "question": "Fill in the blank: He is not interested ______ sports.",
+    "options": ["in", "for", "at", "to"],
+    "answer": "in"
+  },
+  {
+    "id": 373,
+    "question": "Synonym of 'Old'.",
+    "options": ["New", "Aged", "Young", "Modern"],
+    "answer": "Aged"
+  },
+  {
+    "id": 374,
+    "question": "Antonym of 'Open'.",
+    "options": ["Shut", "Close", "Both A and B", "Unlock"],
+    "answer": "Both A and B"
+  },
+  {
+    "id": 375,
+    "question": "Choose the correct word: 'He is a ______ person.'",
+    "options": ["kind", "kindly", "kindness", "kinder"],
+    "answer": "kind"
+  },
+  {
+    "id": 376,
+    "question": "Meaning of 'Abandon'.",
+    "options": ["Keep", "Leave", "Hold", "Retain"],
+    "answer": "Leave"
+  },
+  {
+    "id": 377,
+    "question": "Fill in the blank: He is not worthy ______ praise.",
+    "options": ["of", "for", "to", "in"],
+    "answer": "of"
+  },
+  {
+    "id": 378,
+    "question": "Synonym of 'Brave'.",
+    "options": ["Cowardly", "Fearless", "Timid", "Weak"],
+    "answer": "Fearless"
+  },
+  {
+    "id": 379,
+    "question": "Antonym of 'Soft'.",
+    "options": ["Hard", "Gentle", "Mild", "Tender"],
+    "answer": "Hard"
+  },
+  {
+    "id": 380,
+    "question": "Identify the correct passive: 'He is writing a letter.'",
+    "options": ["A letter is written by him.", "A letter is being written by him.", "A letter was written by him.", "A letter has been written."],
+    "answer": "A letter is being written by him."
+  },
+  {
+    "id": 381,
+    "question": "Meaning of 'Dull'.",
+    "options": ["Sharp", "Boring", "Interesting", "Exciting"],
+    "answer": "Boring"
+  },
+  {
+    "id": 382,
+    "question": "Fill in the blank: He is famous ______ his novels.",
+    "options": ["for", "by", "with", "in"],
+    "answer": "for"
+  },
+  {
+    "id": 383,
+    "question": "Synonym of 'Large'.",
+    "options": ["Small", "Huge", "Tiny", "Minute"],
+    "answer": "Huge"
+  },
+  {
+    "id": 384,
+    "question": "Antonym of 'Always'.",
+    "options": ["Never", "Forever", "Constantly", "Eternally"],
+    "answer": "Never"
+  },
+  {
+    "id": 385,
+    "question": "Choose the correct spelling.",
+    "options": ["Neccessary", "Necessary", "Neccesary", "Necesary"],
+    "answer": "Necessary"
+  },
+  {
+    "id": 386,
+    "question": "Meaning of 'Urgent'.",
+    "options": ["Trivial", "Pressing", "Minor", "Unimportant"],
+    "answer": "Pressing"
+  },
+  {
+    "id": 387,
+    "question": "Fill in the blank: He is related ______ me.",
+    "options": ["to", "with", "by", "from"],
+    "answer": "to"
+  },
+  {
+    "id": 388,
+    "question": "Synonym of 'Rich'.",
+    "options": ["Wealthy", "Poor", "Needy", "Destitute"],
+    "answer": "Wealthy"
+  },
+  {
+    "id": 389,
+    "question": "Antonym of 'Foolish'.",
+    "options": ["Wise", "Stupid", "Silly", "Dull"],
+    "answer": "Wise"
+  },
+  {
+    "id": 390,
+    "question": "Identify the error: 'Each of the students have a book.'",
+    "options": ["Each of", "the students", "have", "a book"],
+    "answer": "have"
+  },
+  {
+    "id": 391,
+    "question": "Meaning of 'Compassion'.",
+    "options": ["Cruelty", "Sympathy", "Indifference", "Harshness"],
+    "answer": "Sympathy"
+  },
+  {
+    "id": 392,
+    "question": "Fill in the blank: He is addicted ______ smoking.",
+    "options": ["to", "of", "for", "in"],
+    "answer": "to"
+  },
+  {
+    "id": 393,
+    "question": "Synonym of 'Quiet'.",
+    "options": ["Silent", "Noisy", "Loud", "Boisterous"],
+    "answer": "Silent"
+  },
+  {
+    "id": 394,
+    "question": "Antonym of 'Peace'.",
+    "options": ["War", "Harmony", "Tranquility", "Calm"],
+    "answer": "War"
+  },
+  {
+    "id": 395,
+    "question": "Choose the correct word: 'She is ______ to me.'",
+    "options": ["kind", "kindly", "kindness", "kinden"],
+    "answer": "kind"
+  },
+  {
+    "id": 396,
+    "question": "Meaning of 'Hesitate'.",
+    "options": ["Decide quickly", "Pause", "Act immediately", "Rush"],
+    "answer": "Pause"
+  },
+  {
+    "id": 397,
+    "question": "Fill in the blank: He is not capable ______ doing this.",
+    "options": ["to", "of", "for", "in"],
+    "answer": "of"
+  },
+  {
+    "id": 398,
+    "question": "Synonym of 'Beautiful'.",
+    "options": ["Ugly", "Attractive", "Hideous", "Plain"],
+    "answer": "Attractive"
+  },
+  {
+    "id": 399,
+    "question": "Antonym of 'Laugh'.",
+    "options": ["Smile", "Cry", "Giggle", "Chuckle"],
+    "answer": "Cry"
+  },
+  {
+    "id": 400,
+    "question": "Identify the correct sentence.",
+    "options": ["She goes to school everyday.", "She go to school everyday.", "She going to school everyday.", "She gone to school everyday."],
+    "answer": "She goes to school everyday."
+  },
+  {
+    "id": 401,
+    "question": "Meaning of 'Exhausted'.",
+    "options": ["Energetic", "Tired", "Fresh", "Lively"],
+    "answer": "Tired"
+  },
+  {
+    "id": 402,
+    "question": "Fill in the blank: He is angry ______ me.",
+    "options": ["on", "with", "at", "for"],
+    "answer": "with"
+  },
+  {
+    "id": 403,
+    "question": "Synonym of 'Cry'.",
+    "options": ["Laugh", "Weep", "Smile", "Giggle"],
+    "answer": "Weep"
+  },
+  {
+    "id": 404,
+    "question": "Antonym of 'Victory'.",
+    "options": ["Win", "Defeat", "Success", "Triumph"],
+    "answer": "Defeat"
+  },
+  {
+    "id": 405,
+    "question": "Choose the correct spelling.",
+    "options": ["Seperate", "Separate", "Seperete", "Seprate"],
+    "answer": "Separate"
+  },
+  {
+    "id": 406,
+    "question": "Meaning of 'Fragile'.",
+    "options": ["Strong", "Breakable", "Tough", "Sturdy"],
+    "answer": "Breakable"
+  },
+  {
+    "id": 407,
+    "question": "Fill in the blank: She is anxious ______ her results.",
+    "options": ["about", "for", "in", "to"],
+    "answer": "about"
+  },
+  {
+    "id": 408,
+    "question": "Synonym of 'Start'.",
+    "options": ["End", "Begin", "Finish", "Stop"],
+    "answer": "Begin"
+  },
+  {
+    "id": 409,
+    "question": "Antonym of 'Clean'.",
+    "options": ["Dirty", "Neat", "Tidy", "Pure"],
+    "answer": "Dirty"
+  },
+  {
+    "id": 410,
+    "question": "Identify the error: 'He is one of the best student in the class.'",
+    "options": ["He is", "one of", "the best student", "in the class"],
+    "answer": "the best student"
+  },
+  {
+    "id": 411,
+    "question": "Meaning of 'Artificial'.",
+    "options": ["Natural", "Man-made", "Real", "Genuine"],
+    "answer": "Man-made"
+  },
+  {
+    "id": 412,
+    "question": "Fill in the blank: He is concerned ______ his son's future.",
+    "options": ["about", "for", "with", "in"],
+    "answer": "about"
+  },
+  {
+    "id": 413,
+    "question": "Synonym of 'Rich'.",
+    "options": ["Affluent", "Poor", "Needy", "Destitute"],
+    "answer": "Affluent"
+  },
+  {
+    "id": 414,
+    "question": "Antonym of 'Broad'.",
+    "options": ["Wide", "Narrow", "Large", "Expansive"],
+    "answer": "Narrow"
+  },
+  {
+    "id": 415,
+    "question": "Choose the correct word: 'This is a ______ issue.'",
+    "options": ["complicated", "complicate", "complication", "complicating"],
+    "answer": "complicated"
+  },
+  {
+    "id": 416,
+    "question": "Meaning of 'Abrupt'.",
+    "options": ["Gradual", "Sudden", "Slow", "Expected"],
+    "answer": "Sudden"
+  },
+  {
+    "id": 417,
+    "question": "Fill in the blank: She is capable ______ handling the situation.",
+    "options": ["of", "to", "in", "for"],
+    "answer": "of"
+  },
+  {
+    "id": 418,
+    "question": "Synonym of 'Help'.",
+    "options": ["Hinder", "Assist", "Obstruct", "Block"],
+    "answer": "Assist"
+  },
+  {
+    "id": 419,
+    "question": "Antonym of 'Cruel'.",
+    "options": ["Kind", "Brutal", "Harsh", "Savage"],
+    "answer": "Kind"
+  },
+  {
+    "id": 420,
+    "question": "Identify the correct passive: 'She writes a letter.'",
+    "options": ["A letter is written by her.", "A letter was written by her.", "A letter is being written.", "A letter has been written."],
+    "answer": "A letter is written by her."
+  },
+  {
+    "id": 421,
+    "question": "Meaning of 'Eliminate'.",
+    "options": ["Include", "Remove", "Add", "Insert"],
+    "answer": "Remove"
+  },
+  {
+    "id": 422,
+    "question": "Fill in the blank: He is similar ______ his father.",
+    "options": ["to", "with", "like", "as"],
+    "answer": "to"
+  },
+  {
+    "id": 423,
+    "question": "Synonym of 'Late'.",
+    "options": ["Early", "Tardy", "Prompt", "Punctual"],
+    "answer": "Tardy"
+  },
+  {
+    "id": 424,
+    "question": "Antonym of 'Gain'.",
+    "options": ["Profit", "Loss", "Benefit", "Advantage"],
+    "answer": "Loss"
+  },
+  {
+    "id": 425,
+    "question": "Choose the correct spelling.",
+    "options": ["Maintainance", "Maintenance", "Maintenence", "Maintanance"],
+    "answer": "Maintenance"
+  },
+  {
+    "id": 426,
+    "question": "Meaning of 'Obvious'.",
+    "options": ["Hidden", "Clear", "Secret", "Concealed"],
+    "answer": "Clear"
+  },
+  {
+    "id": 427,
+    "question": "Fill in the blank: He is different ______ his brother.",
+    "options": ["than", "to", "from", "then"],
+    "answer": "from"
+  },
+  {
+    "id": 428,
+    "question": "Synonym of 'Wealthy'.",
+    "options": ["Poor", "Rich", "Needy", "Impoverished"],
+    "answer": "Rich"
+  },
+  {
+    "id": 429,
+    "question": "Antonym of 'Young'.",
+    "options": ["Old", "New", "Fresh", "Youthful"],
+    "answer": "Old"
+  },
+  {
+    "id": 430,
+    "question": "Identify the error: 'Neither of them are coming.'",
+    "options": ["Neither", "of them", "are", "coming"],
+    "answer": "are"
+  },
+  {
+    "id": 431,
+    "question": "Meaning of 'Reliable'.",
+    "options": ["Unreliable", "Dependable", "Untrustworthy", "Fickle"],
+    "answer": "Dependable"
+  },
+  {
+    "id": 432,
+    "question": "Fill in the blank: She is good ______ singing.",
+    "options": ["in", "at", "on", "for"],
+    "answer": "at"
+  },
+  {
+    "id": 433,
+    "question": "Synonym of 'Smart'.",
+    "options": ["Dull", "Intelligent", "Stupid", "Slow"],
+    "answer": "Intelligent"
+  },
+  {
+    "id": 434,
+    "question": "Antonym of 'Increase'.",
+    "options": ["Rise", "Decrease", "Grow", "Expand"],
+    "answer": "Decrease"
+  },
+  {
+    "id": 435,
+    "question": "Choose the correct word: 'She is ______ in music.'",
+    "options": ["interest", "interesting", "interested", "interests"],
+    "answer": "interested"
+  },
+  {
+    "id": 436,
+    "question": "Meaning of 'Dangerous'.",
+    "options": ["Safe", "Risky", "Secure", "Harmless"],
+    "answer": "Risky"
+  },
+  {
+    "id": 437,
+    "question": "Fill in the blank: He is not aware ______ the rules.",
+    "options": ["to", "of", "for", "with"],
+    "answer": "of"
+  },
+  {
+    "id": 438,
+    "question": "Synonym of 'Large'.",
+    "options": ["Small", "Big", "Tiny", "Minute"],
+    "answer": "Big"
+  },
+  {
+    "id": 439,
+    "question": "Antonym of 'Always'.",
+    "options": ["Never", "Forever", "Constantly", "Perpetually"],
+    "answer": "Never"
+  },
+  {
+    "id": 440,
+    "question": "Identify the correct passive: 'The boy broke the window.'",
+    "options": ["The window is broken by the boy.", "The window was broken by the boy.", "The window has been broken.", "The window is being broken."],
+    "answer": "The window was broken by the boy."
+  },
+  {
+    "id": 441,
+    "question": "Meaning of 'Urgent'.",
+    "options": ["Trivial", "Minor", "Pressing", "Unimportant"],
+    "answer": "Pressing"
+  },
+  {
+    "id": 442,
+    "question": "Fill in the blank: He is jealous ______ his friend's success.",
+    "options": ["of", "at", "with", "for"],
+    "answer": "of"
+  },
+  {
+    "id": 443,
+    "question": "Synonym of 'Strong'.",
+    "options": ["Weak", "Powerful", "Frail", "Feeble"],
+    "answer": "Powerful"
+  },
+  {
+    "id": 444,
+    "question": "Antonym of 'Rich'.",
+    "options": ["Wealthy", "Poor", "Affluent", "Prosperous"],
+    "answer": "Poor"
+  },
+  {
+    "id": 445,
+    "question": "Choose the correct spelling.",
+    "options": ["Occasion", "Ocasion", "Occassion", "Ocassion"],
+    "answer": "Occasion"
+  },
+  {
+    "id": 446,
+    "question": "Meaning of 'Contribute'.",
+    "options": ["Take", "Give", "Remove", "Withdraw"],
+    "answer": "Give"
+  },
+  {
+    "id": 447,
+    "question": "Fill in the blank: He is confident ______ his abilities.",
+    "options": ["about", "of", "in", "on"],
+    "answer": "of"
+  },
+  {
+    "id": 448,
+    "question": "Synonym of 'Finish'.",
+    "options": ["Start", "Complete", "Begin", "Initiate"],
+    "answer": "Complete"
+  },
+  {
+    "id": 449,
+    "question": "Antonym of 'Natural'.",
+    "options": ["Artificial", "Real", "Genuine", "Original"],
+    "answer": "Artificial"
+  },
+  {
+    "id": 450,
+    "question": "Identify the error: 'The poet and singer are coming.'",
+    "options": ["The poet", "and singer", "are", "coming"],
+    "answer": "are"
+  },
+  {
+    "id": 451,
+    "question": "Meaning of 'Comprehend'.",
+    "options": ["Misunderstand", "Understand", "Ignore", "Overlook"],
+    "answer": "Understand"
+  },
+  {
+    "id": 452,
+    "question": "Fill in the blank: He is not fit ______ this job.",
+    "options": ["to", "for", "in", "by"],
+    "answer": "for"
+  },
+  {
+    "id": 453,
+    "question": "Synonym of 'Fast'.",
+    "options": ["Slow", "Quick", "Lazy", "Steady"],
+    "answer": "Quick"
+  },
+  {
+    "id": 454,
+    "question": "Antonym of 'Light'.",
+    "options": ["Heavy", "Weightless", "Airy", "Floating"],
+    "answer": "Heavy"
+  },
+  {
+    "id": 455,
+    "question": "Choose the correct word: 'He is a ______ worker.'",
+    "options": ["hard", "hardly", "hardiness", "harden"],
+    "answer": "hard"
+  },
+  {
+    "id": 456,
+    "question": "Meaning of 'Abundant'.",
+    "options": ["Scarce", "Plentiful", "Rare", "Lacking"],
+    "answer": "Plentiful"
+  },
+  {
+    "id": 457,
+    "question": "Fill in the blank: He is famous ______ his honesty.",
+    "options": ["for", "by", "with", "in"],
+    "answer": "for"
+  },
+  {
+    "id": 458,
+    "question": "Synonym of 'Sad'.",
+    "options": ["Happy", "Unhappy", "Joyful", "Cheerful"],
+    "answer": "Unhappy"
+  },
+  {
+    "id": 459,
+    "question": "Antonym of 'Deep'.",
+    "options": ["Shallow", "Profound", "Bottomless", "Abyssal"],
+    "answer": "Shallow"
+  },
+  {
+    "id": 460,
+    "question": "Identify the correct sentence.",
+    "options": ["He has a two years old son.", "He has a two-year-old son.", "He has a two year old son.", "He has a two-years-old son."],
+    "answer": "He has a two-year-old son."
+  },
+  {
+    "id": 461,
+    "question": "Meaning of 'Persuade'.",
+    "options": ["Dissuade", "Convince", "Discourage", "Deter"],
+    "answer": "Convince"
+  },
+  {
+    "id": 462,
+    "question": "Fill in the blank: He is proud ______ his wealth.",
+    "options": ["for", "of", "in", "with"],
+    "answer": "of"
+  },
+  {
+    "id": 463,
+    "question": "Synonym of 'Careful'.",
+    "options": ["Careless", "Cautious", "Reckless", "Negligent"],
+    "answer": "Cautious"
+  },
+  {
+    "id": 464,
+    "question": "Antonym of 'Accept'.",
+    "options": ["Receive", "Reject", "Take", "Agree"],
+    "answer": "Reject"
+  },
+  {
+    "id": 465,
+    "question": "Choose the correct spelling.",
+    "options": ["Privilege", "Priviledge", "Privelege", "Privilige"],
+    "answer": "Privilege"
+  },
+  {
+    "id": 466,
+    "question": "Meaning of 'Genuine'.",
+    "options": ["Fake", "Real", "Artificial", "Counterfeit"],
+    "answer": "Real"
+  },
+  {
+    "id": 467,
+    "question": "Fill in the blank: He is angry ______ me.",
+    "options": ["on", "with", "at", "for"],
+    "answer": "with"
+  },
+  {
+    "id": 468,
+    "question": "Synonym of 'Quiet'.",
+    "options": ["Noisy", "Silent", "Loud", "Boisterous"],
+    "answer": "Silent"
+  },
+  {
+    "id": 469,
+    "question": "Antonym of 'Poverty'.",
+    "options": ["Wealth", "Need", "Scarcity", "Lack"],
+    "answer": "Wealth"
+  },
+  {
+    "id": 470,
+    "question": "Identify the error: 'The news are true.'",
+    "options": ["The", "news", "are", "true"],
+    "answer": "are"
+  },
+  {
+    "id": 471,
+    "question": "Meaning of 'Flexible'.",
+    "options": ["Rigid", "Bendable", "Stiff", "Hard"],
+    "answer": "Bendable"
+  },
+  {
+    "id": 472,
+    "question": "Fill in the blank: He is responsible ______ the project.",
+    "options": ["for", "to", "in", "on"],
+    "answer": "for"
+  },
+  {
+    "id": 473,
+    "question": "Synonym of 'Clean'.",
+    "options": ["Dirty", "Tidy", "Filthy", "Grubby"],
+    "answer": "Tidy"
+  },
+  {
+    "id": 474,
+    "question": "Antonym of 'Better'.",
+    "options": ["Worse", "Superior", "Finer", "Greater"],
+    "answer": "Worse"
+  },
+  {
+    "id": 475,
+    "question": "Choose the correct word: 'He is ______ to succeed.'",
+    "options": ["like", "likely", "likable", "alike"],
+    "answer": "likely"
+  },
+  {
+    "id": 476,
+    "question": "Meaning of 'Hesitant'.",
+    "options": ["Decisive", "Uncertain", "Confident", "Sure"],
+    "answer": "Uncertain"
+  },
+  {
+    "id": 477,
+    "question": "Fill in the blank: He is blessed ______ a good memory.",
+    "options": ["by", "with", "for", "in"],
+    "answer": "with"
+  },
+  {
+    "id": 478,
+    "question": "Synonym of 'Rare'.",
+    "options": ["Common", "Uncommon", "Frequent", "Regular"],
+    "answer": "Uncommon"
+  },
+  {
+    "id": 479,
+    "question": "Antonym of 'Permanent'.",
+    "options": ["Temporary", "Eternal", "Everlasting", "Perpetual"],
+    "answer": "Temporary"
+  },
+  {
+    "id": 480,
+    "question": "Identify the correct passive: 'She will help you.'",
+    "options": ["You will be helped by her.", "You are helped by her.", "You were helped by her.", "You have been helped."],
+    "answer": "You will be helped by her."
+  },
+  {
+    "id": 481,
+    "question": "Meaning of 'Cautious'.",
+    "options": ["Careless", "Careful", "Reckless", "Negligent"],
+    "answer": "Careful"
+  },
+  {
+    "id": 482,
+    "question": "Fill in the blank: He is weak ______ Mathematics.",
+    "options": ["in", "at", "on", "for"],
+    "answer": "in"
+  },
+  {
+    "id": 483,
+    "question": "Synonym of 'Clear'.",
+    "options": ["Vague", "Obvious", "Unclear", "Ambiguous"],
+    "answer": "Obvious"
+  },
+  {
+    "id": 484,
+    "question": "Antonym of 'Honest'.",
+    "options": ["Truthful", "Dishonest", "Sincere", "Genuine"],
+    "answer": "Dishonest"
+  },
+  {
+    "id": 485,
+    "question": "Choose the correct spelling.",
+    "options": ["Definitely", "Definately", "Definitley", "Definently"],
+    "answer": "Definitely"
+  },
+  {
+    "id": 486,
+    "question": "Meaning of 'Anonymous'.",
+    "options": ["Known", "Nameless", "Famous", "Renowned"],
+    "answer": "Nameless"
+  },
+  {
+    "id": 487,
+    "question": "Fill in the blank: He is strict ______ his children.",
+    "options": ["to", "with", "on", "at"],
+    "answer": "with"
+  },
+  {
+    "id": 488,
+    "question": "Synonym of 'Polite'.",
+    "options": ["Rude", "Courteous", "Impudent", "Disrespectful"],
+    "answer": "Courteous"
+  },
+  {
+    "id": 489,
+    "question": "Antonym of 'Expand'.",
+    "options": ["Shrink", "Grow", "Increase", "Enlarge"],
+    "answer": "Shrink"
+  },
+  {
+    "id": 490,
+    "question": "Identify the error: 'He is the tallest of the two brothers.'",
+    "options": ["He is", "the tallest", "of the two", "brothers"],
+    "answer": "the tallest"
+  },
+  {
+    "id": 491,
+    "question": "Meaning of 'Explicit'.",
+    "options": ["Vague", "Clear", "Ambiguous", "Unclear"],
+    "answer": "Clear"
+  },
+  {
+    "id": 492,
+    "question": "Fill in the blank: He is familiar ______ this topic.",
+    "options": ["to", "with", "of", "for"],
+    "answer": "with"
+  },
+  {
+    "id": 493,
+    "question": "Synonym of 'Dangerous'.",
+    "options": ["Safe", "Risky", "Secure", "Harmless"],
+    "answer": "Risky"
+  },
+  {
+    "id": 494,
+    "question": "Antonym of 'Friend'.",
+    "options": ["Ally", "Enemy", "Companion", "Partner"],
+    "answer": "Enemy"
+  },
+  {
+    "id": 495,
+    "question": "Choose the correct word: 'He spoke ______.'",
+    "options": ["loud", "loudly", "loudness", "louden"],
+    "answer": "loudly"
+  },
+  {
+    "id": 496,
+    "question": "Meaning of 'Relevant'.",
+    "options": ["Irrelevant", "Related", "Unrelated", "Inappropriate"],
+    "answer": "Related"
+  },
+  {
+    "id": 497,
+    "question": "Fill in the blank: He is not satisfied ______ his job.",
+    "options": ["with", "at", "for", "in"],
+    "answer": "with"
+  },
+  {
+    "id": 498,
+    "question": "Synonym of 'Famous'.",
+    "options": ["Unknown", "Renowned", "Obscure", "Anonymous"],
+    "answer": "Renowned"
+  },
+  {
+    "id": 499,
+    "question": "Antonym of 'Rise'.",
+    "options": ["Fall", "Ascend", "Climb", "Increase"],
+    "answer": "Fall"
+  },
+  {
+    "id": 500,
+    "question": "Identify the correct sentence.",
+    "options": ["She does not have any money.", "She does not have no money.", "She does not have none money.", "She does not have any moneys."],
+    "answer": "She does not have any money."
+  }
+]

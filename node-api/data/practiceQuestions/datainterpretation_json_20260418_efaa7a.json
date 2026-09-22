@@ -1,0 +1,2102 @@
+[
+  {
+    "id": 1,
+    "data_presentation": "Bar chart: Sales of products A, B, C in 2019: A=120, B=150, C=90.",
+    "question": "What is the total sales of products A and B in 2019?",
+    "options": ["210", "240", "270", "300"],
+    "answer": "270"
+  },
+  {
+    "id": 2,
+    "data_presentation": "Table: Marks of 5 students in Math and Science. Math: 85,78,92,67,89; Science: 90,82,88,70,85.",
+    "question": "What is the average Math marks?",
+    "options": ["80.2", "82.2", "84.2", "86.2"],
+    "answer": "82.2"
+  },
+  {
+    "id": 3,
+    "data_presentation": "Line graph: Population of a town from 2015-2020: 50k,55k,60k,65k,70k,75k.",
+    "question": "What is the percentage increase from 2015 to 2020?",
+    "options": ["40%", "45%", "50%", "55%"],
+    "answer": "50%"
+  },
+  {
+    "id": 4,
+    "data_presentation": "Pie chart: Expenditure on Rent=30%, Food=25%, Transport=15%, Education=20%, Others=10%.",
+    "question": "If total monthly income is ₹40,000, how much is spent on Education?",
+    "options": ["₹6,000", "₹8,000", "₹10,000", "₹12,000"],
+    "answer": "₹8,000"
+  },
+  {
+    "id": 5,
+    "data_presentation": "Table: Yearly profit (in lakhs) for company X: 2016=25, 2017=30, 2018=28, 2019=35, 2020=40.",
+    "question": "Which year had the maximum profit growth over previous year?",
+    "options": ["2017", "2018", "2019", "2020"],
+    "answer": "2019"
+  },
+  {
+    "id": 6,
+    "data_presentation": "Bar chart: Number of books read by students in 4 months: Jan=15, Feb=20, Mar=10, Apr=25.",
+    "question": "What is the ratio of books read in Feb to Apr?",
+    "options": ["4:5", "2:3", "3:4", "1:2"],
+    "answer": "4:5"
+  },
+  {
+    "id": 7,
+    "data_presentation": "Table: Production (units) of factory in 3 shifts: Morning=500, Evening=400, Night=300.",
+    "question": "What percentage of total production is Evening shift?",
+    "options": ["25%", "33.33%", "40%", "50%"],
+    "answer": "33.33%"
+  },
+  {
+    "id": 8,
+    "data_presentation": "Line graph: Temperature (°C) at 6am,12pm,6pm: 18,28,22.",
+    "question": "What is the average temperature?",
+    "options": ["20.67", "22.67", "24.67", "26.67"],
+    "answer": "22.67"
+  },
+  {
+    "id": 9,
+    "data_presentation": "Pie chart: Market share of brands: A=40%, B=30%, C=20%, D=10%.",
+    "question": "If total market size is ₹50 crore, what is A's share?",
+    "options": ["₹15 cr", "₹20 cr", "₹25 cr", "₹30 cr"],
+    "answer": "₹20 cr"
+  },
+  {
+    "id": 10,
+    "data_presentation": "Table: Employees in departments: HR=12, IT=35, Sales=28, Admin=10.",
+    "question": "How many more employees in IT than Sales?",
+    "options": ["5", "7", "9", "11"],
+    "answer": "7"
+  },
+  {
+    "id": 11,
+    "data_presentation": "Bar chart: Monthly savings (₹) of a person: Jan=2000, Feb=2500, Mar=1800, Apr=2200.",
+    "question": "What is the total savings in these 4 months?",
+    "options": ["₹8,000", "₹8,200", "₹8,500", "₹9,000"],
+    "answer": "₹8,500"
+  },
+  {
+    "id": 12,
+    "data_presentation": "Line graph: Website visitors per day: Mon=120, Tue=150, Wed=130, Thu=170, Fri=160.",
+    "question": "What is the median number of visitors?",
+    "options": ["130", "150", "160", "170"],
+    "answer": "150"
+  },
+  {
+    "id": 13,
+    "data_presentation": "Pie chart: Time spent on activities: Work=40%, Sleep=30%, Leisure=20%, Others=10%.",
+    "question": "If a day has 24 hours, how many hours for Leisure?",
+    "options": ["2.4", "4.8", "6", "7.2"],
+    "answer": "4.8"
+  },
+  {
+    "id": 14,
+    "data_presentation": "Table: Scores of team in 5 matches: 220, 180, 250, 200, 190.",
+    "question": "What is the range of scores?",
+    "options": ["50", "60", "70", "80"],
+    "answer": "70"
+  },
+  {
+    "id": 15,
+    "data_presentation": "Bar chart: Number of cars sold by 3 showrooms: Showroom1=45, Showroom2=60, Showroom3=35.",
+    "question": "What fraction of total sales is Showroom2?",
+    "options": ["3/7", "2/5", "3/8", "1/3"],
+    "answer": "3/7"
+  },
+  {
+    "id": 16,
+    "data_presentation": "Line graph: Gold price (₹/g) in 5 months: 4500,4600,4550,4700,4800.",
+    "question": "What is the percentage increase from first to last month?",
+    "options": ["5.56%", "6.67%", "7.78%", "8.89%"],
+    "answer": "6.67%"
+  },
+  {
+    "id": 17,
+    "data_presentation": "Pie chart: Distribution of 500 students in streams: Science=40%, Commerce=30%, Arts=20%, Others=10%.",
+    "question": "How many students in Commerce?",
+    "options": ["100", "120", "150", "180"],
+    "answer": "150"
+  },
+  {
+    "id": 18,
+    "data_presentation": "Table: Monthly expenditure of a family: Rent=12000, Grocery=5000, Utilities=3000, Transport=2000.",
+    "question": "What is the total monthly expenditure?",
+    "options": ["₹20,000", "₹22,000", "₹24,000", "₹26,000"],
+    "answer": "₹22,000"
+  },
+  {
+    "id": 19,
+    "data_presentation": "Bar chart: Rainfall (mm) in 3 cities: City A=120, City B=80, City C=100.",
+    "question": "What is the average rainfall?",
+    "options": ["90", "100", "110", "120"],
+    "answer": "100"
+  },
+  {
+    "id": 20,
+    "data_presentation": "Line graph: Unemployment rate (%) in years: 2015=5, 2016=4.5, 2017=4.8, 2018=5.2, 2019=4.9.",
+    "question": "In which year was unemployment lowest?",
+    "options": ["2015", "2016", "2017", "2018"],
+    "answer": "2016"
+  },
+  {
+    "id": 21,
+    "data_presentation": "Table: Number of students in 4 classes: Class A=40, B=35, C=45, D=30.",
+    "question": "What is the difference between highest and lowest strength?",
+    "options": ["10", "12", "15", "18"],
+    "answer": "15"
+  },
+  {
+    "id": 22,
+    "data_presentation": "Pie chart: Savings distribution: FD=50%, Stocks=30%, Gold=15%, Cash=5%.",
+    "question": "If total savings is ₹2 lakh, amount in Stocks?",
+    "options": ["₹40,000", "₹50,000", "₹60,000", "₹70,000"],
+    "answer": "₹60,000"
+  },
+  {
+    "id": 23,
+    "data_presentation": "Bar chart: Monthly sales (units): Jan=500, Feb=600, Mar=550, Apr=650.",
+    "question": "Which month had maximum sales?",
+    "options": ["Jan", "Feb", "Mar", "Apr"],
+    "answer": "Apr"
+  },
+  {
+    "id": 24,
+    "data_presentation": "Line graph: Distance traveled (km) on 5 days: 10,15,12,18,20.",
+    "question": "What is the average distance per day?",
+    "options": ["13", "14", "15", "16"],
+    "answer": "15"
+  },
+  {
+    "id": 25,
+    "data_presentation": "Table: Runs scored by batsman in 6 innings: 45, 60, 30, 75, 50, 40.",
+    "question": "What is the median score?",
+    "options": ["45", "47.5", "50", "52.5"],
+    "answer": "47.5"
+  },
+  {
+    "id": 26,
+    "data_presentation": "Pie chart: Expenses in a company: Salaries=45%, Marketing=25%, Rent=20%, Misc=10%.",
+    "question": "If total expenses are ₹80 lakh, what is Marketing expense?",
+    "options": ["₹16 lakh", "₹18 lakh", "₹20 lakh", "₹22 lakh"],
+    "answer": "₹20 lakh"
+  },
+  {
+    "id": 27,
+    "data_presentation": "Bar chart: Number of complaints in 5 months: 25,30,20,35,28.",
+    "question": "What is the total complaints?",
+    "options": ["128", "138", "148", "158"],
+    "answer": "138"
+  },
+  {
+    "id": 28,
+    "data_presentation": "Line graph: Stock price (₹) over 5 days: 100,105,102,108,110.",
+    "question": "What is the percentage increase from day1 to day5?",
+    "options": ["8%", "9%", "10%", "11%"],
+    "answer": "10%"
+  },
+  {
+    "id": 29,
+    "data_presentation": "Table: Population (in thousands) of 3 towns: Town X=80, Y=120, Z=100.",
+    "question": "What is the ratio of X to Z?",
+    "options": ["3:4", "4:5", "5:6", "2:3"],
+    "answer": "4:5"
+  },
+  {
+    "id": 30,
+    "data_presentation": "Pie chart: Time spent by student: Study=6hrs, Sleep=8hrs, Leisure=4hrs, Others=6hrs.",
+    "question": "What percentage of day is spent on Study?",
+    "options": ["20%", "25%", "30%", "35%"],
+    "answer": "25%"
+  },
+  {
+    "id": 31,
+    "data_presentation": "Bar chart: Production of steel (tons) in 4 quarters: Q1=200, Q2=220, Q3=210, Q4=230.",
+    "question": "What is the average production per quarter?",
+    "options": ["210", "215", "220", "225"],
+    "answer": "215"
+  },
+  {
+    "id": 32,
+    "data_presentation": "Line graph: Number of tourists (thousands) in 6 months: 50,55,60,65,70,75.",
+    "question": "What is the total tourists?",
+    "options": ["375k", "380k", "385k", "390k"],
+    "answer": "375k"
+  },
+  {
+    "id": 33,
+    "data_presentation": "Table: Marks of 3 subjects for 2 students: Student1: Math=80, Sci=85, Eng=75; Student2: Math=70, Sci=90, Eng=80.",
+    "question": "Who has higher total marks?",
+    "options": ["Student1", "Student2", "Both equal", "Cannot determine"],
+    "answer": "Student2"
+  },
+  {
+    "id": 34,
+    "data_presentation": "Pie chart: Share of different fruits in a basket: Apples=30%, Oranges=25%, Bananas=20%, Grapes=15%, Others=10%.",
+    "question": "If there are 200 fruits, how many oranges?",
+    "options": ["40", "50", "60", "70"],
+    "answer": "50"
+  },
+  {
+    "id": 35,
+    "data_presentation": "Bar chart: Monthly salary of employees: A=25k, B=30k, C=22k, D=28k.",
+    "question": "What is the average salary?",
+    "options": ["25k", "26.25k", "27.5k", "28.75k"],
+    "answer": "26.25k"
+  },
+  {
+    "id": 36,
+    "data_presentation": "Line graph: Inflation rate over years: 2016=6%, 2017=5.5%, 2018=5%, 2019=4.8%, 2020=5.2%.",
+    "question": "What is the trend from 2016 to 2019?",
+    "options": ["Increasing", "Decreasing", "Constant", "Fluctuating"],
+    "answer": "Decreasing"
+  },
+  {
+    "id": 37,
+    "data_presentation": "Table: Number of mobiles sold by 3 companies: Nokia=1500, Samsung=2000, Apple=1200.",
+    "question": "What is the total sold?",
+    "options": ["4500", "4600", "4700", "4800"],
+    "answer": "4700"
+  },
+  {
+    "id": 38,
+    "data_presentation": "Pie chart: Expenditure of a student: Food=40%, Rent=30%, Travel=15%, Books=10%, Others=5%.",
+    "question": "If total expenditure is ₹10,000, how much on Books?",
+    "options": ["₹500", "₹1000", "₹1500", "₹2000"],
+    "answer": "₹1000"
+  },
+  {
+    "id": 39,
+    "data_presentation": "Bar chart: Number of pages read per day: Mon=30, Tue=40, Wed=35, Thu=50, Fri=45.",
+    "question": "What is the average pages per day?",
+    "options": ["38", "40", "42", "44"],
+    "answer": "40"
+  },
+  {
+    "id": 40,
+    "data_presentation": "Line graph: Profit (₹ lakh) over 4 years: 2017=12, 2018=15, 2019=18, 2020=20.",
+    "question": "What is the annual growth rate from 2017 to 2020 (approx)?",
+    "options": ["16.67%", "18.33%", "20%", "22.5%"],
+    "answer": "18.33%"
+  },
+  {
+    "id": 41,
+    "data_presentation": "Table: Number of medals won by 3 countries: USA=45, China=38, Russia=30.",
+    "question": "What is the percentage of USA medals out of total?",
+    "options": ["38.5%", "39.8%", "41.2%", "42.5%"],
+    "answer": "39.8%"
+  },
+  {
+    "id": 42,
+    "data_presentation": "Pie chart: Distribution of 3600 employees in departments: IT=25%, HR=15%, Sales=30%, Admin=20%, Others=10%.",
+    "question": "How many in Sales?",
+    "options": ["900", "1080", "1200", "1500"],
+    "answer": "1080"
+  },
+  {
+    "id": 43,
+    "data_presentation": "Bar chart: Energy consumption (kWh) in 5 months: 300,350,400,380,420.",
+    "question": "What is the median consumption?",
+    "options": ["350", "380", "400", "420"],
+    "answer": "380"
+  },
+  {
+    "id": 44,
+    "data_presentation": "Line graph: Revenue ($) of a startup: Month1=5000, M2=7000, M3=6000, M4=8000, M5=7500.",
+    "question": "What is the average revenue?",
+    "options": ["6700", "6800", "6900", "7000"],
+    "answer": "6700"
+  },
+  {
+    "id": 45,
+    "data_presentation": "Table: Scores of 4 teams: Team1=85, Team2=92, Team3=78, Team4=88.",
+    "question": "What is the difference between highest and lowest?",
+    "options": ["10", "12", "14", "16"],
+    "answer": "14"
+  },
+  {
+    "id": 46,
+    "data_presentation": "Pie chart: Budget allocation: Infrastructure=35%, Health=25%, Education=20%, Defense=15%, Others=5%.",
+    "question": "If total budget is ₹2000 crore, how much on Education?",
+    "options": ["300 cr", "350 cr", "400 cr", "450 cr"],
+    "answer": "400 cr"
+  },
+  {
+    "id": 47,
+    "data_presentation": "Bar chart: Number of new customers per month: Jan=80, Feb=100, Mar=90, Apr=110, May=95.",
+    "question": "Which month had highest growth over previous month?",
+    "options": ["Jan", "Feb", "Mar", "Apr"],
+    "answer": "Feb"
+  },
+  {
+    "id": 48,
+    "data_presentation": "Line graph: Rainfall (cm) in 4 cities: City1=15, City2=20, City3=12, City4=18.",
+    "question": "What is the total rainfall?",
+    "options": ["55", "60", "65", "70"],
+    "answer": "65"
+  },
+  {
+    "id": 49,
+    "data_presentation": "Table: Number of students in 3 colleges: College A=500, B=600, C=450.",
+    "question": "What is the average strength?",
+    "options": ["500", "516.67", "525", "533.33"],
+    "answer": "516.67"
+  },
+  {
+    "id": 50,
+    "data_presentation": "Pie chart: Market share of 4 companies: P=35%, Q=25%, R=20%, S=20%.",
+    "question": "If total sales is ₹80 crore, what is P's sales?",
+    "options": ["24 cr", "26 cr", "28 cr", "30 cr"],
+    "answer": "28 cr"
+  },
+  {
+    "id": 51,
+    "data_presentation": "Bar chart: Number of hours studied by 5 students: 4,5,3,6,4.5.",
+    "question": "What is the mode?",
+    "options": ["3", "4", "4.5", "5"],
+    "answer": "4"
+  },
+  {
+    "id": 52,
+    "data_presentation": "Line graph: Price of petrol (₹/L) over 6 months: 72,74,76,75,78,80.",
+    "question": "What is the percentage increase from month1 to month6?",
+    "options": ["9.09%", "10.11%", "11.11%", "12.12%"],
+    "answer": "11.11%"
+  },
+  {
+    "id": 53,
+    "data_presentation": "Table: Runs conceded by bowler in 4 overs: 6,4,8,2.",
+    "question": "What is the average runs per over?",
+    "options": ["4", "5", "6", "7"],
+    "answer": "5"
+  },
+  {
+    "id": 54,
+    "data_presentation": "Pie chart: Sources of income: Salary=60%, Freelance=25%, Investment=10%, Other=5%.",
+    "question": "If total income is ₹1,00,000, what is Freelance income?",
+    "options": ["₹20,000", "₹25,000", "₹30,000", "₹35,000"],
+    "answer": "₹25,000"
+  },
+  {
+    "id": 55,
+    "data_presentation": "Bar chart: Number of items produced in 3 shifts: Shift1=400, Shift2=450, Shift3=350.",
+    "question": "What fraction of total is Shift3?",
+    "options": ["7/24", "1/3", "5/12", "3/8"],
+    "answer": "7/24"
+  },
+  {
+    "id": 56,
+    "data_presentation": "Line graph: Temperature (°F) over 5 days: 68,70,72,69,71.",
+    "question": "What is the median temperature?",
+    "options": ["68", "69", "70", "71"],
+    "answer": "70"
+  },
+  {
+    "id": 57,
+    "data_presentation": "Table: Number of tickets sold for 3 movies: Movie1=1200, Movie2=1500, Movie3=900.",
+    "question": "How many more tickets for Movie2 than Movie3?",
+    "options": ["300", "400", "500", "600"],
+    "answer": "600"
+  },
+  {
+    "id": 58,
+    "data_presentation": "Pie chart: Time spent on apps: Social media=35%, Games=20%, Study=25%, Others=20%.",
+    "question": "If total time is 5 hours, time on Study?",
+    "options": ["1 hr", "1.25 hr", "1.5 hr", "1.75 hr"],
+    "answer": "1.25 hr"
+  },
+  {
+    "id": 59,
+    "data_presentation": "Bar chart: Monthly profit ($) of a store: Jan=2000, Feb=2500, Mar=2200, Apr=2800.",
+    "question": "What is the total profit?",
+    "options": ["9000", "9500", "10000", "10500"],
+    "answer": "9500"
+  },
+  {
+    "id": 60,
+    "data_presentation": "Line graph: Website bounce rate (%) over 4 weeks: 45,42,40,38.",
+    "question": "What is the improvement from week1 to week4?",
+    "options": ["5%", "6%", "7%", "8%"],
+    "answer": "7%"
+  },
+  {
+    "id": 61,
+    "data_presentation": "Table: Number of goals scored in 5 matches: 2,3,1,4,2.",
+    "question": "What is the mode?",
+    "options": ["1", "2", "3", "4"],
+    "answer": "2"
+  },
+  {
+    "id": 62,
+    "data_presentation": "Pie chart: Expenses of a company: Production=50%, Marketing=20%, R&D=15%, Admin=10%, Others=5%.",
+    "question": "If R&D expense is ₹30 lakh, what is total expense?",
+    "options": ["150 lakh", "180 lakh", "200 lakh", "220 lakh"],
+    "answer": "200 lakh"
+  },
+  {
+    "id": 63,
+    "data_presentation": "Bar chart: Number of trees planted in 4 years: 2016=100, 2017=120, 2018=130, 2019=150.",
+    "question": "What is the average number planted?",
+    "options": ["120", "125", "130", "135"],
+    "answer": "125"
+  },
+  {
+    "id": 64,
+    "data_presentation": "Line graph: Sales (in thousands) over 6 months: 20,25,22,28,30,32.",
+    "question": "What is the range?",
+    "options": ["10", "12", "14", "16"],
+    "answer": "12"
+  },
+  {
+    "id": 65,
+    "data_presentation": "Table: Marks of 5 students: 88,76,92,84,70.",
+    "question": "What is the average?",
+    "options": ["80", "82", "84", "86"],
+    "answer": "82"
+  },
+  {
+    "id": 66,
+    "data_presentation": "Pie chart: Share of electricity sources: Coal=55%, Hydro=20%, Solar=15%, Wind=10%.",
+    "question": "If total generation is 500 MW, what is Solar?",
+    "options": ["50 MW", "60 MW", "75 MW", "100 MW"],
+    "answer": "75 MW"
+  },
+  {
+    "id": 67,
+    "data_presentation": "Bar chart: Number of students in sports: Cricket=40, Football=35, Basketball=25, Tennis=20.",
+    "question": "What is the ratio of Cricket to Basketball?",
+    "options": ["5:3", "8:5", "3:2", "4:3"],
+    "answer": "8:5"
+  },
+  {
+    "id": 68,
+    "data_presentation": "Line graph: Unemployment rate (%) in 4 quarters: Q1=7.5, Q2=7.2, Q3=7.8, Q4=7.4.",
+    "question": "Which quarter had highest unemployment?",
+    "options": ["Q1", "Q2", "Q3", "Q4"],
+    "answer": "Q3"
+  },
+  {
+    "id": 69,
+    "data_presentation": "Table: Monthly saving of a person: Jan=5000, Feb=4500, Mar=5500, Apr=6000.",
+    "question": "What is the average saving?",
+    "options": ["5000", "5250", "5500", "5750"],
+    "answer": "5250"
+  },
+  {
+    "id": 70,
+    "data_presentation": "Pie chart: Distribution of 1000 people by age: 0-18=20%, 19-30=30%, 31-50=35%, 51+=15%.",
+    "question": "How many are in 19-30 age group?",
+    "options": ["200", "250", "300", "350"],
+    "answer": "300"
+  },
+  {
+    "id": 71,
+    "data_presentation": "Bar chart: Number of emails received per day: Mon=45, Tue=50, Wed=40, Thu=55, Fri=60.",
+    "question": "What is the total for Mon to Fri?",
+    "options": ["240", "250", "260", "270"],
+    "answer": "250"
+  },
+  {
+    "id": 72,
+    "data_presentation": "Line graph: Price of gold over 5 months: 46000,47000,46500,48000,49000.",
+    "question": "What is the percentage increase from month1 to month5?",
+    "options": ["5.5%", "6.52%", "7.2%", "8.0%"],
+    "answer": "6.52%"
+  },
+  {
+    "id": 73,
+    "data_presentation": "Table: Number of defective items in 5 batches: 5,3,7,4,6.",
+    "question": "What is the median?",
+    "options": ["4", "5", "6", "7"],
+    "answer": "5"
+  },
+  {
+    "id": 74,
+    "data_presentation": "Pie chart: Time spent on chores: Cooking=25%, Cleaning=20%, Laundry=15%, Shopping=10%, Others=30%.",
+    "question": "If total time is 8 hours, time on Cleaning?",
+    "options": ["1.2 hr", "1.4 hr", "1.6 hr", "1.8 hr"],
+    "answer": "1.6 hr"
+  },
+  {
+    "id": 75,
+    "data_presentation": "Bar chart: Sales of 3 products: P1=320, P2=280, P3=400.",
+    "question": "What is the total sales?",
+    "options": ["900", "950", "1000", "1050"],
+    "answer": "1000"
+  },
+  {
+    "id": 76,
+    "data_presentation": "Line graph: Monthly visitors to a website: Jan=1000, Feb=1200, Mar=1100, Apr=1300, May=1250.",
+    "question": "What is the average?",
+    "options": ["1150", "1170", "1190", "1210"],
+    "answer": "1170"
+  },
+  {
+    "id": 77,
+    "data_presentation": "Table: Population of 5 cities (lakhs): 15,20,12,18,22.",
+    "question": "What is the range?",
+    "options": ["8", "9", "10", "11"],
+    "answer": "10"
+  },
+  {
+    "id": 78,
+    "data_presentation": "Pie chart: Expenses of a student: Rent=50%, Food=20%, Travel=15%, Books=10%, Misc=5%.",
+    "question": "If rent is ₹10,000, what is total expense?",
+    "options": ["₹15,000", "₹18,000", "₹20,000", "₹25,000"],
+    "answer": "₹20,000"
+  },
+  {
+    "id": 79,
+    "data_presentation": "Bar chart: Number of books in library: Fiction=300, Non-fiction=250, Science=200, Arts=150.",
+    "question": "What is the total?",
+    "options": ["800", "850", "900", "950"],
+    "answer": "900"
+  },
+  {
+    "id": 80,
+    "data_presentation": "Line graph: Temperature in 4 cities: 30°C,35°C,28°C,32°C.",
+    "question": "What is the average?",
+    "options": ["30", "31.25", "32.5", "33.75"],
+    "answer": "31.25"
+  },
+  {
+    "id": 81,
+    "data_presentation": "Table: Number of accidents in 6 months: 8,5,7,6,9,4.",
+    "question": "What is the median?",
+    "options": ["6", "6.5", "7", "7.5"],
+    "answer": "6.5"
+  },
+  {
+    "id": 82,
+    "data_presentation": "Pie chart: Market share of 5 brands: A=28%, B=22%, C=18%, D=17%, E=15%.",
+    "question": "What is the difference between A and E?",
+    "options": ["10%", "11%", "12%", "13%"],
+    "answer": "13%"
+  },
+  {
+    "id": 83,
+    "data_presentation": "Bar chart: Production of cars in 4 quarters: 250,300,280,320.",
+    "question": "What is the total production?",
+    "options": ["1050", "1100", "1150", "1200"],
+    "answer": "1150"
+  },
+  {
+    "id": 84,
+    "data_presentation": "Line graph: Revenue growth over 5 years: 5%,6%,7%,8%,9%.",
+    "question": "What is the average growth?",
+    "options": ["6%", "7%", "8%", "9%"],
+    "answer": "7%"
+  },
+  {
+    "id": 85,
+    "data_presentation": "Table: Scores of 3 players: Player1=120, Player2=135, Player3=110.",
+    "question": "Who scored highest?",
+    "options": ["Player1", "Player2", "Player3", "All equal"],
+    "answer": "Player2"
+  },
+  {
+    "id": 86,
+    "data_presentation": "Pie chart: Land usage: Agriculture=45%, Forest=25%, Urban=20%, Water=10%.",
+    "question": "If total land is 1000 sq km, urban land?",
+    "options": ["150 sq km", "180 sq km", "200 sq km", "250 sq km"],
+    "answer": "200 sq km"
+  },
+  {
+    "id": 87,
+    "data_presentation": "Bar chart: Number of students in 3 sections: Section A=50, B=45, C=55.",
+    "question": "What is the average per section?",
+    "options": ["48", "50", "52", "54"],
+    "answer": "50"
+  },
+  {
+    "id": 88,
+    "data_presentation": "Line graph: Number of covid cases per day: 100,120,110,130,125.",
+    "question": "What is the range?",
+    "options": ["20", "25", "30", "35"],
+    "answer": "30"
+  },
+  {
+    "id": 89,
+    "data_presentation": "Table: Salary of 4 employees: 25000,30000,28000,35000.",
+    "question": "What is the average?",
+    "options": ["28000", "29000", "29500", "30000"],
+    "answer": "29500"
+  },
+  {
+    "id": 90,
+    "data_presentation": "Pie chart: Types of waste: Plastic=40%, Paper=30%, Glass=20%, Metal=10%.",
+    "question": "If total waste is 500 kg, plastic waste?",
+    "options": ["150 kg", "200 kg", "250 kg", "300 kg"],
+    "answer": "200 kg"
+  },
+  {
+    "id": 91,
+    "data_presentation": "Bar chart: Monthly electricity bill (₹): Jan=1500, Feb=1800, Mar=1600, Apr=2000.",
+    "question": "What is the average bill?",
+    "options": ["1625", "1650", "1675", "1725"],
+    "answer": "1725"
+  },
+  {
+    "id": 92,
+    "data_presentation": "Line graph: Number of subscribers (thousands) over 6 months: 10,12,15,14,16,18.",
+    "question": "What is the total growth from month1 to month6?",
+    "options": ["6k", "7k", "8k", "9k"],
+    "answer": "8k"
+  },
+  {
+    "id": 93,
+    "data_presentation": "Table: Marks in 3 subjects for 2 students: Student A: 70,80,90; Student B: 85,75,95.",
+    "question": "Who has higher average?",
+    "options": ["Student A", "Student B", "Both equal", "Cannot say"],
+    "answer": "Student B"
+  },
+  {
+    "id": 94,
+    "data_presentation": "Pie chart: Distribution of 1500 students in clubs: Music=30%, Dance=25%, Drama=20%, Sports=15%, Art=10%.",
+    "question": "How many in Drama?",
+    "options": ["200", "250", "300", "350"],
+    "answer": "300"
+  },
+  {
+    "id": 95,
+    "data_presentation": "Bar chart: Number of computers sold in 4 weeks: 15,20,18,22.",
+    "question": "What is the total?",
+    "options": ["70", "75", "80", "85"],
+    "answer": "75"
+  },
+  {
+    "id": 96,
+    "data_presentation": "Line graph: Interest rate over 5 years: 8%,7.5%,7%,6.5%,6%.",
+    "question": "What is the total decrease?",
+    "options": ["1%", "1.5%", "2%", "2.5%"],
+    "answer": "2%"
+  },
+  {
+    "id": 97,
+    "data_presentation": "Table: Number of hours worked by 5 employees: 40,45,38,42,50.",
+    "question": "What is the median?",
+    "options": ["40", "41", "42", "43"],
+    "answer": "42"
+  },
+  {
+    "id": 98,
+    "data_presentation": "Pie chart: Source of water: Ground=60%, River=25%, Lake=10%, Rain=5%.",
+    "question": "If total water is 800 million liters, river water?",
+    "options": ["150 million", "180 million", "200 million", "250 million"],
+    "answer": "200 million"
+  },
+  {
+    "id": 99,
+    "data_presentation": "Bar chart: Number of employees in 4 branches: 120,150,130,160.",
+    "question": "What is the average?",
+    "options": ["135", "140", "145", "150"],
+    "answer": "140"
+  },
+  {
+    "id": 100,
+    "data_presentation": "Line graph: Profit margin over 4 quarters: 20%,22%,21%,23%.",
+    "question": "Which quarter had highest margin?",
+    "options": ["Q1", "Q2", "Q3", "Q4"],
+    "answer": "Q4"
+  },
+  {
+    "id": 101,
+    "data_presentation": "Table: Number of students in 5 grades: 50,60,55,65,70.",
+    "question": "What is the total?",
+    "options": ["290", "300", "310", "320"],
+    "answer": "300"
+  },
+  {
+    "id": 102,
+    "data_presentation": "Pie chart: Percentage of people using transport: Car=40%, Bus=35%, Bike=15%, Walk=10%.",
+    "question": "If total people=2000, how many use Car?",
+    "options": ["600", "700", "800", "900"],
+    "answer": "800"
+  },
+  {
+    "id": 103,
+    "data_presentation": "Bar chart: Monthly savings of a family: Jan=3000, Feb=3500, Mar=2800, Apr=4000.",
+    "question": "What is the average?",
+    "options": ["3225", "3325", "3425", "3525"],
+    "answer": "3325"
+  },
+  {
+    "id": 104,
+    "data_presentation": "Line graph: Number of new products launched: 2017=8,2018=10,2019=12,2020=15.",
+    "question": "What is the increase from 2017 to 2020?",
+    "options": ["5", "6", "7", "8"],
+    "answer": "7"
+  },
+  {
+    "id": 105,
+    "data_presentation": "Table: Runs in 5 innings: 50,45,60,55,40.",
+    "question": "What is the average?",
+    "options": ["48", "50", "52", "54"],
+    "answer": "50"
+  },
+  {
+    "id": 106,
+    "data_presentation": "Pie chart: Budget allocation for departments: R&D=40%, Sales=30%, Marketing=20%, HR=10%.",
+    "question": "If total budget is ₹500 crore, Marketing budget?",
+    "options": ["₹80 cr", "₹100 cr", "₹120 cr", "₹150 cr"],
+    "answer": "₹100 cr"
+  },
+  {
+    "id": 107,
+    "data_presentation": "Bar chart: Number of visitors to museum: Mon=200, Tue=250, Wed=180, Thu=220, Fri=300.",
+    "question": "What is the range?",
+    "options": ["80", "100", "120", "140"],
+    "answer": "120"
+  },
+  {
+    "id": 108,
+    "data_presentation": "Line graph: Price of oil ($/barrel) over 6 months: 60,62,58,65,70,68.",
+    "question": "What is the median?",
+    "options": ["62", "63", "64", "65"],
+    "answer": "63"
+  },
+  {
+    "id": 109,
+    "data_presentation": "Table: Number of employees in 3 shifts: Morning=80, Evening=70, Night=50.",
+    "question": "What is the ratio of Morning to Night?",
+    "options": ["8:5", "5:3", "3:2", "4:3"],
+    "answer": "8:5"
+  },
+  {
+    "id": 110,
+    "data_presentation": "Pie chart: Distribution of 5000 votes among 4 candidates: A=45%, B=30%, C=15%, D=10%.",
+    "question": "How many votes did B get?",
+    "options": ["1200", "1300", "1400", "1500"],
+    "answer": "1500"
+  },
+  {
+    "id": 111,
+    "data_presentation": "Bar chart: Number of calls received per day: Mon=50, Tue=45, Wed=60, Thu=55, Fri=65.",
+    "question": "What is the average?",
+    "options": ["53", "54", "55", "56"],
+    "answer": "55"
+  },
+  {
+    "id": 112,
+    "data_presentation": "Line graph: GDP growth rate over 5 years: 6.5,7.0,7.2,6.8,7.5.",
+    "question": "What is the range?",
+    "options": ["0.7", "0.8", "0.9", "1.0"],
+    "answer": "1.0"
+  },
+  {
+    "id": 113,
+    "data_presentation": "Table: Number of pages in 5 books: 200,250,180,220,300.",
+    "question": "What is the total?",
+    "options": ["1100", "1150", "1200", "1250"],
+    "answer": "1150"
+  },
+  {
+    "id": 114,
+    "data_presentation": "Pie chart: Time spent on internet: Social=40%, Work=35%, Entertainment=15%, Study=10%.",
+    "question": "If total time is 4 hours, time on Work?",
+    "options": ["1.2 hr", "1.4 hr", "1.6 hr", "1.8 hr"],
+    "answer": "1.4 hr"
+  },
+  {
+    "id": 115,
+    "data_presentation": "Bar chart: Number of students in 4 schools: 300,450,400,350.",
+    "question": "What is the average?",
+    "options": ["350", "375", "400", "425"],
+    "answer": "375"
+  },
+  {
+    "id": 116,
+    "data_presentation": "Line graph: Inflation rate over 4 years: 5.5,5.0,4.5,4.0.",
+    "question": "What is the total decrease?",
+    "options": ["1.0%", "1.2%", "1.5%", "2.0%"],
+    "answer": "1.5%"
+  },
+  {
+    "id": 117,
+    "data_presentation": "Table: Marks of 4 students: 85,90,78,92.",
+    "question": "What is the median?",
+    "options": ["85", "86", "87.5", "88"],
+    "answer": "87.5"
+  },
+  {
+    "id": 118,
+    "data_presentation": "Pie chart: Share of expenses: Food=35%, Rent=25%, Transport=20%, Others=20%.",
+    "question": "If total expense is ₹40,000, what is Food expense?",
+    "options": ["₹12,000", "₹14,000", "₹16,000", "₹18,000"],
+    "answer": "₹14,000"
+  },
+  {
+    "id": 119,
+    "data_presentation": "Bar chart: Number of hours studied per day: 3,4,2,5,4.",
+    "question": "What is the mode?",
+    "options": ["2", "3", "4", "5"],
+    "answer": "4"
+  },
+  {
+    "id": 120,
+    "data_presentation": "Line graph: Number of patients in a clinic: Mon=30, Tue=25, Wed=35, Thu=40, Fri=45.",
+    "question": "What is the total?",
+    "options": ["165", "170", "175", "180"],
+    "answer": "175"
+  },
+  {
+    "id": 121,
+    "data_presentation": "Table: Number of chairs in 5 rooms: 10,12,8,15,9.",
+    "question": "What is the range?",
+    "options": ["5", "6", "7", "8"],
+    "answer": "7"
+  },
+  {
+    "id": 122,
+    "data_presentation": "Pie chart: Distribution of 8000 employees by department: IT=25%, HR=15%, Sales=35%, Admin=25%.",
+    "question": "How many in Sales?",
+    "options": ["2000", "2400", "2800", "3200"],
+    "answer": "2800"
+  },
+  {
+    "id": 123,
+    "data_presentation": "Bar chart: Number of cars in 3 cities: City1=500, City2=700, City3=600.",
+    "question": "What is the average?",
+    "options": ["500", "550", "600", "650"],
+    "answer": "600"
+  },
+  {
+    "id": 124,
+    "data_presentation": "Line graph: Daily sales ($): 100,120,110,130,125.",
+    "question": "What is the median?",
+    "options": ["110", "115", "120", "125"],
+    "answer": "120"
+  },
+  {
+    "id": 125,
+    "data_presentation": "Table: Scores of 5 players: 150,180,170,160,190.",
+    "question": "What is the total?",
+    "options": ["800", "820", "840", "850"],
+    "answer": "850"
+  },
+  {
+    "id": 126,
+    "data_presentation": "Pie chart: Distribution of 6000 kg of waste: Organic=40%, Plastic=30%, Paper=20%, Metal=10%.",
+    "question": "How much Plastic?",
+    "options": ["1200 kg", "1500 kg", "1800 kg", "2000 kg"],
+    "answer": "1800 kg"
+  },
+  {
+    "id": 127,
+    "data_presentation": "Bar chart: Number of students in 3 courses: Math=40, Physics=35, Chemistry=45.",
+    "question": "What is the ratio of Physics to Math?",
+    "options": ["7:8", "8:9", "9:10", "5:6"],
+    "answer": "7:8"
+  },
+  {
+    "id": 128,
+    "data_presentation": "Line graph: Population of a village (thousands): 2010=5, 2012=5.5, 2014=6, 2016=6.5, 2018=7.",
+    "question": "What is the increase from 2010 to 2018?",
+    "options": ["1.5k", "2k", "2.5k", "3k"],
+    "answer": "2k"
+  },
+  {
+    "id": 129,
+    "data_presentation": "Table: Number of trees in 4 parks: 50,70,60,80.",
+    "question": "What is the average?",
+    "options": ["60", "65", "70", "75"],
+    "answer": "65"
+  },
+  {
+    "id": 130,
+    "data_presentation": "Pie chart: Percentage of total sales by 4 products: P1=40%, P2=25%, P3=20%, P4=15%.",
+    "question": "If total sales = ₹2000, what is P2 sales?",
+    "options": ["₹400", "₹500", "₹600", "₹700"],
+    "answer": "₹500"
+  },
+  {
+    "id": 131,
+    "data_presentation": "Bar chart: Number of laptops sold in 4 months: 30,45,35,50.",
+    "question": "What is the total?",
+    "options": ["150", "155", "160", "165"],
+    "answer": "160"
+  },
+  {
+    "id": 132,
+    "data_presentation": "Line graph: Unemployment rate (%) in 5 years: 8,7.5,7,6.5,6.",
+    "question": "What is the average?",
+    "options": ["6.5", "7", "7.5", "8"],
+    "answer": "7"
+  },
+  {
+    "id": 133,
+    "data_presentation": "Table: Number of books in 3 libraries: 1200,1500,1800.",
+    "question": "What is the median?",
+    "options": ["1200", "1500", "1800", "Cannot say"],
+    "answer": "1500"
+  },
+  {
+    "id": 134,
+    "data_presentation": "Pie chart: Time allocation of a student: Study=50%, Sleep=25%, Leisure=15%, Others=10%.",
+    "question": "If total time is 24 hours, how many hours for Leisure?",
+    "options": ["2.4", "3.6", "4.8", "6"],
+    "answer": "3.6"
+  },
+  {
+    "id": 135,
+    "data_presentation": "Bar chart: Number of visitors to a park: Mon=80, Tue=100, Wed=90, Thu=110, Fri=120.",
+    "question": "What is the range?",
+    "options": ["30", "40", "50", "60"],
+    "answer": "40"
+  },
+  {
+    "id": 136,
+    "data_presentation": "Line graph: Price of a stock ($) over 5 days: 50,52,51,53,55.",
+    "question": "What is the percentage increase from day1 to day5?",
+    "options": ["8%", "9%", "10%", "11%"],
+    "answer": "10%"
+  },
+  {
+    "id": 137,
+    "data_presentation": "Table: Number of students in 5 classes: 30,35,40,45,50.",
+    "question": "What is the average?",
+    "options": ["38", "40", "42", "44"],
+    "answer": "40"
+  },
+  {
+    "id": 138,
+    "data_presentation": "Pie chart: Distribution of 9000 people by age: <20=20%, 20-40=40%, 40-60=30%, >60=10%.",
+    "question": "How many are >60?",
+    "options": ["600", "700", "800", "900"],
+    "answer": "900"
+  },
+  {
+    "id": 139,
+    "data_presentation": "Bar chart: Number of phones sold per month: Jan=120, Feb=150, Mar=130, Apr=160.",
+    "question": "What is the average?",
+    "options": ["135", "140", "145", "150"],
+    "answer": "140"
+  },
+  {
+    "id": 140,
+    "data_presentation": "Line graph: Temperature in 5 cities: 25,30,28,32,26.",
+    "question": "What is the median?",
+    "options": ["26", "28", "30", "32"],
+    "answer": "28"
+  },
+  {
+    "id": 141,
+    "data_presentation": "Table: Monthly income of 4 persons: 20000,25000,30000,35000.",
+    "question": "What is the range?",
+    "options": ["10000", "12000", "15000", "18000"],
+    "answer": "15000"
+  },
+  {
+    "id": 142,
+    "data_presentation": "Pie chart: Expenditure on different items: Rent=40%, Food=30%, Transport=15%, Education=10%, Others=5%.",
+    "question": "If total is ₹50,000, what is Transport?",
+    "options": ["₹5,000", "₹6,000", "₹7,500", "₹8,000"],
+    "answer": "₹7,500"
+  },
+  {
+    "id": 143,
+    "data_presentation": "Bar chart: Number of tickets sold per show: Show1=200, Show2=250, Show3=180, Show4=220.",
+    "question": "What is the total?",
+    "options": ["800", "830", "850", "870"],
+    "answer": "850"
+  },
+  {
+    "id": 144,
+    "data_presentation": "Line graph: Sales (units) over 4 months: 500,550,600,650.",
+    "question": "What is the monthly growth rate?",
+    "options": ["8%", "9%", "10%", "12%"],
+    "answer": "10%"
+  },
+  {
+    "id": 145,
+    "data_presentation": "Table: Scores of 6 students: 78,82,85,90,88,79.",
+    "question": "What is the average?",
+    "options": ["83", "83.5", "84", "84.5"],
+    "answer": "83.5"
+  },
+  {
+    "id": 146,
+    "data_presentation": "Pie chart: Sources of energy: Coal=50%, Gas=20%, Nuclear=15%, Renewables=15%.",
+    "question": "If total energy=1000 MW, Nuclear=?",
+    "options": ["100 MW", "120 MW", "150 MW", "180 MW"],
+    "answer": "150 MW"
+  },
+  {
+    "id": 147,
+    "data_presentation": "Bar chart: Number of employees in 3 companies: A=250, B=300, C=200.",
+    "question": "What is the average?",
+    "options": ["240", "250", "260", "270"],
+    "answer": "250"
+  },
+  {
+    "id": 148,
+    "data_presentation": "Line graph: Number of cars sold per month: Jan=80, Feb=90, Mar=100, Apr=110.",
+    "question": "What is the total?",
+    "options": ["360", "370", "380", "390"],
+    "answer": "380"
+  },
+  {
+    "id": 149,
+    "data_presentation": "Table: Marks of 4 students: 88,76,90,82.",
+    "question": "What is the median?",
+    "options": ["82", "83", "84", "85"],
+    "answer": "85"
+  },
+  {
+    "id": 150,
+    "data_presentation": "Pie chart: Distribution of 5000 fruits: Apple=30%, Banana=25%, Orange=20%, Grapes=15%, Others=10%.",
+    "question": "How many bananas?",
+    "options": ["1000", "1100", "1200", "1250"],
+    "answer": "1250"
+  },
+  {
+    "id": 151,
+    "data_presentation": "Bar chart: Number of visitors per day: Mon=120, Tue=140, Wed=130, Thu=150, Fri=160.",
+    "question": "What is the average?",
+    "options": ["130", "135", "140", "145"],
+    "answer": "140"
+  },
+  {
+    "id": 152,
+    "data_presentation": "Line graph: Profit (₹ lakh) over 5 years: 10,12,15,14,18.",
+    "question": "What is the range?",
+    "options": ["6", "7", "8", "9"],
+    "answer": "8"
+  },
+  {
+    "id": 153,
+    "data_presentation": "Table: Number of hours worked per day: 8,7,9,6,8.",
+    "question": "What is the mode?",
+    "options": ["6", "7", "8", "9"],
+    "answer": "8"
+  },
+  {
+    "id": 154,
+    "data_presentation": "Pie chart: Allocation of time in a day: Work=8h, Sleep=8h, Leisure=5h, Others=3h.",
+    "question": "What percentage is Leisure?",
+    "options": ["18.75%", "20.83%", "22.5%", "25%"],
+    "answer": "20.83%"
+  },
+  {
+    "id": 155,
+    "data_presentation": "Bar chart: Number of units sold: Product X=400, Y=350, Z=450.",
+    "question": "What is the total?",
+    "options": ["1100", "1150", "1200", "1250"],
+    "answer": "1200"
+  },
+  {
+    "id": 156,
+    "data_presentation": "Line graph: Number of subscribers (millions): 2015=2, 2016=2.5, 2017=3, 2018=3.5, 2019=4.",
+    "question": "What is the growth from 2015 to 2019?",
+    "options": ["1.5M", "2M", "2.5M", "3M"],
+    "answer": "2M"
+  },
+  {
+    "id": 157,
+    "data_presentation": "Table: Scores in 5 tests: 65,70,75,80,85.",
+    "question": "What is the average?",
+    "options": ["73", "74", "75", "76"],
+    "answer": "75"
+  },
+  {
+    "id": 158,
+    "data_presentation": "Pie chart: Distribution of 720 degrees in angles: A=120°, B=180°, C=240°, D=180°.",
+    "question": "What is the percentage of A?",
+    "options": ["12.5%", "16.67%", "20%", "25%"],
+    "answer": "16.67%"
+  },
+  {
+    "id": 159,
+    "data_presentation": "Bar chart: Number of medals won by 3 countries: USA=100, China=80, Russia=70.",
+    "question": "What is the ratio of USA to Russia?",
+    "options": ["10:7", "8:5", "9:7", "5:4"],
+    "answer": "10:7"
+  },
+  {
+    "id": 160,
+    "data_presentation": "Line graph: Temperature in 3 cities: 25,30,28.",
+    "question": "What is the average?",
+    "options": ["26.67", "27.67", "28.67", "29.67"],
+    "answer": "27.67"
+  },
+  {
+    "id": 161,
+    "data_presentation": "Table: Population (lakhs) of 4 states: 100,150,120,130.",
+    "question": "What is the total?",
+    "options": ["500 lakh", "510 lakh", "520 lakh", "530 lakh"],
+    "answer": "500 lakh"
+  },
+  {
+    "id": 162,
+    "data_presentation": "Pie chart: Expenditure on categories: Rent=30%, Food=25%, Transport=15%, Entertainment=10%, Savings=20%.",
+    "question": "If monthly income is ₹60,000, how much saved?",
+    "options": ["₹8,000", "₹10,000", "₹12,000", "₹15,000"],
+    "answer": "₹12,000"
+  },
+  {
+    "id": 163,
+    "data_presentation": "Bar chart: Number of students in 5 grades: 60,70,65,80,75.",
+    "question": "What is the median?",
+    "options": ["65", "70", "72", "75"],
+    "answer": "70"
+  },
+  {
+    "id": 164,
+    "data_presentation": "Line graph: Price of wheat (₹/kg) over 6 months: 20,22,21,23,24,25.",
+    "question": "What is the percentage increase from month1 to month6?",
+    "options": ["20%", "25%", "30%", "35%"],
+    "answer": "25%"
+  },
+  {
+    "id": 165,
+    "data_presentation": "Table: Number of pages in 4 books: 250,300,280,320.",
+    "question": "What is the range?",
+    "options": ["60", "70", "80", "90"],
+    "answer": "70"
+  },
+  {
+    "id": 166,
+    "data_presentation": "Pie chart: Distribution of 1200 students in sports: Cricket=40%, Football=30%, Tennis=20%, Others=10%.",
+    "question": "How many in Football?",
+    "options": ["300", "320", "340", "360"],
+    "answer": "360"
+  },
+  {
+    "id": 167,
+    "data_presentation": "Bar chart: Number of mobiles sold in 3 months: Jan=1000, Feb=1200, Mar=900.",
+    "question": "What is the average?",
+    "options": ["1000", "1033", "1066", "1100"],
+    "answer": "1033"
+  },
+  {
+    "id": 168,
+    "data_presentation": "Line graph: Daily rainfall (mm): Mon=5, Tue=10, Wed=7, Thu=12, Fri=8.",
+    "question": "What is the total?",
+    "options": ["40 mm", "42 mm", "44 mm", "46 mm"],
+    "answer": "42 mm"
+  },
+  {
+    "id": 169,
+    "data_presentation": "Table: Marks of 3 students in 2 subjects: A: Math=80, Sci=70; B: Math=75, Sci=85; C: Math=90, Sci=80.",
+    "question": "Who has highest total?",
+    "options": ["A", "B", "C", "All equal"],
+    "answer": "C"
+  },
+  {
+    "id": 170,
+    "data_presentation": "Pie chart: Time spent on social media: WhatsApp=40%, Instagram=30%, Facebook=20%, Twitter=10%.",
+    "question": "If total time is 2 hours, time on Instagram?",
+    "options": ["24 min", "30 min", "36 min", "40 min"],
+    "answer": "36 min"
+  },
+  {
+    "id": 171,
+    "data_presentation": "Bar chart: Number of accidents in 4 zones: Zone1=15, Zone2=20, Zone3=10, Zone4=25.",
+    "question": "What is the total?",
+    "options": ["60", "65", "70", "75"],
+    "answer": "70"
+  },
+  {
+    "id": 172,
+    "data_presentation": "Line graph: Profit growth over 4 years: 5%,8%,10%,12%.",
+    "question": "What is the average growth?",
+    "options": ["7.5%", "8.75%", "9.25%", "10%"],
+    "answer": "8.75%"
+  },
+  {
+    "id": 173,
+    "data_presentation": "Table: Number of students in 3 colleges: 1500,2000,2500.",
+    "question": "What is the average?",
+    "options": ["1900", "2000", "2100", "2200"],
+    "answer": "2000"
+  },
+  {
+    "id": 174,
+    "data_presentation": "Pie chart: Expenditure of a company: Salaries=60%, Rent=20%, Utilities=10%, Others=10%.",
+    "question": "If salaries are ₹30 lakh, what is total expense?",
+    "options": ["40 lakh", "45 lakh", "50 lakh", "55 lakh"],
+    "answer": "50 lakh"
+  },
+  {
+    "id": 175,
+    "data_presentation": "Bar chart: Number of trees in 5 parks: 40,50,45,60,55.",
+    "question": "What is the median?",
+    "options": ["45", "50", "55", "60"],
+    "answer": "50"
+  },
+  {
+    "id": 176,
+    "data_presentation": "Line graph: Number of followers (thousands) over 6 months: 10,12,15,14,16,18.",
+    "question": "What is the total?",
+    "options": ["80k", "85k", "90k", "95k"],
+    "answer": "85k"
+  },
+  {
+    "id": 177,
+    "data_presentation": "Table: Number of hours spent on TV per week: 5,7,6,8,4.",
+    "question": "What is the range?",
+    "options": ["3", "4", "5", "6"],
+    "answer": "4"
+  },
+  {
+    "id": 178,
+    "data_presentation": "Pie chart: Distribution of 3600 employees by gender: Male=55%, Female=45%.",
+    "question": "How many females?",
+    "options": ["1520", "1580", "1620", "1680"],
+    "answer": "1620"
+  },
+  {
+    "id": 179,
+    "data_presentation": "Bar chart: Number of laptops sold in 4 weeks: 40,50,45,55.",
+    "question": "What is the average?",
+    "options": ["45", "46", "47.5", "48"],
+    "answer": "47.5"
+  },
+  {
+    "id": 180,
+    "data_presentation": "Line graph: Price of sugar (₹/kg) over 5 months: 35,36,34,37,38.",
+    "question": "What is the median?",
+    "options": ["35", "36", "37", "38"],
+    "answer": "36"
+  },
+  {
+    "id": 181,
+    "data_presentation": "Table: Runs scored in 6 matches: 45,60,30,75,50,40.",
+    "question": "What is the average?",
+    "options": ["48.33", "50", "51.67", "53.33"],
+    "answer": "50"
+  },
+  {
+    "id": 182,
+    "data_presentation": "Pie chart: Sources of income: Salary=70%, Business=20%, Investment=10%.",
+    "question": "If total income is ₹80,000, what is Business income?",
+    "options": ["₹12,000", "₹14,000", "₹16,000", "₹18,000"],
+    "answer": "₹16,000"
+  },
+  {
+    "id": 183,
+    "data_presentation": "Bar chart: Number of books read by 4 students: 10,15,12,18.",
+    "question": "What is the total?",
+    "options": ["50", "55", "60", "65"],
+    "answer": "55"
+  },
+  {
+    "id": 184,
+    "data_presentation": "Line graph: Number of cars sold per day: Mon=25, Tue=30, Wed=20, Thu=35, Fri=40.",
+    "question": "What is the range?",
+    "options": ["15", "20", "25", "30"],
+    "answer": "20"
+  },
+  {
+    "id": 185,
+    "data_presentation": "Table: Marks of 5 students: 68,72,76,80,84.",
+    "question": "What is the average?",
+    "options": ["74", "75", "76", "77"],
+    "answer": "76"
+  },
+  {
+    "id": 186,
+    "data_presentation": "Pie chart: Allocation of 2400 hours in a year: Work=40%, Sleep=30%, Leisure=20%, Others=10%.",
+    "question": "How many hours for Leisure?",
+    "options": ["360", "400", "440", "480"],
+    "answer": "480"
+  },
+  {
+    "id": 187,
+    "data_presentation": "Bar chart: Number of visitors to a mall: Mon=200, Tue=250, Wed=220, Thu=270, Fri=300.",
+    "question": "What is the average?",
+    "options": ["240", "248", "252", "256"],
+    "answer": "248"
+  },
+  {
+    "id": 188,
+    "data_presentation": "Line graph: Temperature in 4 cities: 28,32,30,26.",
+    "question": "What is the median?",
+    "options": ["28", "29", "30", "31"],
+    "answer": "29"
+  },
+  {
+    "id": 189,
+    "data_presentation": "Table: Number of employees in 5 departments: 50,60,45,55,70.",
+    "question": "What is the median?",
+    "options": ["50", "55", "60", "65"],
+    "answer": "55"
+  },
+  {
+    "id": 190,
+    "data_presentation": "Pie chart: Distribution of 5000 voters: Candidate A=35%, B=25%, C=20%, D=20%.",
+    "question": "How many votes for A?",
+    "options": ["1500", "1600", "1700", "1750"],
+    "answer": "1750"
+  },
+  {
+    "id": 191,
+    "data_presentation": "Bar chart: Number of hours spent on phone per day: Mon=3, Tue=4, Wed=2, Thu=5, Fri=4.",
+    "question": "What is the mode?",
+    "options": ["2", "3", "4", "5"],
+    "answer": "4"
+  },
+  {
+    "id": 192,
+    "data_presentation": "Line graph: Sales (₹) of a shop: Mon=500, Tue=600, Wed=550, Thu=650, Fri=700.",
+    "question": "What is the total?",
+    "options": ["2900", "2950", "3000", "3050"],
+    "answer": "3000"
+  },
+  {
+    "id": 193,
+    "data_presentation": "Table: Number of questions solved by 4 students: 20,25,18,30.",
+    "question": "What is the average?",
+    "options": ["22.5", "23.25", "24", "25"],
+    "answer": "23.25"
+  },
+  {
+    "id": 194,
+    "data_presentation": "Pie chart: Time spent on different activities: Work=8h, Sleep=7h, Food=2h, Travel=2h, Leisure=5h.",
+    "question": "What percentage is Sleep?",
+    "options": ["25%", "27.08%", "29.17%", "31.25%"],
+    "answer": "29.17%"
+  },
+  {
+    "id": 195,
+    "data_presentation": "Bar chart: Number of emails sent per day: Mon=30, Tue=35, Wed=28, Thu=40, Fri=32.",
+    "question": "What is the range?",
+    "options": ["10", "12", "14", "16"],
+    "answer": "12"
+  },
+  {
+    "id": 196,
+    "data_presentation": "Line graph: Number of units produced per day: 100,110,105,120,115.",
+    "question": "What is the average?",
+    "options": ["106", "108", "110", "112"],
+    "answer": "110"
+  },
+  {
+    "id": 197,
+    "data_presentation": "Table: Number of customers per day: 50,60,55,70,65.",
+    "question": "What is the median?",
+    "options": ["55", "60", "65", "70"],
+    "answer": "60"
+  },
+  {
+    "id": 198,
+    "data_presentation": "Pie chart: Distribution of 1800 employees by education: Graduate=45%, Postgraduate=30%, Diploma=15%, Others=10%.",
+    "question": "How many Postgraduates?",
+    "options": ["480", "500", "520", "540"],
+    "answer": "540"
+  },
+  {
+    "id": 199,
+    "data_presentation": "Bar chart: Number of trees planted by 3 groups: Group1=100, Group2=150, Group3=120.",
+    "question": "What is the total?",
+    "options": ["350", "360", "370", "380"],
+    "answer": "370"
+  },
+  {
+    "id": 200,
+    "data_presentation": "Line graph: Price of petrol over 4 months: 70,72,71,73.",
+    "question": "What is the average?",
+    "options": ["70.5", "71", "71.5", "72"],
+    "answer": "71.5"
+  },
+  {
+    "id": 201,
+    "data_presentation": "Table: Marks in 4 subjects: 75,80,85,90.",
+    "question": "What is the average?",
+    "options": ["80", "82.5", "85", "87.5"],
+    "answer": "82.5"
+  },
+  {
+    "id": 202,
+    "data_presentation": "Pie chart: Sources of pollution: Vehicles=40%, Industries=30%, Agriculture=20%, Others=10%.",
+    "question": "If total pollution is 5000 units, Industrial pollution?",
+    "options": ["1200", "1300", "1400", "1500"],
+    "answer": "1500"
+  },
+  {
+    "id": 203,
+    "data_presentation": "Bar chart: Number of students in 4 classes: 40,45,35,50.",
+    "question": "What is the total?",
+    "options": ["160", "165", "170", "175"],
+    "answer": "170"
+  },
+  {
+    "id": 204,
+    "data_presentation": "Line graph: Number of job applicants over 5 months: 200,220,210,230,240.",
+    "question": "What is the growth from month1 to month5?",
+    "options": ["30", "35", "40", "45"],
+    "answer": "40"
+  },
+  {
+    "id": 205,
+    "data_presentation": "Table: Number of books in 4 libraries: 800,1000,900,1100.",
+    "question": "What is the average?",
+    "options": ["900", "925", "950", "975"],
+    "answer": "950"
+  },
+  {
+    "id": 206,
+    "data_presentation": "Pie chart: Time spent on apps: WhatsApp=30%, Instagram=25%, Facebook=20%, Snapchat=15%, Others=10%.",
+    "question": "If total time is 4 hours, time on WhatsApp?",
+    "options": ["1 hr", "1.2 hr", "1.5 hr", "1.8 hr"],
+    "answer": "1.2 hr"
+  },
+  {
+    "id": 207,
+    "data_presentation": "Bar chart: Number of cars in 3 cities: 500,700,600.",
+    "question": "What is the median?",
+    "options": ["500", "600", "700", "650"],
+    "answer": "600"
+  },
+  {
+    "id": 208,
+    "data_presentation": "Line graph: Daily profit ($): 100,120,110,130,125.",
+    "question": "What is the average?",
+    "options": ["115", "117", "119", "121"],
+    "answer": "117"
+  },
+  {
+    "id": 209,
+    "data_presentation": "Table: Number of hours worked per week: 40,45,38,42,50.",
+    "question": "What is the range?",
+    "options": ["10", "11", "12", "13"],
+    "answer": "12"
+  },
+  {
+    "id": 210,
+    "data_presentation": "Pie chart: Distribution of 5000 kg of rice: Variety A=40%, B=30%, C=20%, D=10%.",
+    "question": "How many kg of B?",
+    "options": ["1200", "1300", "1400", "1500"],
+    "answer": "1500"
+  },
+  {
+    "id": 211,
+    "data_presentation": "Bar chart: Number of students in 3 schools: 400,500,600.",
+    "question": "What is the average?",
+    "options": ["450", "500", "550", "600"],
+    "answer": "500"
+  },
+  {
+    "id": 212,
+    "data_presentation": "Line graph: Temperature over 5 days: 20,22,21,23,24.",
+    "question": "What is the range?",
+    "options": ["2", "3", "4", "5"],
+    "answer": "4"
+  },
+  {
+    "id": 213,
+    "data_presentation": "Table: Number of goals scored in 4 matches: 2,3,1,4.",
+    "question": "What is the average?",
+    "options": ["2", "2.5", "3", "3.5"],
+    "answer": "2.5"
+  },
+  {
+    "id": 214,
+    "data_presentation": "Pie chart: Expenditure on categories: Rent=25%, Food=20%, Travel=15%, Entertainment=10%, Savings=30%.",
+    "question": "If income is ₹80,000, how much saved?",
+    "options": ["₹20,000", "₹24,000", "₹28,000", "₹32,000"],
+    "answer": "₹24,000"
+  },
+  {
+    "id": 215,
+    "data_presentation": "Bar chart: Number of laptops sold in 5 months: 50,60,55,70,65.",
+    "question": "What is the median?",
+    "options": ["55", "60", "65", "70"],
+    "answer": "60"
+  },
+  {
+    "id": 216,
+    "data_presentation": "Line graph: Number of patients per day: Mon=30, Tue=35, Wed=28, Thu=40, Fri=32.",
+    "question": "What is the average?",
+    "options": ["32", "33", "34", "35"],
+    "answer": "33"
+  },
+  {
+    "id": 217,
+    "data_presentation": "Table: Marks of 6 students: 85,90,88,92,86,89.",
+    "question": "What is the median?",
+    "options": ["87", "88", "88.5", "89"],
+    "answer": "88.5"
+  },
+  {
+    "id": 218,
+    "data_presentation": "Pie chart: Distribution of 2400 students by stream: Science=40%, Commerce=30%, Arts=20%, Others=10%.",
+    "question": "How many in Commerce?",
+    "options": ["600", "700", "720", "750"],
+    "answer": "720"
+  },
+  {
+    "id": 219,
+    "data_presentation": "Bar chart: Number of trees in 4 parks: 60,70,80,90.",
+    "question": "What is the total?",
+    "options": ["280", "290", "300", "310"],
+    "answer": "300"
+  },
+  {
+    "id": 220,
+    "data_presentation": "Line graph: Sales (₹) over 4 weeks: 5000,6000,5500,6500.",
+    "question": "What is the average?",
+    "options": ["5500", "5625", "5750", "5875"],
+    "answer": "5750"
+  },
+  {
+    "id": 221,
+    "data_presentation": "Table: Number of employees in 4 branches: 120,150,130,160.",
+    "question": "What is the range?",
+    "options": ["30", "35", "40", "45"],
+    "answer": "40"
+  },
+  {
+    "id": 222,
+    "data_presentation": "Pie chart: Sources of income: Salary=60%, Freelance=25%, Rent=10%, Others=5%.",
+    "question": "If total income is ₹1,20,000, what is Freelance?",
+    "options": ["₹25,000", "₹30,000", "₹35,000", "₹40,000"],
+    "answer": "₹30,000"
+  },
+  {
+    "id": 223,
+    "data_presentation": "Bar chart: Number of visitors per day: Mon=80, Tue=100, Wed=90, Thu=110, Fri=120.",
+    "question": "What is the median?",
+    "options": ["90", "100", "110", "120"],
+    "answer": "100"
+  },
+  {
+    "id": 224,
+    "data_presentation": "Line graph: Price of gold over 5 months: 48000,49000,48500,50000,51000.",
+    "question": "What is the growth from month1 to month5?",
+    "options": ["2000", "2500", "3000", "3500"],
+    "answer": "3000"
+  },
+  {
+    "id": 225,
+    "data_presentation": "Table: Number of questions attempted: 20,25,22,28,24.",
+    "question": "What is the average?",
+    "options": ["23.2", "23.8", "24.2", "24.8"],
+    "answer": "23.8"
+  },
+  {
+    "id": 226,
+    "data_presentation": "Pie chart: Time spent on chores: Cooking=30%, Cleaning=25%, Laundry=15%, Shopping=10%, Others=20%.",
+    "question": "If total time is 10 hours, time on Cleaning?",
+    "options": ["2 hr", "2.5 hr", "3 hr", "3.5 hr"],
+    "answer": "2.5 hr"
+  },
+  {
+    "id": 227,
+    "data_presentation": "Bar chart: Number of cars sold in 4 quarters: 200,250,300,350.",
+    "question": "What is the total?",
+    "options": ["1000", "1050", "1100", "1150"],
+    "answer": "1100"
+  },
+  {
+    "id": 228,
+    "data_presentation": "Line graph: Number of followers (thousands) over 5 months: 15,18,20,22,25.",
+    "question": "What is the average?",
+    "options": ["18", "19", "20", "21"],
+    "answer": "20"
+  },
+  {
+    "id": 229,
+    "data_presentation": "Table: Scores of 5 players: 120,130,125,140,135.",
+    "question": "What is the median?",
+    "options": ["125", "130", "135", "140"],
+    "answer": "130"
+  },
+  {
+    "id": 230,
+    "data_presentation": "Pie chart: Distribution of 3000 kg of fruit: Mango=35%, Apple=25%, Banana=20%, Orange=15%, Others=5%.",
+    "question": "How many kg of Mango?",
+    "options": ["900", "950", "1000", "1050"],
+    "answer": "1050"
+  },
+  {
+    "id": 231,
+    "data_presentation": "Bar chart: Number of books in 3 libraries: 2000,2500,3000.",
+    "question": "What is the average?",
+    "options": ["2400", "2500", "2600", "2700"],
+    "answer": "2500"
+  },
+  {
+    "id": 232,
+    "data_presentation": "Line graph: Temperature in 5 cities: 32,35,30,33,31.",
+    "question": "What is the range?",
+    "options": ["3", "4", "5", "6"],
+    "answer": "5"
+  },
+  {
+    "id": 233,
+    "data_presentation": "Table: Number of hours studied per day: 5,6,4,7,5.",
+    "question": "What is the mode?",
+    "options": ["4", "5", "6", "7"],
+    "answer": "5"
+  },
+  {
+    "id": 234,
+    "data_presentation": "Pie chart: Expenses of a student: Rent=40%, Food=25%, Travel=15%, Books=10%, Others=10%.",
+    "question": "If total expense is ₹20,000, what is Travel?",
+    "options": ["₹2,000", "₹2,500", "₹3,000", "₹3,500"],
+    "answer": "₹3,000"
+  },
+  {
+    "id": 235,
+    "data_presentation": "Bar chart: Number of mobiles sold in 3 months: Jan=800, Feb=900, Mar=850.",
+    "question": "What is the total?",
+    "options": ["2450", "2500", "2550", "2600"],
+    "answer": "2550"
+  },
+  {
+    "id": 236,
+    "data_presentation": "Line graph: Number of covid cases per week: 1000,1200,1100,1300,1250.",
+    "question": "What is the average?",
+    "options": ["1150", "1170", "1190", "1210"],
+    "answer": "1170"
+  },
+  {
+    "id": 237,
+    "data_presentation": "Table: Marks of 4 students: 82,78,90,86.",
+    "question": "What is the average?",
+    "options": ["82", "83", "84", "85"],
+    "answer": "84"
+  },
+  {
+    "id": 238,
+    "data_presentation": "Pie chart: Allocation of 3600 employees: IT=30%, HR=20%, Sales=25%, Admin=15%, Others=10%.",
+    "question": "How many in IT?",
+    "options": ["900", "960", "1020", "1080"],
+    "answer": "1080"
+  },
+  {
+    "id": 239,
+    "data_presentation": "Bar chart: Number of trees in 5 parks: 30,40,35,45,50.",
+    "question": "What is the median?",
+    "options": ["35", "40", "45", "50"],
+    "answer": "40"
+  },
+  {
+    "id": 240,
+    "data_presentation": "Line graph: Price of rice (₹/kg) over 6 months: 40,42,41,43,44,45.",
+    "question": "What is the increase from month1 to month6?",
+    "options": ["4", "5", "6", "7"],
+    "answer": "5"
+  },
+  {
+    "id": 241,
+    "data_presentation": "Table: Number of visitors per day: 100,120,110,130,140.",
+    "question": "What is the range?",
+    "options": ["30", "35", "40", "45"],
+    "answer": "40"
+  },
+  {
+    "id": 242,
+    "data_presentation": "Pie chart: Time spent on activities: Work=9h, Sleep=7h, Leisure=4h, Others=4h.",
+    "question": "What percentage is Work?",
+    "options": ["35%", "37.5%", "40%", "42.5%"],
+    "answer": "37.5%"
+  },
+  {
+    "id": 243,
+    "data_presentation": "Bar chart: Number of students in 3 sections: 50,60,70.",
+    "question": "What is the average?",
+    "options": ["55", "60", "65", "70"],
+    "answer": "60"
+  },
+  {
+    "id": 244,
+    "data_presentation": "Line graph: Sales ($) over 5 days: 200,220,210,230,240.",
+    "question": "What is the average?",
+    "options": ["210", "215", "220", "225"],
+    "answer": "220"
+  },
+  {
+    "id": 245,
+    "data_presentation": "Table: Number of books in 3 libraries: 1500,1800,2000.",
+    "question": "What is the median?",
+    "options": ["1500", "1800", "2000", "1900"],
+    "answer": "1800"
+  },
+  {
+    "id": 246,
+    "data_presentation": "Pie chart: Distribution of 5000 voters: Candidate P=40%, Q=30%, R=20%, S=10%.",
+    "question": "How many votes for Q?",
+    "options": ["1200", "1300", "1400", "1500"],
+    "answer": "1500"
+  },
+  {
+    "id": 247,
+    "data_presentation": "Bar chart: Number of laptops sold in 4 weeks: 30,35,40,45.",
+    "question": "What is the total?",
+    "options": ["140", "145", "150", "155"],
+    "answer": "150"
+  },
+  {
+    "id": 248,
+    "data_presentation": "Line graph: Temperature over 5 days: 18,20,19,21,22.",
+    "question": "What is the average?",
+    "options": ["19", "20", "21", "22"],
+    "answer": "20"
+  },
+  {
+    "id": 249,
+    "data_presentation": "Table: Number of employees in 5 departments: 25,30,28,35,32.",
+    "question": "What is the median?",
+    "options": ["28", "30", "32", "35"],
+    "answer": "30"
+  },
+  {
+    "id": 250,
+    "data_presentation": "Pie chart: Expenditure on items: Food=30%, Rent=25%, Transport=15%, Entertainment=10%, Savings=20%.",
+    "question": "If total income is ₹60,000, what is Savings?",
+    "options": ["₹10,000", "₹12,000", "₹15,000", "₹18,000"],
+    "answer": "₹12,000"
+  },
+  {
+    "id": 251,
+    "data_presentation": "Bar chart: Number of visitors to a museum: Mon=150, Tue=180, Wed=160, Thu=200, Fri=190.",
+    "question": "What is the average?",
+    "options": ["170", "172", "174", "176"],
+    "answer": "176"
+  },
+  {
+    "id": 252,
+    "data_presentation": "Line graph: Number of units produced per day: 500,520,510,530,540.",
+    "question": "What is the range?",
+    "options": ["30", "35", "40", "45"],
+    "answer": "40"
+  },
+  {
+    "id": 253,
+    "data_presentation": "Table: Scores of 5 students: 70,75,80,85,90.",
+    "question": "What is the average?",
+    "options": ["75", "78", "80", "82"],
+    "answer": "80"
+  },
+  {
+    "id": 254,
+    "data_presentation": "Pie chart: Time spent on social media: Instagram=35%, Facebook=25%, Twitter=20%, Snapchat=10%, Others=10%.",
+    "question": "If total time is 3 hours, time on Instagram?",
+    "options": ["1 hr", "1.05 hr", "1.1 hr", "1.2 hr"],
+    "answer": "1.05 hr"
+  },
+  {
+    "id": 255,
+    "data_presentation": "Bar chart: Number of cars in 3 cities: 1000,1200,1100.",
+    "question": "What is the total?",
+    "options": ["3100", "3200", "3300", "3400"],
+    "answer": "3300"
+  },
+  {
+    "id": 256,
+    "data_presentation": "Line graph: Profit (₹) over 4 months: 10000,12000,11000,13000.",
+    "question": "What is the average?",
+    "options": ["11000", "11250", "11500", "11750"],
+    "answer": "11500"
+  },
+  {
+    "id": 257,
+    "data_presentation": "Table: Number of questions solved: 15,20,18,22,25.",
+    "question": "What is the median?",
+    "options": ["18", "19", "20", "22"],
+    "answer": "20"
+  },
+  {
+    "id": 258,
+    "data_presentation": "Pie chart: Distribution of 2400 students by gender: Male=55%, Female=45%.",
+    "question": "How many males?",
+    "options": ["1200", "1260", "1320", "1380"],
+    "answer": "1320"
+  },
+  {
+    "id": 259,
+    "data_presentation": "Bar chart: Number of books in 4 libraries: 1200,1500,1300,1600.",
+    "question": "What is the range?",
+    "options": ["300", "350", "400", "450"],
+    "answer": "400"
+  },
+  {
+    "id": 260,
+    "data_presentation": "Line graph: Temperature in 3 cities: 25,30,28.",
+    "question": "What is the median?",
+    "options": ["25", "28", "30", "27"],
+    "answer": "28"
+  },
+  {
+    "id": 261,
+    "data_presentation": "Table: Number of employees in 4 branches: 80,100,90,110.",
+    "question": "What is the average?",
+    "options": ["90", "95", "100", "105"],
+    "answer": "95"
+  },
+  {
+    "id": 262,
+    "data_presentation": "Pie chart: Sources of energy: Solar=30%, Wind=25%, Hydro=20%, Coal=15%, Nuclear=10%.",
+    "question": "If total energy is 2000 MW, Hydro energy?",
+    "options": ["300 MW", "350 MW", "400 MW", "450 MW"],
+    "answer": "400 MW"
+  },
+  {
+    "id": 263,
+    "data_presentation": "Bar chart: Number of students in 5 classes: 45,50,48,52,55.",
+    "question": "What is the median?",
+    "options": ["48", "50", "52", "55"],
+    "answer": "50"
+  },
+  {
+    "id": 264,
+    "data_presentation": "Line graph: Sales (units) over 5 months: 300,320,310,330,340.",
+    "question": "What is the growth from month1 to month5?",
+    "options": ["30", "35", "40", "45"],
+    "answer": "40"
+  },
+  {
+    "id": 265,
+    "data_presentation": "Table: Marks of 4 students: 85,90,88,92.",
+    "question": "What is the average?",
+    "options": ["87.5", "88", "88.75", "89"],
+    "answer": "88.75"
+  },
+  {
+    "id": 266,
+    "data_presentation": "Pie chart: Time spent on work: Office=8h, Travel=2h, Home=14h.",
+    "question": "What percentage is Office?",
+    "options": ["25%", "30%", "33.33%", "35%"],
+    "answer": "33.33%"
+  },
+  {
+    "id": 267,
+    "data_presentation": "Bar chart: Number of phones sold per day: Mon=40, Tue=50, Wed=45, Thu=55, Fri=60.",
+    "question": "What is the total?",
+    "options": ["240", "245", "250", "255"],
+    "answer": "250"
+  },
+  {
+    "id": 268,
+    "data_presentation": "Line graph: Number of patients per week: 100,120,110,130,140.",
+    "question": "What is the median?",
+    "options": ["110", "115", "120", "125"],
+    "answer": "120"
+  },
+  {
+    "id": 269,
+    "data_presentation": "Table: Number of hours of exercise per week: 4,5,3,6,4.",
+    "question": "What is the mode?",
+    "options": ["3", "4", "5", "6"],
+    "answer": "4"
+  },
+  {
+    "id": 270,
+    "data_presentation": "Pie chart: Distribution of 4000 people by age: <20=25%, 20-40=40%, 40-60=25%, >60=10%.",
+    "question": "How many are in 20-40 age group?",
+    "options": ["1400", "1500", "1600", "1700"],
+    "answer": "1600"
+  },
+  {
+    "id": 271,
+    "data_presentation": "Bar chart: Number of trees in 3 parks: 50,60,70.",
+    "question": "What is the average?",
+    "options": ["50", "55", "60", "65"],
+    "answer": "60"
+  },
+  {
+    "id": 272,
+    "data_presentation": "Line graph: Price of oil ($) over 5 months: 55,60,58,62,65.",
+    "question": "What is the average?",
+    "options": ["58", "59", "60", "61"],
+    "answer": "60"
+  },
+  {
+    "id": 273,
+    "data_presentation": "Table: Number of students in 3 colleges: 1000,1200,1400.",
+    "question": "What is the median?",
+    "options": ["1000", "1200", "1400", "1300"],
+    "answer": "1200"
+  },
+  {
+    "id": 274,
+    "data_presentation": "Pie chart: Expenses of a company: Salaries=50%, Rent=20%, Utilities=15%, Marketing=10%, Others=5%.",
+    "question": "If total expenses are ₹40 lakh, what is Rent?",
+    "options": ["₹6 lakh", "₹8 lakh", "₹10 lakh", "₹12 lakh"],
+    "answer": "₹8 lakh"
+  },
+  {
+    "id": 275,
+    "data_presentation": "Bar chart: Number of laptops sold in 3 months: 200,250,300.",
+    "question": "What is the total?",
+    "options": ["700", "720", "740", "750"],
+    "answer": "750"
+  },
+  {
+    "id": 276,
+    "data_presentation": "Line graph: Number of visitors per day: 200,220,210,230,240.",
+    "question": "What is the range?",
+    "options": ["30", "35", "40", "45"],
+    "answer": "40"
+  },
+  {
+    "id": 277,
+    "data_presentation": "Table: Marks of 5 students: 72,78,80,85,90.",
+    "question": "What is the average?",
+    "options": ["79", "80", "81", "82"],
+    "answer": "81"
+  },
+  {
+    "id": 278,
+    "data_presentation": "Pie chart: Time spent on hobbies: Reading=25%, Sports=30%, Music=20%, Art=15%, Others=10%.",
+    "question": "If total time is 20 hours, time on Sports?",
+    "options": ["5 hr", "6 hr", "7 hr", "8 hr"],
+    "answer": "6 hr"
+  },
+  {
+    "id": 279,
+    "data_presentation": "Bar chart: Number of cars sold in 4 quarters: 150,200,250,300.",
+    "question": "What is the average?",
+    "options": ["200", "225", "250", "275"],
+    "answer": "225"
+  },
+  {
+    "id": 280,
+    "data_presentation": "Line graph: Temperature in 5 cities: 28,30,29,31,32.",
+    "question": "What is the median?",
+    "options": ["29", "30", "31", "32"],
+    "answer": "30"
+  },
+  {
+    "id": 281,
+    "data_presentation": "Table: Number of books in 4 libraries: 600,800,700,900.",
+    "question": "What is the range?",
+    "options": ["200", "250", "300", "350"],
+    "answer": "300"
+  },
+  {
+    "id": 282,
+    "data_presentation": "Pie chart: Distribution of 5000 kg of grain: Wheat=40%, Rice=30%, Corn=20%, Barley=10%.",
+    "question": "How many kg of Rice?",
+    "options": ["1200", "1300", "1400", "1500"],
+    "answer": "1500"
+  },
+  {
+    "id": 283,
+    "data_presentation": "Bar chart: Number of students in 3 sections: 35,40,45.",
+    "question": "What is the total?",
+    "options": ["110", "115", "120", "125"],
+    "answer": "120"
+  },
+  {
+    "id": 284,
+    "data_presentation": "Line graph: Sales ($) over 6 months: 1000,1200,1100,1300,1250,1400.",
+    "question": "What is the average?",
+    "options": ["1200", "1216.67", "1233.33", "1250"],
+    "answer": "1208.33"
+  },
+  {
+    "id": 285,
+    "data_presentation": "Table: Number of hours studied per week: 10,12,8,15,11.",
+    "question": "What is the median?",
+    "options": ["10", "11", "12", "15"],
+    "answer": "11"
+  },
+  {
+    "id": 286,
+    "data_presentation": "Pie chart: Sources of income: Job=70%, Business=20%, Investment=10%.",
+    "question": "If total income is ₹1,00,000, what is Investment?",
+    "options": ["₹5,000", "₹8,000", "₹10,000", "₹12,000"],
+    "answer": "₹10,000"
+  },
+  {
+    "id": 287,
+    "data_presentation": "Bar chart: Number of trees in 5 parks: 20,30,25,35,40.",
+    "question": "What is the average?",
+    "options": ["28", "29", "30", "31"],
+    "answer": "30"
+  },
+  {
+    "id": 288,
+    "data_presentation": "Line graph: Number of patients per day: 25,30,28,32,35.",
+    "question": "What is the range?",
+    "options": ["8", "9", "10", "11"],
+    "answer": "10"
+  },
+  {
+    "id": 289,
+    "data_presentation": "Table: Marks of 6 students: 88,92,86,90,94,88.",
+    "question": "What is the mode?",
+    "options": ["86", "88", "90", "92"],
+    "answer": "88"
+  },
+  {
+    "id": 290,
+    "data_presentation": "Pie chart: Time spent on activities: Study=6h, Sleep=8h, Leisure=4h, Others=6h.",
+    "question": "What is the percentage of Sleep?",
+    "options": ["30%", "32%", "33.33%", "35%"],
+    "answer": "33.33%"
+  },
+  {
+    "id": 291,
+    "data_presentation": "Bar chart: Number of books in 4 libraries: 800,1000,900,1100.",
+    "question": "What is the total?",
+    "options": ["3600", "3700", "3800", "3900"],
+    "answer": "3800"
+  },
+  {
+    "id": 292,
+    "data_presentation": "Line graph: Price of gold over 4 months: 45000,46000,45500,47000.",
+    "question": "What is the average?",
+    "options": ["45625", "45875", "46000", "46250"],
+    "answer": "45875"
+  },
+  {
+    "id": 293,
+    "data_presentation": "Table: Number of employees in 3 branches: 200,250,300.",
+    "question": "What is the average?",
+    "options": ["240", "250", "260", "270"],
+    "answer": "250"
+  },
+  {
+    "id": 294,
+    "data_presentation": "Pie chart: Distribution of 3600 students: Science=40%, Commerce=30%, Arts=20%, Others=10%.",
+    "question": "How many in Arts?",
+    "options": ["600", "650", "700", "720"],
+    "answer": "720"
+  },
+  {
+    "id": 295,
+    "data_presentation": "Bar chart: Number of cars sold in 3 months: 500,600,700.",
+    "question": "What is the total?",
+    "options": ["1700", "1750", "1800", "1850"],
+    "answer": "1800"
+  },
+  {
+    "id": 296,
+    "data_presentation": "Line graph: Number of visitors per day: 50,60,55,70,65.",
+    "question": "What is the median?",
+    "options": ["55", "60", "65", "70"],
+    "answer": "60"
+  },
+  {
+    "id": 297,
+    "data_presentation": "Table: Marks of 5 students: 65,70,75,80,85.",
+    "question": "What is the average?",
+    "options": ["73", "74", "75", "76"],
+    "answer": "75"
+  },
+  {
+    "id": 298,
+    "data_presentation": "Pie chart: Time spent on apps: WhatsApp=40%, Instagram=30%, Facebook=20%, Others=10%.",
+    "question": "If total time is 5 hours, time on Instagram?",
+    "options": ["1 hr", "1.5 hr", "2 hr", "2.5 hr"],
+    "answer": "1.5 hr"
+  },
+  {
+    "id": 299,
+    "data_presentation": "Bar chart: Number of students in 4 classes: 30,35,40,45.",
+    "question": "What is the range?",
+    "options": ["10", "12", "13", "15"],
+    "answer": "15"
+  },
+  {
+    "id": 300,
+    "data_presentation": "Line graph: Temperature over 5 days: 22,24,23,25,26.",
+    "question": "What is the average?",
+    "options": ["23", "23.5", "24", "24.5"],
+    "answer": "24"
+  }
+]
