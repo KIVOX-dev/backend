@@ -1,4 +1,4 @@
-# UpScaler-AI Node API — Reference
+# TalentSnaps Node API — Reference
 
 Base URL (dev): `http://localhost:5000/api/v1`
 

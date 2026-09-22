@@ -94,7 +94,7 @@ async function findOrCreateStudentUser({ item, institutionId, department, depart
           fullName: item.name,
           email,
           tempPassword,
-          loginUrl: `${env.frontendUrl}/login`,
+          loginUrl: `${env.frontendUrl}/institutional`,
         });
         sendEmail({ to: email, subject, html, text });
       }

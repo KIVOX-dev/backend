@@ -33,7 +33,7 @@ async function sendEmail({ to, subject, html, text }) {
   try {
     const brevo = getClient();
     await brevo.transactionalEmails.sendTransacEmail({
-      sender: { email: env.brevo.senderEmail, name: env.brevo.senderName || 'UpScaler-AI' },
+      sender: { email: env.brevo.senderEmail, name: env.brevo.senderName || 'TalentSnaps' },
       to: [{ email: to }],
       subject,
       htmlContent: html,
