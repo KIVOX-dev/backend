@@ -6,6 +6,7 @@ const lessonAssessmentAttemptRepository = require('../repositories/lessonAssessm
 const studentSkillBadgeRepository = require('../repositories/studentSkillBadge.repository');
 const studentCertificateRepository = require('../repositories/studentCertificate.repository');
 const studentRepository = require('../repositories/student.repository');
+const roadmapService = require('./roadmap.service');
 const { parseYoutubeInput, fetchPlaylist, fetchSingleVideo, YoutubeApiError } = require('../utils/youtubeClient');
 const { callAiService } = require('../utils/aiServiceClient');
 const { matchSkill } = require('../config/skillCatalog');
@@ -380,12 +381,20 @@ class CourseService {
 
     if (!certificateIssued && nextCount >= BADGES_PER_CERTIFICATE) {
       certificateIssued = true;
-      await studentCertificateRepository.create({ student_id: student.id, skill_name: lesson.skill_name, issued_at: new Date() });
+      await studentCertificateRepository.create({ student_id: student.id, type: 'skill', skill_name: lesson.skill_name, issued_at: new Date() });
       await recordActivity({
         userId: student.user_id,
         action: 'skill_certificate_earned',
         entityType: 'student_skill_badge',
         entityId: badge.id,
+      });
+      // A newly-issued skill certificate might be the last one a student's
+      // chosen job role needed — check right away rather than waiting for
+      // their next roadmap page view (roadmap.service.js#getRoadmap already
+      // covers that path too, so this is belt-and-suspenders, not the only
+      // trigger).
+      await roadmapService.maybeIssueRoleCertificateForStudent(student).catch((err) => {
+        logger.error('Role certificate check failed after skill certificate issuance', { studentId: student.id, error: err.message });
       });
     }
 

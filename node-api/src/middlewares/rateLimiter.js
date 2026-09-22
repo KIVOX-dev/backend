@@ -112,4 +112,20 @@ const healthLimiter = rateLimit({
   store: storeFor('health', HEALTH_WINDOW_MS),
 });
 
-module.exports = { apiLimiter, authLimiter, identifyLimiter, aiLimiter, aiInstitutionLimiter, healthLimiter };
+// Guards GET /roadmap/roles/:roleId — even a cache hit still does DB reads
+// per skill in the role, and a cache miss spends real YouTube quota (100
+// units/search.list call), so this is deliberately its own bucket rather
+// than falling under only the generic apiLimiter. Same per-user-keyed shape
+// as aiLimiter, sized a bit higher since most requests are cheap cache hits.
+const ROADMAP_WINDOW_MS = 15 * 60 * 1000;
+const roadmapLimiter = rateLimit({
+  windowMs: ROADMAP_WINDOW_MS,
+  max: parseInt(process.env.ROADMAP_RATE_LIMIT_MAX, 10) || 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => `user:${req.user.id}`,
+  message: { success: false, message: 'Too many roadmap requests, please try again later.' },
+  store: storeFor('roadmap-user', ROADMAP_WINDOW_MS),
+});
+
+module.exports = { apiLimiter, authLimiter, identifyLimiter, aiLimiter, aiInstitutionLimiter, healthLimiter, roadmapLimiter };

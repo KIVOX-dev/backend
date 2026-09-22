@@ -21,6 +21,14 @@ function certUrl(certificateId) {
   return `${env.frontendUrl}/verify/${certificateId}`;
 }
 
+// A skill certificate is named after its skill; a role certificate (see
+// roadmap.service.js#_maybeIssueRoleCertificate) after the job role it
+// covers — `type` tells which of skill_name/role_title is populated.
+function certificateName(certificate) {
+  const subject = certificate.type === 'role' ? certificate.role_title : certificate.skill_name;
+  return `${subject} — TalentSnaps Certified`;
+}
+
 // LinkedIn's own documented "Add to Profile" deep link for a certification
 // (https://addtoprofile.linkedin.com/, ADD_TO_PROFILE / CERTIFICATION_NAME
 // task) — clicking it opens LinkedIn's own "Add certification" form
@@ -30,7 +38,7 @@ function certUrl(certificateId) {
 function linkedinAddUrl(certificate) {
   const params = new URLSearchParams({
     startTask: 'CERTIFICATION_NAME',
-    name: `${certificate.skill_name} — TalentSnaps Certified`,
+    name: certificateName(certificate),
     organizationName: 'TalentSnaps',
     issueYear: String(new Date(certificate.issued_at).getFullYear()),
     issueMonth: String(new Date(certificate.issued_at).getMonth() + 1),
@@ -57,7 +65,9 @@ class StudentSkillService {
     const certificates = await studentCertificateRepository.findForStudent(student.id);
     return certificates.map((certificate) => ({
       id: certificate.id,
+      type: certificate.type || 'skill',
       skill_name: certificate.skill_name,
+      role_title: certificate.role_title,
       issued_at: certificate.issued_at,
       verify_url: certUrl(certificate.id),
       linkedin_add_url: linkedinAddUrl(certificate),
@@ -74,7 +84,9 @@ class StudentSkillService {
     const user = student ? await userRepository.findById(student.user_id) : null;
     return {
       id: certificate.id,
+      type: certificate.type || 'skill',
       skill_name: certificate.skill_name,
+      role_title: certificate.role_title,
       issued_at: certificate.issued_at,
       student_name: user?.full_name || 'A TalentSnaps student',
     };

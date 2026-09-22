@@ -39,6 +39,10 @@ module.exports = {
     // above, which are this student's single current-institution record;
     // `education` here can hold prior schools too, same as any resume.
     'work_experience', 'education',
+    // Self-selected target role (see config/jobRoleCatalog.js) driving the
+    // "Choose Your Job Role" setup step and the YouTube-to-Course roadmap tab
+    // — an id from that catalog, or null if the student hasn't picked one yet.
+    'target_job_role',
   ],
   defaults: { profile_completed: false },
 };

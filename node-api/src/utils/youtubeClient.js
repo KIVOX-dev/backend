@@ -128,6 +128,28 @@ async function fetchSingleVideo(videoId) {
   return video;
 }
 
+// search.list only gives id + title + thumbnail + channel (no duration) —
+// same two-call shape as fetchPlaylist: search first, then a videos.list
+// batch to fill in real durations. Costs 100 quota units per call (vs 1 for
+// playlists/videos.list) — callers MUST cache by query, never call this
+// per-request (see roadmapSkillCache.model.js, the only caller).
+async function searchVideos(query, { maxResults = 6 } = {}) {
+  const searchData = await apiGet('/search', {
+    part: 'snippet',
+    q: query,
+    type: 'video',
+    order: 'relevance',
+    maxResults,
+  });
+  const items = searchData.items || [];
+  const videoIds = items.map((item) => item.id?.videoId).filter(Boolean);
+  if (videoIds.length === 0) return [];
+
+  const detailed = await fetchVideosDetails(videoIds);
+  const channelByVideoId = new Map(items.map((item) => [item.id.videoId, item.snippet?.channelTitle || null]));
+  return detailed.map((video) => ({ ...video, channelTitle: channelByVideoId.get(video.youtubeVideoId) || null }));
+}
+
 // playlistItems.list only gives id + title + thumbnail (no duration) — a
 // second videos.list batch call fills in durationSeconds for every item.
 async function fetchPlaylist(playlistId) {
@@ -167,5 +189,6 @@ module.exports = {
   parseYoutubeInput,
   fetchSingleVideo,
   fetchPlaylist,
+  searchVideos,
   YoutubeApiError,
 };
