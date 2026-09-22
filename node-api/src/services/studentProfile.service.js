@@ -156,7 +156,17 @@ class StudentProfileService {
     const now = new Date();
     const lastMonthRef = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1));
 
-    const categoryStats = [...byCategory.entries()].map(([category, list]) => {
+    // Always all 4 categories (not just attempted ones) — the frontend's
+    // Growth Trends grid shows every category so a student can see what they
+    // haven't tried yet, not just what they have. Skipped entirely when the
+    // student has never completed an aptitude attempt at all (nothing to
+    // contrast "tried" vs "untried" against yet) — matches has_data below,
+    // which gates the frontend from rendering this section in that case.
+    const categoryStats = attempts.length === 0 ? [] : Object.entries(CATEGORY_META).map(([category, meta]) => {
+      const list = byCategory.get(category) || [];
+      if (list.length === 0) {
+        return { category, label: meta.label, avg_percentage: 0, attempts: 0, growth: null };
+      }
       const pct = Math.round(average(list.map((a) => a.percentage || 0)));
       const thisMonthAvg = average(list.filter((a) => a.completed_at && isSameMonth(new Date(a.completed_at), now)).map((a) => a.percentage || 0));
       const lastMonthAvg = average(list.filter((a) => a.completed_at && isSameMonth(new Date(a.completed_at), lastMonthRef)).map((a) => a.percentage || 0));
@@ -164,7 +174,7 @@ class StudentProfileService {
         list.some((a) => a.completed_at && isSameMonth(new Date(a.completed_at), lastMonthRef));
       return {
         category,
-        label: CATEGORY_META[category]?.label || category,
+        label: meta.label,
         avg_percentage: pct,
         attempts: list.length,
         // null (not 0) when there isn't a full prior month to compare
@@ -173,8 +183,12 @@ class StudentProfileService {
       };
     }).sort((a, b) => b.avg_percentage - a.avg_percentage);
 
-    const topSkill = categoryStats[0] || null;
-    const weakness = categoryStats.length > 1 ? categoryStats[categoryStats.length - 1] : null;
+    // Top skill / weakness only ever pick from categories the student has
+    // actually attempted — an untried category defaults to 0% above, which
+    // would otherwise get picked as the "weakness" just for never being tried.
+    const attemptedStats = categoryStats.filter((c) => c.attempts > 0);
+    const topSkill = attemptedStats[0] || null;
+    const weakness = attemptedStats.length > 1 ? attemptedStats[attemptedStats.length - 1] : null;
 
     const aptitudePct = Math.round(average(attempts.map((a) => a.percentage || 0)));
     const interviewPct = Math.round(average(interviews.map((i) => (i.overall_rating || 0) * 10)));
@@ -203,15 +217,15 @@ class StudentProfileService {
     const attemptedCategories = new Set(byCategory.keys());
     for (const [key, meta] of Object.entries(CATEGORY_META)) {
       if (!attemptedCategories.has(key)) {
-        focusAreas.push({ severity: 'gap', text: `You haven't attempted any ${meta.label} practice tests yet — start here to build a baseline.` });
+        focusAreas.push({ severity: 'gap', text: `You haven't tried ${meta.label} yet — a great next category to build your score.` });
       }
     }
 
-    for (const stat of categoryStats) {
+    for (const stat of attemptedStats) {
       if (stat.avg_percentage < 60) {
         focusAreas.push({
           severity: 'weak',
-          text: `${stat.label} is averaging ${stat.avg_percentage}% across ${stat.attempts} attempt${stat.attempts === 1 ? '' : 's'} — your weakest scored area, worth more practice time.`,
+          text: `You're building momentum in ${stat.label} (${stat.avg_percentage}% avg across ${stat.attempts} attempt${stat.attempts === 1 ? '' : 's'}) — a bit more practice here will boost your placement readiness fast.`,
         });
       }
     }
@@ -219,19 +233,19 @@ class StudentProfileService {
     // Real completed tests exist, but every one was an assigned test
     // (no fixed category — see the loop above building byCategory), so
     // there's genuine activity with nothing to show a skill breakdown for.
-    if (attempts.length > 0 && categoryStats.length === 0) {
+    if (attempts.length > 0 && attemptedStats.length === 0) {
       focusAreas.push({
         severity: 'gap',
-        text: `Your ${attempts.length} completed test${attempts.length === 1 ? '' : 's'} were assigned tests with no skill category — try Mock Practice to get a real strengths/weaknesses breakdown.`,
+        text: `Nice work completing ${attempts.length} test${attempts.length === 1 ? '' : 's'}! Try Mock Practice next to get a category-by-category strengths and weaknesses breakdown.`,
       });
     }
 
     if (interviews.length === 0) {
-      focusAreas.push({ severity: 'gap', text: 'No mock interviews completed yet — try one to build interview confidence and get a baseline score.' });
+      focusAreas.push({ severity: 'gap', text: "You haven't tried a mock interview yet — one attempt is all it takes to get your baseline score and build confidence." });
     } else if (interviewPct < 60) {
       focusAreas.push({
         severity: 'weak',
-        text: `Mock interview average is ${(interviewPct / 10).toFixed(1)}/10 across ${interviews.length} interview${interviews.length === 1 ? '' : 's'} — the score reflects how many questions you actually answered, so answer every one fully.`,
+        text: `You're averaging ${(interviewPct / 10).toFixed(1)}/10 across ${interviews.length} mock interview${interviews.length === 1 ? '' : 's'} — answering every question fully next time will lift this score fast.`,
       });
     }
 
@@ -241,8 +255,8 @@ class StudentProfileService {
       focusAreas.push({
         severity: resume ? 'weak' : 'gap',
         text: resume
-          ? `Resume is missing: ${labels.join(', ')} — filling these in raises your resume completeness above ${resumePct}%.`
-          : `No resume started yet — build one in Resume Builder, starting with ${labels.join(', ')}.`,
+          ? `Great start on your resume! Add ${labels.join(', ')} to push completeness above ${resumePct}%.`
+          : `Ready to stand out? Build your resume in Resume Builder, starting with ${labels.join(', ')}.`,
       });
     }
 
