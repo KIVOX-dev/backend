@@ -99,7 +99,10 @@ class AchievementService {
         const student = await studentRepository.findByUserId(user.id);
         const tests = (student && student.tests_completed) || 0;
         const accuracy = (student && student.avg_accuracy) || 0;
-        const score = Math.round(tests * accuracy * 10);
+        // tests * accuracy directly (no inflation multiplier) — a student
+        // with a handful of tests reads as a small, honest number instead of
+        // a game-score-looking 2,900+.
+        const score = Math.round(tests * accuracy);
 
         let trend = 'same';
         if (tests > 0) {
