@@ -17,6 +17,7 @@ router.use(authenticate, authorize(ROLES.STUDENT));
 
 router.get('/', controller.getOwn);
 router.get('/summary', controller.getSummary);
+router.get('/practice-trends', controller.getPracticeTrends);
 router.get('/leetcode-stats', controller.getLeetcodeStats);
 router.get('/hackerrank-stats', controller.getHackerrankStats);
 router.get('/skill-badges', controller.getSkillBadges);

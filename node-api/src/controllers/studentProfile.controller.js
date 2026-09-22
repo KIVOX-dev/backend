@@ -14,6 +14,11 @@ const getSummary = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, summary);
 });
 
+const getPracticeTrends = asyncHandler(async (req, res) => {
+  const trends = await studentProfileService.getPracticeTrends(req.user);
+  ApiResponse.ok(res, trends);
+});
+
 const getLeetcodeStats = asyncHandler(async (req, res) => {
   const stats = await studentProfileService.getLeetcodeStats(req.user);
   ApiResponse.ok(res, stats);
@@ -63,6 +68,7 @@ module.exports = {
   createOwn,
   updateOwn,
   getSummary,
+  getPracticeTrends,
   getLeetcodeStats,
   getHackerrankStats,
   uploadAvatar,

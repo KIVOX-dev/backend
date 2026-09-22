@@ -7,6 +7,7 @@ const interviewAttemptRepository = require('../repositories/interviewAttempt.rep
 const resumeBuilderRepository = require('../repositories/resumeBuilder.repository');
 const testRepository = require('../repositories/test.repository');
 const ApiError = require('../utils/ApiError');
+const { CATEGORY_META } = require('../config/aptitudeCategories');
 const {
   verifyLeetcodeUsername,
   verifyHackerrankUsername,
@@ -15,17 +16,6 @@ const {
   fetchHackerrankStats,
   SocialProfileNotFoundError,
 } = require('../utils/socialProfileClient');
-
-// Category -> (display label, one plausible role a strength there points
-// toward). Deliberately simple/rule-based, not AI-generated — see
-// PracticeModule.tsx's CATEGORIES for the same 4 categories on the
-// practice-bank side.
-const CATEGORY_META = {
-  quantitative: { label: 'Quantitative Aptitude', role: 'Data Analyst' },
-  logical: { label: 'Logical Reasoning', role: 'Software Developer' },
-  verbal: { label: 'Verbal Ability', role: 'Business Analyst' },
-  data_interpretation: { label: 'Data Interpretation', role: 'Business Intelligence Analyst' },
-};
 
 // Resume completeness is a plain "how many of the sections a recruiter
 // actually looks for are filled in" count — no ATS scoring here (that's
@@ -289,6 +279,42 @@ class StudentProfileService {
       category_trends: categoryStats,
       focus_areas: focusAreas,
     };
+  }
+
+  // Backs the Practice Module's per-category growth-trend charts
+  // (PracticeModule.tsx) — unlike getSummary()'s category_trends (one
+  // rolled-up avg per category), this returns every completed attempt's own
+  // date + score so the frontend can actually plot a line across sessions,
+  // not just a single before/after delta.
+  async getPracticeTrends(actor) {
+    const student = await studentRepository.findByUserId(actor.id);
+    if (!student) throw ApiError.notFound('Profile not created yet');
+
+    const { rows: attempts } = await assessmentAttemptRepository.findAll({
+      page: 1,
+      limit: 1000,
+      filters: { student_id: student.id, status: 'completed' },
+    });
+
+    const testIds = [...new Set(attempts.map((a) => a.test_id))];
+    const tests = await testRepository.findByIds(testIds);
+    const categoryByTestId = new Map(tests.map((t) => [t.id, t.category]));
+
+    const byCategory = new Map(Object.keys(CATEGORY_META).map((key) => [key, []]));
+    for (const attempt of attempts) {
+      const category = categoryByTestId.get(attempt.test_id);
+      if (!category || !byCategory.has(category)) continue; // assigned test, or a category outside the 4 practice-bank ones
+      if (!attempt.completed_at) continue; // no point on a timeline without a date
+      byCategory.get(category).push({
+        date: attempt.completed_at,
+        percentage: Math.round(attempt.percentage || 0),
+      });
+    }
+
+    return Object.entries(CATEGORY_META).map(([category, meta]) => {
+      const points = byCategory.get(category).sort((a, b) => new Date(a.date) - new Date(b.date));
+      return { category, label: meta.label, points };
+    });
   }
 
   async createOwn(actor, data) {
