@@ -23,6 +23,49 @@ def test_generate_questions_defaults_company_to_general(client, auth_headers):
     assert all("GENERAL" in q["text"] for q in resp.json())
 
 
+def test_generate_questions_hr_round_fallback_has_no_technical_questions(client, auth_headers):
+    resp = client.post(
+        "/v1/interview/generate-questions",
+        json={"role": "Software Engineer", "company": "TCS", "round": "hr"},
+        headers=auth_headers,
+    )
+    assert resp.status_code == 200
+    questions = resp.json()
+    assert len(questions) == 10
+    assert all(q["type"] == "hr" for q in questions)
+    assert not any("closures" in q["text"] or "TCP" in q["text"] for q in questions)
+
+
+def test_generate_questions_rejects_unknown_round(client, auth_headers):
+    resp = client.post(
+        "/v1/interview/generate-questions",
+        json={"role": "Software Engineer", "round": "karaoke"},
+        headers=auth_headers,
+    )
+    assert resp.status_code == 422
+
+
+@respx.mock
+def test_generate_questions_sends_round_to_groq(client, auth_headers, groq_configured):
+    route = respx.post("https://api.groq.com/openai/v1/chat/completions").mock(
+        return_value=Response(
+            200,
+            json={"choices": [{"message": {"content": json.dumps({"questions": [f"Q{i}" for i in range(10)]})}}]},
+        )
+    )
+
+    resp = client.post(
+        "/v1/interview/generate-questions",
+        json={"role": "Software Engineer", "company": "TCS", "round": "hr"},
+        headers=auth_headers,
+    )
+    assert resp.status_code == 200
+    assert all(q["type"] == "hr" for q in resp.json())
+    sent = json.loads(route.calls.last.request.content)
+    assert "HR round" in sent["messages"][0]["content"]
+    assert "Do not ask any technical" in sent["messages"][1]["content"]
+
+
 def test_generate_questions_rejects_missing_role(client, auth_headers):
     resp = client.post("/v1/interview/generate-questions", json={}, headers=auth_headers)
     assert resp.status_code == 422

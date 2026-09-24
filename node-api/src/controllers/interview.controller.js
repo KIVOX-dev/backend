@@ -3,7 +3,7 @@ const asyncHandler = require('../utils/asyncHandler');
 const ApiResponse = require('../utils/ApiResponse');
 
 const generate = asyncHandler(async (req, res) => {
-  const questions = await interviewService.generateQuestions(req.query.role, req.query.company);
+  const questions = await interviewService.generateQuestions(req.query.role, req.query.company, req.query.round);
   ApiResponse.ok(res, questions);
 });
 

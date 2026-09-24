@@ -53,6 +53,29 @@ describe('AI features: graceful degradation when the AI service is unreachable',
     expect(res.body.data.every((q) => q.text.includes('ACME') && q.text.includes('BACKEND ENGINEER'))).toBe(true);
   });
 
+  it('POST /interviews/generate passes the round through — an HR round gets HR questions, not coding ones', async () => {
+    const institution = await seedInstitution(institutionRepository, { code: `AIH-${Date.now()}` });
+    const token = await loginAsAdmin(institution.id);
+
+    const res = await request(app)
+      .post('/api/v1/interviews/generate?role=Software%20Engineer&company=TCS&round=hr')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
+
+    expect(res.body.data).toHaveLength(10);
+    expect(res.body.data.every((q) => q.type === 'hr')).toBe(true);
+  });
+
+  it('POST /interviews/generate rejects an unknown round', async () => {
+    const institution = await seedInstitution(institutionRepository, { code: `AIX-${Date.now()}` });
+    const token = await loginAsAdmin(institution.id);
+
+    await request(app)
+      .post('/api/v1/interviews/generate?role=Software%20Engineer&round=karaoke')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(400);
+  });
+
   it('POST /tests/generate-questions falls back to a local placeholder question instead of failing', async () => {
     const institution = await seedInstitution(institutionRepository, { code: `AIT-${Date.now()}` });
     const token = await loginAsAdmin(institution.id);
