@@ -32,14 +32,14 @@ const getHackerrankStats = asyncHandler(async (req, res) => {
 const uploadAvatar = asyncHandler(async (req, res) => {
   const file = (req.files || [])[0];
   if (!file) throw ApiError.badRequest('No image uploaded');
-  const profile = await studentProfileService.uploadAvatar(req.user, file.publicUrl);
+  const profile = await studentProfileService.uploadAvatar(req.user, file.storageRef);
   ApiResponse.ok(res, profile, 'Profile photo updated');
 });
 
 const uploadCoverImage = asyncHandler(async (req, res) => {
   const file = (req.files || [])[0];
   if (!file) throw ApiError.badRequest('No image uploaded');
-  const profile = await studentProfileService.uploadCoverImage(req.user, file.publicUrl);
+  const profile = await studentProfileService.uploadCoverImage(req.user, file.storageRef);
   ApiResponse.ok(res, profile, 'Cover image updated');
 });
 

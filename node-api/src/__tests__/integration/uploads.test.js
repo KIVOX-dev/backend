@@ -77,7 +77,37 @@ describe('Upload security: /profile', () => {
       .set('Authorization', `Bearer ${token}`)
       .attach('profilePhoto', REAL_PNG, { filename: 'avatar.png', contentType: 'image/png' })
       .expect(200);
-    expect(res.body.data.values.profilePhoto).toMatch(/^\/uploads\/profile\/.+\.png$/);
+    // No GCS bucket in tests, so this lands on local disk — and comes back
+    // as a short-lived signed link, never a bare public path.
+    expect(res.body.data.values.profilePhoto).toMatch(/^\/uploads\/profile\/[\w-]+\.png\?token=[\w-]+&exp=\d+$/);
+  });
+
+  describe('serving a locally stored onboarding photo', () => {
+    async function uploadPhoto() {
+      const token = await loginAsHr();
+      const res = await request(app)
+        .post('/api/v1/profile')
+        .set('Authorization', `Bearer ${token}`)
+        .attach('profilePhoto', REAL_PNG, { filename: 'avatar.png', contentType: 'image/png' })
+        .expect(200);
+      return res.body.data.values.profilePhoto;
+    }
+
+    it('serves the file through its signed link', async () => {
+      const signedLink = await uploadPhoto();
+      const res = await request(app).get(signedLink).expect(200);
+      expect(res.headers['cache-control']).toMatch(/^private/);
+    });
+
+    it('refuses the same path with no signature (it used to be public)', async () => {
+      const signedLink = await uploadPhoto();
+      await request(app).get(signedLink.split('?')[0]).expect(403);
+    });
+
+    it('refuses a link whose expiry was tampered with', async () => {
+      const signedLink = await uploadPhoto();
+      await request(app).get(signedLink.replace(/exp=\d+/, `exp=${Date.now() + 10 ** 9}`)).expect(403);
+    });
   });
 
   it('rejects an oversized file', async () => {

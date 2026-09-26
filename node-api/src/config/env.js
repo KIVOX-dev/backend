@@ -57,20 +57,27 @@ module.exports = {
     appToken: process.env.GITHUB_APP_TOKEN || '',
   },
 
-  // Student profile photo / cover banner uploads (middlewares/upload.js's
-  // verifyAndUploadToGcs, utils/gcsClient.js). Cloud Run's own filesystem is
-  // wiped on every restart/redeploy/scale event, so — unlike the existing
-  // onboarding profile-photo upload, which writes to local disk — anything
-  // meant to actually persist has to land in real cloud storage instead.
-  // Optional: uploads 503 until this is set, same philosophy as
-  // aiService/brevo above.
+  // Profile photos, cover banners, and onboarding photo/signature uploads
+  // (middlewares/upload.js, utils/gcsClient.js). Cloud Run's own filesystem
+  // is wiped on every restart/redeploy/scale event, so anything meant to
+  // persist has to land in real cloud storage. The bucket must NOT grant
+  // allUsers read access: objects are private and only ever reached through
+  // short-lived V4 signed URLs (utils/privateMedia.js). Optional: avatar/
+  // cover uploads 503 and onboarding uploads fall back to local disk (dev/
+  // tests only) until this is set, same philosophy as aiService/brevo above.
   gcs: {
     bucketName: process.env.GCS_BUCKET_NAME || '',
+    // Lifetime of every signed URL handed out for a profile photo, cover, or
+    // signature. Clamped to 60s..7 days (7 days is V4 signing's own maximum).
+    mediaUrlTtlSeconds: Math.min(
+      Math.max(parseInt(process.env.MEDIA_URL_TTL_SECONDS, 10) || 900, 60),
+      7 * 24 * 60 * 60
+    ),
     // Placement-proof offer letters (utils/placementProofStorage.js), stored
     // per institution under placement-proof/<institution_id>/. Defaults to
-    // the profile-photo bucket above; set this to a separate bucket WITHOUT
-    // public allUsers read access, since that bucket is public-read and
-    // offer letters carry salary/employer details. Unset both = local disk
+    // the profile-photo bucket above. A separate bucket is still recommended
+    // (offer letters carry salary/employer details, and a separate bucket
+    // keeps their IAM and retention independent). Unset both = local disk
     // (dev/tests only — not durable on Cloud Run).
     documentsBucketName: process.env.GCS_DOCUMENTS_BUCKET_NAME || process.env.GCS_BUCKET_NAME || '',
   },

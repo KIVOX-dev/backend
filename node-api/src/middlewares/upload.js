@@ -4,10 +4,18 @@ const crypto = require('crypto');
 const multer = require('multer');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
-const { uploadPublicFile } = require('../utils/gcsClient');
+const env = require('../config/env');
+const { uploadPrivateFile } = require('../utils/gcsClient');
+const { gcsRef, LOCAL_URL_PREFIX } = require('../utils/privateMedia');
 
-// Mirrors python-service's uploads/profile layout so both the on-disk path and
-// the public /uploads/profile/<file> URL shape stay familiar across the migration.
+// Browsers may reuse a profile image for this long — kept inside the signed
+// URL's own lifetime (MEDIA_URL_TTL_SECONDS) so a cached copy never outlives
+// the access it was granted under by much.
+const MEDIA_CACHE_CONTROL = 'private, max-age=300';
+
+// Local-disk fallback for onboarding uploads when GCS_BUCKET_NAME is unset
+// (dev/tests). Served only through signed links — see
+// routes/profileMediaFiles.routes.js.
 const uploadDir = path.join(process.cwd(), 'uploads', 'profile');
 fs.mkdirSync(uploadDir, { recursive: true });
 
@@ -121,12 +129,12 @@ const verifyDocument = asyncHandler(async (req, res, next) => {
 });
 
 // Runs after upload.any() on the same route. Verifies each buffered file's
-// real content against its declared type, then — and only then — writes it
-// to disk under a fresh random filename (never the client-supplied
-// originalname, which is how path traversal / double-extension tricks like
-// `avatar.jpg.php` would otherwise reach the filesystem). Sets `file.filename`
-// on each entry so downstream controllers (profile.controller.js#saveOwn)
-// keep working unchanged.
+// real content against its declared type, then — and only then — stores it
+// under a fresh random name (never the client-supplied originalname, which is
+// how path traversal / double-extension tricks like `avatar.jpg.php` would
+// otherwise reach storage). Goes to the private GCS bucket when configured,
+// local disk otherwise. Sets `file.storageRef` — a private reference, not a
+// URL (see utils/privateMedia.js) — for profile.controller.js#saveOwn.
 const verifyAndPersist = asyncHandler(async (req, res, next) => {
   for (const file of req.files || []) {
     const rule = ALLOWED_TYPES[file.mimetype];
@@ -135,7 +143,19 @@ const verifyAndPersist = asyncHandler(async (req, res, next) => {
     }
     const ext = extensionOf(file.originalname);
     file.filename = `${crypto.randomUUID()}${ext}`;
-    await fs.promises.writeFile(path.join(uploadDir, file.filename), file.buffer);
+    if (env.gcs.bucketName) {
+      const destination = `profile/${file.filename}`;
+      await uploadPrivateFile(file.buffer, {
+        bucketName: env.gcs.bucketName,
+        destination,
+        contentType: file.mimetype,
+        cacheControl: MEDIA_CACHE_CONTROL,
+      });
+      file.storageRef = gcsRef(destination);
+    } else {
+      await fs.promises.writeFile(path.join(uploadDir, file.filename), file.buffer);
+      file.storageRef = `${LOCAL_URL_PREFIX}${file.filename}`;
+    }
   }
   next();
 });
@@ -145,17 +165,26 @@ const verifyAndPersist = asyncHandler(async (req, res, next) => {
 // filesystem is ephemeral (wiped on restart/redeploy/scale, never shared
 // across instances), so anything meant to actually persist (student
 // avatar/cover images, see studentProfile.routes.js) can't use the
-// local-disk pattern the onboarding profile-photo upload above uses. Sets
-// `file.publicUrl` on each entry instead of `file.filename`.
+// local-disk fallback. Objects are private; sets `file.storageRef` (a
+// gs:// reference, signed per response — see utils/privateMedia.js).
 const verifyAndUploadToGcs = asyncHandler(async (req, res, next) => {
   for (const file of req.files || []) {
     const rule = ALLOWED_TYPES[file.mimetype];
     if (!rule || !rule.magic(file.buffer)) {
       throw ApiError.badRequest(`"${file.originalname}" does not look like a valid ${file.mimetype.split('/')[1].toUpperCase()} file.`);
     }
+    if (!env.gcs.bucketName) {
+      throw ApiError.serviceUnavailable('Image uploads are not configured');
+    }
     const ext = extensionOf(file.originalname);
     const destination = `student-profile/${crypto.randomUUID()}${ext}`;
-    file.publicUrl = await uploadPublicFile(file.buffer, { destination, contentType: file.mimetype });
+    await uploadPrivateFile(file.buffer, {
+      bucketName: env.gcs.bucketName,
+      destination,
+      contentType: file.mimetype,
+      cacheControl: MEDIA_CACHE_CONTROL,
+    });
+    file.storageRef = gcsRef(destination);
   }
   next();
 });

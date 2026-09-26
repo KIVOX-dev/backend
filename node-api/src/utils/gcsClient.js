@@ -1,5 +1,4 @@
 const { Storage } = require('@google-cloud/storage');
-const env = require('../config/env');
 const ApiError = require('./ApiError');
 const logger = require('./logger');
 
@@ -10,45 +9,23 @@ const logger = require('./logger');
 // consumer in this codebase (see aiServiceClient.js's GoogleAuth usage).
 const storage = new Storage();
 
-// Requires the bucket to grant `allUsers` the `roles/storage.objectViewer`
-// IAM role (bucket-level, since new buckets default to uniform
-// bucket-level access — per-object `predefinedAcl` doesn't work there) —
-// profile photos/covers are meant to be publicly viewable on a shared
-// profile, same as any other social-profile avatar.
-async function uploadPublicFile(buffer, { destination, contentType }) {
-  if (!env.gcs.bucketName) {
-    throw ApiError.serviceUnavailable('Image uploads are not configured');
-  }
-
-  try {
-    const bucket = storage.bucket(env.gcs.bucketName);
-    const file = bucket.file(destination);
-    await file.save(buffer, {
-      contentType,
-      resumable: false,
-      metadata: { cacheControl: 'public, max-age=31536000, immutable' },
-    });
-    return `https://storage.googleapis.com/${env.gcs.bucketName}/${destination}`;
-  } catch (err) {
-    logger.error('GCS upload failed', { destination, error: err.message });
-    throw ApiError.serviceUnavailable("Couldn't upload the image right now — try again shortly");
-  }
-}
-
-// For documents that must never get a public URL (placement-proof offer
-// letters). Unlike uploadPublicFile this returns no URL at all — callers
-// serve the bytes back themselves through an access-checked route
-// (routes/placementProofFiles.routes.js), via downloadFile below.
-async function uploadPrivateFile(buffer, { bucketName, destination, contentType }) {
+// Every object this app writes is private — nothing is ever granted
+// `allUsers` read. Callers either serve the bytes back themselves through
+// an access-checked route (placement-proof offer letters, via downloadFile
+// below) or hand out a short-lived V4 signed URL (profile photos, via
+// signReadUrl below and utils/privateMedia.js). `cacheControl` defaults to
+// no-store; profile photos pass a short private max-age instead so a
+// browser can reuse the image for as long as its signed URL is valid.
+async function uploadPrivateFile(buffer, { bucketName, destination, contentType, cacheControl = 'private, no-store' }) {
   try {
     await storage.bucket(bucketName).file(destination).save(buffer, {
       contentType,
       resumable: false,
-      metadata: { cacheControl: 'private, no-store' },
+      metadata: { cacheControl },
     });
   } catch (err) {
     logger.error('GCS upload failed', { destination, error: err.message });
-    throw ApiError.serviceUnavailable("Couldn't upload the document right now — try again shortly");
+    throw ApiError.serviceUnavailable("Couldn't upload the file right now — try again shortly");
   }
 }
 
@@ -61,4 +38,18 @@ async function downloadFile({ bucketName, destination }) {
   return { buffer, contentType: metadata.contentType };
 }
 
-module.exports = { uploadPublicFile, uploadPrivateFile, downloadFile };
+// Short-lived, read-only V4 signed URL for one object. On Cloud Run the
+// runtime service account has no private key, so the library signs through
+// the IAM Credentials API (signBlob) — that needs the service account to
+// hold roles/iam.serviceAccountTokenCreator on itself (see
+// docs/OPERATIONS.md, "Private profile photos").
+async function signReadUrl({ bucketName, destination, ttlSeconds }) {
+  const [url] = await storage.bucket(bucketName).file(destination).getSignedUrl({
+    version: 'v4',
+    action: 'read',
+    expires: Date.now() + ttlSeconds * 1000,
+  });
+  return url;
+}
+
+module.exports = { uploadPrivateFile, downloadFile, signReadUrl };

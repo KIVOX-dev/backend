@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const { isPrivateMediaRef } = require('../utils/privateMedia');
 const { ALL_ROLES } = require('../config/constants');
 
 const create = Joi.object({
@@ -37,7 +38,14 @@ const update = Joi.object({
   is_active: Joi.boolean(),
   status: Joi.string().valid('pending', 'approved', 'rejected'),
   is_email_verified: Joi.boolean(),
-  avatar_url: Joi.string().uri().allow('', null),
+  // A plain web link only. Rejects gs:// and anything that parses as one of
+  // this app's own private media references — otherwise a user could point
+  // their avatar at someone else's private photo/signature and have the
+  // response signer (middlewares/signPrivateMedia.js) mint a URL for it.
+  avatar_url: Joi.string()
+    .uri({ scheme: ['http', 'https'] })
+    .custom((value, helpers) => (isPrivateMediaRef(value) ? helpers.error('any.invalid') : value))
+    .allow('', null),
   preferences: Joi.object().unknown(true),
   department: Joi.string().max(255).allow('', null),
 });

@@ -12,6 +12,10 @@ const env = require('../config/env');
 // ownership/institution check as every other per-record endpoint (see
 // placementRecord.service.js#getProofUrl).
 //
+// Also signs locally stored onboarding photos/signatures
+// (routes/profileMediaFiles.routes.js). The signature covers the full path,
+// so a link minted for one prefix can never verify under the other.
+//
 // Keyed off a derivation of JWT_SECRET rather than a new required env var —
 // this app already treats that secret as the one thing every deploy must
 // set (see config/env.js's required-at-boot list), and deriving a
