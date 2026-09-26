@@ -116,6 +116,45 @@ describe('Placement-proof documents: signed-URL access, not public static servin
     expect(Buffer.from(fileRes.body).toString('utf8')).toBe('%PDF-1.4 test');
   });
 
+  it('files an uploaded offer letter under its own institution folder, and serves it back', async () => {
+    const institutionA = await seedInstitution(institutionRepository, { code: `PPG-${Date.now()}` });
+    const institutionB = await seedInstitution(institutionRepository, { code: `PPH-${Date.now()}` });
+
+    async function uploadAs(institutionId, body) {
+      const { user, password } = await seedUser(userRepository, hashPassword, {
+        role: 'student',
+        institutionId,
+        email: `upload-${Date.now()}-${Math.random()}@example.com`,
+      });
+      await studentRepository.create({ user_id: user.id, institution_id: institutionId });
+      const token = await login(user.email, password);
+      const res = await request(app)
+        .post('/api/v1/placement-records')
+        .set('Authorization', `Bearer ${token}`)
+        .field('company_name', 'Acme Corp')
+        .field('role', 'SDE')
+        .attach('proof_file', Buffer.from(body), { filename: 'offer.pdf', contentType: 'application/pdf' })
+        .expect(201);
+      return { token, record: res.body.data };
+    }
+
+    const a = await uploadAs(institutionA.id, '%PDF-1.4 college A');
+    const b = await uploadAs(institutionB.id, '%PDF-1.4 college B');
+
+    expect(a.record.proof_url).toMatch(new RegExp(`^/uploads/placement-proof/${institutionA.id}/[0-9a-f-]{36}\\.pdf$`));
+    expect(b.record.proof_url).toMatch(new RegExp(`^/uploads/placement-proof/${institutionB.id}/[0-9a-f-]{36}\\.pdf$`));
+
+    const urlRes = await request(app)
+      .get(`/api/v1/placement-records/${a.record.id}/proof-url`)
+      .set('Authorization', `Bearer ${a.token}`)
+      .expect(200);
+    const fileRes = await request(app).get(urlRes.body.data.url).expect(200);
+    expect(Buffer.from(fileRes.body).toString('utf8')).toBe('%PDF-1.4 college A');
+
+    // A valid signature for college A's file doesn't open the same filename under college B.
+    await request(app).get(urlRes.body.data.url.replace(`/${institutionA.id}/`, `/${institutionB.id}/`)).expect(403);
+  });
+
   it('lets institution_admin staff in the same institution mint a signed URL', async () => {
     const institution = await seedInstitution(institutionRepository, { code: `PPE-${Date.now()}` });
     const { record } = await seedStudentWithRecord(institution.id);

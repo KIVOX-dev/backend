@@ -35,4 +35,30 @@ async function uploadPublicFile(buffer, { destination, contentType }) {
   }
 }
 
-module.exports = { uploadPublicFile };
+// For documents that must never get a public URL (placement-proof offer
+// letters). Unlike uploadPublicFile this returns no URL at all — callers
+// serve the bytes back themselves through an access-checked route
+// (routes/placementProofFiles.routes.js), via downloadFile below.
+async function uploadPrivateFile(buffer, { bucketName, destination, contentType }) {
+  try {
+    await storage.bucket(bucketName).file(destination).save(buffer, {
+      contentType,
+      resumable: false,
+      metadata: { cacheControl: 'private, no-store' },
+    });
+  } catch (err) {
+    logger.error('GCS upload failed', { destination, error: err.message });
+    throw ApiError.serviceUnavailable("Couldn't upload the document right now — try again shortly");
+  }
+}
+
+// Resolves to { buffer, contentType }, or null if the object doesn't exist.
+async function downloadFile({ bucketName, destination }) {
+  const file = storage.bucket(bucketName).file(destination);
+  const [exists] = await file.exists();
+  if (!exists) return null;
+  const [[buffer], [metadata]] = await Promise.all([file.download(), file.getMetadata()]);
+  return { buffer, contentType: metadata.contentType };
+}
+
+module.exports = { uploadPublicFile, uploadPrivateFile, downloadFile };

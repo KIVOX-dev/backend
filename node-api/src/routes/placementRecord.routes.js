@@ -3,7 +3,7 @@ const controller = require('../controllers/placementRecord.controller');
 const authenticate = require('../middlewares/authenticate');
 const authorize = require('../middlewares/authorize');
 const validate = require('../middlewares/validate');
-const { documentUpload, verifyAndPersistDocument } = require('../middlewares/upload');
+const { documentUpload, verifyDocument } = require('../middlewares/upload');
 const schema = require('../validations/placementRecord.validation');
 const { ROLES } = require('../config/constants');
 
@@ -22,7 +22,7 @@ router.get('/:id', controller.getById);
 router.post(
   '/',
   documentUpload.any(),
-  verifyAndPersistDocument,
+  verifyDocument,
   validate(schema.create),
   controller.create
 ); // role-gated inside the service (student=self, staff=on behalf of)

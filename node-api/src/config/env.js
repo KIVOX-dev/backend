@@ -66,6 +66,13 @@ module.exports = {
   // aiService/brevo above.
   gcs: {
     bucketName: process.env.GCS_BUCKET_NAME || '',
+    // Placement-proof offer letters (utils/placementProofStorage.js), stored
+    // per institution under placement-proof/<institution_id>/. Defaults to
+    // the profile-photo bucket above; set this to a separate bucket WITHOUT
+    // public allUsers read access, since that bucket is public-read and
+    // offer letters carry salary/employer details. Unset both = local disk
+    // (dev/tests only — not durable on Cloud Run).
+    documentsBucketName: process.env.GCS_DOCUMENTS_BUCKET_NAME || process.env.GCS_BUCKET_NAME || '',
   },
 
   // Lets a student connect their LinkedIn identity — "Sign In with LinkedIn

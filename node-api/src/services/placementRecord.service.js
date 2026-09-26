@@ -4,6 +4,7 @@ const studentRepository = require('../repositories/student.repository');
 const { ROLES } = require('../config/constants');
 const { assertInstitutionOwnership } = require('../utils/authz');
 const { sign } = require('../utils/signedUrl');
+const placementProofStorage = require('../utils/placementProofStorage');
 const ApiError = require('../utils/ApiError');
 
 const STAFF_ROLES = [ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY, ROLES.HR];
@@ -53,6 +54,16 @@ class PlacementRecordService extends BaseService {
     // student's behalf but can't verify (faculty, HR).
     const canSelfVerify = actor.role === ROLES.SUPER_ADMIN || actor.role === ROLES.INSTITUTION_ADMIN;
 
+    // Filed under the student's own institution folder — see
+    // utils/placementProofStorage.js.
+    const proofUrl = proofFile
+      ? await placementProofStorage.save(proofFile.buffer, {
+          institutionId: student.institution_id,
+          extension: proofFile.extension,
+          contentType: proofFile.mimetype,
+        })
+      : undefined;
+
     const record = await this.repository.create({
       student_id: student.id,
       institution_id: student.institution_id,
@@ -62,8 +73,7 @@ class PlacementRecordService extends BaseService {
       work_type: data.work_type,
       mode: data.mode,
       location: data.location,
-      // Served back via app.js's existing /uploads static mount.
-      proof_url: proofFile ? `/uploads/placement-proof/${proofFile.filename}` : undefined,
+      proof_url: proofUrl,
       ...(canSelfVerify ? { verification_status: 'verified', verified_by: actor.id, verified_at: new Date() } : {}),
     });
 

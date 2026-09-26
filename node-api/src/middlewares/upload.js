@@ -76,7 +76,7 @@ const upload = multer({
 // (offer letters) — deliberately not merged into ALLOWED_TYPES above: that
 // one backs onboarding's profile photo/signature fields, and PDF has no
 // business being accepted there. Same two-layer verification approach
-// (extension + Content-Type here, magic bytes in verifyAndPersistDocument).
+// (extension + Content-Type here, magic bytes in verifyDocument).
 const documentUploadDir = path.join(process.cwd(), 'uploads', 'placement-proof');
 fs.mkdirSync(documentUploadDir, { recursive: true });
 
@@ -104,15 +104,18 @@ const documentUpload = multer({
   fileFilter: documentFileFilter,
 });
 
-const verifyAndPersistDocument = asyncHandler(async (req, res, next) => {
+// Only verifies — doesn't persist. Where an offer letter is stored depends on
+// the student's institution (placement-proof/<institution_id>/...), which
+// isn't known until placementRecord.service.js#create resolves the student,
+// so storage happens there (utils/placementProofStorage.js). Sets
+// `file.extension` for it.
+const verifyDocument = asyncHandler(async (req, res, next) => {
   for (const file of req.files || []) {
     const rule = ALLOWED_DOCUMENT_TYPES[file.mimetype];
     if (!rule || !rule.magic(file.buffer)) {
       throw ApiError.badRequest(`"${file.originalname}" does not look like a valid ${file.mimetype === 'application/pdf' ? 'PDF' : file.mimetype.split('/')[1].toUpperCase()} file.`);
     }
-    const ext = extensionOf(file.originalname);
-    file.filename = `${crypto.randomUUID()}${ext}`;
-    await fs.promises.writeFile(path.join(documentUploadDir, file.filename), file.buffer);
+    file.extension = extensionOf(file.originalname);
   }
   next();
 });
@@ -164,5 +167,5 @@ module.exports = {
   verifyAndUploadToGcs,
   documentUpload,
   documentUploadDir,
-  verifyAndPersistDocument,
+  verifyDocument,
 };
