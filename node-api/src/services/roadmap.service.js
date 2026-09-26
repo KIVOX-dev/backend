@@ -3,19 +3,19 @@ const studentSkillBadgeRepository = require('../repositories/studentSkillBadge.r
 const studentCertificateRepository = require('../repositories/studentCertificate.repository');
 const roadmapSkillCacheRepository = require('../repositories/roadmapSkillCache.repository');
 const { listRoles, getRole } = require('../config/jobRoleCatalog');
-const { searchVideos, YoutubeApiError } = require('../utils/youtubeClient');
+const { searchPlaylists, YoutubeApiError } = require('../utils/youtubeClient');
 const ApiError = require('../utils/ApiError');
 const recordActivity = require('../utils/recordActivity');
 const logger = require('../utils/logger');
 const env = require('../config/env');
 
 const BADGES_PER_CERTIFICATE = 5;
-// A cached skill's videos are reused as-is until they're this old, then
+// A cached skill's playlists are reused as-is until they're this old, then
 // refetched on the next request past that age — bounds YouTube quota spend
 // (100 units/search.list call) to roughly once per skill per month, shared
 // across every role and every student, rather than once per request.
 const CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
-const VIDEOS_PER_SKILL = 6;
+const PLAYLISTS_PER_SKILL = 6;
 
 async function requireStudent(actor) {
   const student = await studentRepository.findByUserId(actor.id);
@@ -23,8 +23,10 @@ async function requireStudent(actor) {
   return student;
 }
 
+// Rows cached before suggestions became playlists only hold `videos` —
+// treat those as stale so they're refetched rather than served.
 function isStale(cached) {
-  if (!cached || !cached.fetched_at) return true;
+  if (!cached || !cached.fetched_at || !Array.isArray(cached.playlists)) return true;
   return Date.now() - new Date(cached.fetched_at).getTime() > CACHE_TTL_MS;
 }
 
@@ -72,14 +74,14 @@ class RoadmapService {
   }
 
   async _buildStep(studentId, skillName) {
-    const [videos, badge] = await Promise.all([
-      this._videosForSkill(skillName),
+    const [playlists, badge] = await Promise.all([
+      this._playlistsForSkill(skillName),
       studentSkillBadgeRepository.findOneForSkill(studentId, skillName),
     ]);
 
     return {
       skill: skillName,
-      videos,
+      playlists,
       badge_progress: {
         skill_name: skillName,
         badge_count: badge?.badge_count || 0,
@@ -89,19 +91,21 @@ class RoadmapService {
     };
   }
 
-  async _videosForSkill(skillName) {
+  // Suggestions are whole playlists, not single videos: importing one gives
+  // a multi-lesson course, and each lesson passed earns a skill badge.
+  async _playlistsForSkill(skillName) {
     const cached = await roadmapSkillCacheRepository.findBySkill(skillName);
-    if (!isStale(cached)) return cached.videos;
+    if (!isStale(cached)) return cached.playlists;
 
     try {
-      const videos = await searchVideos(`${skillName} tutorial for beginners`, { maxResults: VIDEOS_PER_SKILL });
-      await roadmapSkillCacheRepository.upsertForSkill(skillName, videos);
-      return videos;
+      const playlists = await searchPlaylists(`${skillName} full course for beginners`, { maxResults: PLAYLISTS_PER_SKILL });
+      await roadmapSkillCacheRepository.upsertForSkill(skillName, playlists);
+      return playlists;
     } catch (err) {
       // A failed live refresh shouldn't blank out a roadmap step that already
-      // had cached videos from a previous successful fetch — only genuinely
+      // had cached playlists from a previous successful fetch — only genuinely
       // fall through to empty when there's nothing to fall back on.
-      if (cached) return cached.videos;
+      if (Array.isArray(cached?.playlists)) return cached.playlists;
       if (err instanceof YoutubeApiError) {
         logger.error('Roadmap video search failed', { skillName, error: err.message });
         return [];

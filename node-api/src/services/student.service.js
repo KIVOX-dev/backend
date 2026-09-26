@@ -213,6 +213,7 @@ class StudentService extends BaseService {
       max_score: maxScore,
       percentage,
       passed: percentage >= 40,
+      time_taken_seconds: data.time_taken_seconds != null ? Number(data.time_taken_seconds) : null,
       completed_at: new Date(),
     });
 

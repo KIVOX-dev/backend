@@ -128,26 +128,44 @@ async function fetchSingleVideo(videoId) {
   return video;
 }
 
-// search.list only gives id + title + thumbnail + channel (no duration) —
-// same two-call shape as fetchPlaylist: search first, then a videos.list
-// batch to fill in real durations. Costs 100 quota units per call (vs 1 for
-// playlists/videos.list) — callers MUST cache by query, never call this
+// search.list only gives id + title + thumbnail + channel (no item count) —
+// same two-call shape as fetchPlaylist: search first, then one playlists.list
+// batch to fill in how many videos each has. Costs 100 quota units per call
+// (vs 1 for playlists.list) — callers MUST cache by query, never call this
 // per-request (see roadmapSkillCache.model.js, the only caller).
-async function searchVideos(query, { maxResults = 6 } = {}) {
+//
+// Playlists outside [minItems, maxItems] are dropped: a 1–2 video "playlist"
+// isn't a course, and a several-hundred-video channel dump makes an
+// unfinishable one. search.list is over-fetched so filtering still leaves
+// `maxResults` to choose from.
+async function searchPlaylists(query, { maxResults = 6, minItems = 3, maxItems = 100 } = {}) {
   const searchData = await apiGet('/search', {
     part: 'snippet',
     q: query,
-    type: 'video',
+    type: 'playlist',
     order: 'relevance',
-    maxResults,
+    maxResults: Math.min(maxResults * 2, MAX_PAGE_SIZE),
   });
   const items = searchData.items || [];
-  const videoIds = items.map((item) => item.id?.videoId).filter(Boolean);
-  if (videoIds.length === 0) return [];
+  const playlistIds = items.map((item) => item.id?.playlistId).filter(Boolean);
+  if (playlistIds.length === 0) return [];
 
-  const detailed = await fetchVideosDetails(videoIds);
-  const channelByVideoId = new Map(items.map((item) => [item.id.videoId, item.snippet?.channelTitle || null]));
-  return detailed.map((video) => ({ ...video, channelTitle: channelByVideoId.get(video.youtubeVideoId) || null }));
+  const data = await apiGet('/playlists', { part: 'snippet,contentDetails', id: playlistIds.join(',') });
+  const byId = new Map((data.items || []).map((p) => [p.id, p]));
+  // playlists.list drops deleted/private ids like videos.list does — keep
+  // search's relevance order and only what actually came back.
+  return playlistIds
+    .map((id) => byId.get(id))
+    .filter(Boolean)
+    .map((p) => ({
+      youtubePlaylistId: p.id,
+      title: p.snippet.title,
+      thumbnailUrl: bestThumbnail(p.snippet.thumbnails),
+      channelTitle: p.snippet.channelTitle || null,
+      itemCount: p.contentDetails?.itemCount || 0,
+    }))
+    .filter((p) => p.itemCount >= minItems && p.itemCount <= maxItems)
+    .slice(0, maxResults);
 }
 
 // playlistItems.list only gives id + title + thumbnail (no duration) — a
@@ -189,6 +207,6 @@ module.exports = {
   parseYoutubeInput,
   fetchSingleVideo,
   fetchPlaylist,
-  searchVideos,
+  searchPlaylists,
   YoutubeApiError,
 };

@@ -34,6 +34,7 @@ const logTest = Joi.object({
   test_name: Joi.string().max(255),
   title: Joi.string().max(255),
   duration: Joi.number().integer().min(0),
+  time_taken_seconds: Joi.number().integer().min(0),
 });
 
 const interviewResponse = Joi.object({

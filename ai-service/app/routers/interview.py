@@ -6,7 +6,13 @@ from fastapi import APIRouter, Depends
 from app.config import get_settings
 from app.db import timed_log
 from app.groq_client import GroqError, groq_complete
-from app.schemas.interview import GenerateQuestionsRequest, InterviewQuestion
+from app.schemas.interview import (
+    GenerateMcqRequest,
+    GenerateMcqResponse,
+    GenerateQuestionsRequest,
+    InterviewQuestion,
+    McqQuestion,
+)
 from app.security import verify_service_token
 
 logger = logging.getLogger("ai-service.interview")
@@ -160,3 +166,88 @@ async def generate_questions(payload: GenerateQuestionsRequest):
         InterviewQuestion(id=i + 1, text=q, time_limit_seconds=60, type=spec["types"][i])
         for i, q in enumerate(questions[:10])
     ]
+
+
+def _valid_mcqs(raw: list, limit: int) -> list[McqQuestion]:
+    """Keeps only well-formed items: 4 distinct options, answer among them."""
+    valid: list[McqQuestion] = []
+    seen: set[str] = set()
+    for item in raw:
+        if not isinstance(item, dict):
+            continue
+        question = str(item.get("question", "")).strip()
+        options = [str(o).strip() for o in item.get("options", []) if str(o).strip()]
+        answer = str(item.get("correct_answer", "")).strip()
+        # Accept a letter answer ("B") by mapping it onto the option list.
+        if len(answer) == 1 and answer.upper() in "ABCD" and len(options) == 4 and answer not in options:
+            answer = options["ABCD".index(answer.upper())]
+        key = question.lower()
+        if not question or key in seen or len(options) != 4 or len(set(options)) != 4 or answer not in options:
+            continue
+        seen.add(key)
+        valid.append(
+            McqQuestion(
+                id=len(valid) + 1,
+                section=str(item.get("section", "")).strip() or "General",
+                question=question,
+                options=options,
+                correct_answer=answer,
+            )
+        )
+        if len(valid) == limit:
+            break
+    return valid
+
+
+@router.post("/generate-mcq", response_model=GenerateMcqResponse)
+async def generate_mcq(payload: GenerateMcqRequest):
+    """Round 1 of the mock interview: a written test for this role at this company."""
+    settings = get_settings()
+    if not settings.is_groq_configured:
+        return GenerateMcqResponse(source="unavailable", questions=[])
+
+    aptitude = round(payload.count * 0.6)
+    technical = payload.count - aptitude
+    system_prompt = (
+        f"You write the campus online assessment used by {payload.company} to hire a {payload.role}. "
+        "You know that company's written-test pattern and difficulty."
+    )
+    user_prompt = (
+        f"Generate exactly {payload.count} multiple-choice questions:\n"
+        f"- {aptitude} aptitude questions split across the sections {payload.company}'s test actually uses "
+        "(for example Quantitative, Logical Reasoning, Verbal Ability, Data Interpretation, Pseudo-code), "
+        f"at {payload.company}'s typical difficulty.\n"
+        f"- {technical} technical questions on the core skills a {payload.role} is tested on, in the section \"Technical\".\n"
+        "Every question must be answerable without a calculator in under 90 seconds and have one clearly correct option.\n"
+        'Return a raw JSON object {"questions": [...]}; each item has "section" (string), "question" (string), '
+        '"options" (exactly 4 distinct strings) and "correct_answer" (exactly equal to one of the options). '
+        "No markdown, no text outside the JSON."
+    )
+
+    async with timed_log("interview.generate_mcq") as detail:
+        detail["role"] = payload.role
+        detail["company"] = payload.company
+        try:
+            result = await groq_complete(
+                system_prompt,
+                user_prompt,
+                temperature=0.6,
+                max_tokens=max(2048, payload.count * 240),
+                json_response=True,
+            )
+            raw = result.get("questions", []) if isinstance(result, dict) else []
+            questions = _valid_mcqs(raw, payload.count)
+            # Too few usable items reads as a broken test, not a short one.
+            if len(questions) < max(5, payload.count * 2 // 3):
+                raise GroqError(f"only {len(questions)} valid MCQs of {payload.count}")
+        except GroqError as exc:
+            logger.error("Interview MCQ generation failed, caller will fall back: %s", exc)
+            return GenerateMcqResponse(source="unavailable", questions=[])
+
+    # Grouped by section, in the order the model introduced them, like a real
+    # sectioned test (Technical last, since the prompt lists it last).
+    order = {s: i for i, s in enumerate(dict.fromkeys(q.section for q in questions))}
+    questions.sort(key=lambda q: (q.section == "Technical", order[q.section]))
+    for i, q in enumerate(questions):
+        q.id = i + 1
+    return GenerateMcqResponse(source="ai", questions=questions)

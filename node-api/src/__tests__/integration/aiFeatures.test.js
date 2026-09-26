@@ -76,6 +76,29 @@ describe('AI features: graceful degradation when the AI service is unreachable',
       .expect(400);
   });
 
+  it('POST /interviews/generate-mcq reports "unavailable" (not an error) so the frontend can use its own banks', async () => {
+    const institution = await seedInstitution(institutionRepository, { code: `AIM-${Date.now()}` });
+    const token = await loginAsAdmin(institution.id);
+
+    const res = await request(app)
+      .post('/api/v1/interviews/generate-mcq?role=Data%20Analyst&company=Infosys&count=20')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
+
+    expect(res.body.data).toEqual({ source: 'unavailable', questions: [] });
+  });
+
+  it('POST /interviews/generate-mcq validates role and count', async () => {
+    const institution = await seedInstitution(institutionRepository, { code: `AIV-${Date.now()}` });
+    const token = await loginAsAdmin(institution.id);
+
+    await request(app).post('/api/v1/interviews/generate-mcq?company=TCS').set('Authorization', `Bearer ${token}`).expect(400);
+    await request(app)
+      .post('/api/v1/interviews/generate-mcq?role=SDE&count=500')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(400);
+  });
+
   it('POST /tests/generate-questions falls back to a local placeholder question instead of failing', async () => {
     const institution = await seedInstitution(institutionRepository, { code: `AIT-${Date.now()}` });
     const token = await loginAsAdmin(institution.id);

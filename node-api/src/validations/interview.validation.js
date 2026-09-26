@@ -8,4 +8,10 @@ const generate = Joi.object({
   round: Joi.string().valid(...INTERVIEW_ROUNDS).default('technical'),
 });
 
-module.exports = { generate, INTERVIEW_ROUNDS };
+const generateMcq = Joi.object({
+  role: Joi.string().min(1).max(255).required(),
+  company: Joi.string().max(255),
+  count: Joi.number().integer().min(5).max(30).default(20),
+});
+
+module.exports = { generate, generateMcq, INTERVIEW_ROUNDS };

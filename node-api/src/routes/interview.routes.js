@@ -12,5 +12,6 @@ router.use(authenticate);
 // signature (plain args, not a request-body model, become query params
 // under FastAPI's inference rules).
 router.post('/generate', aiLimiter, aiInstitutionLimiter, validate(schema.generate, 'query'), controller.generate);
+router.post('/generate-mcq', aiLimiter, aiInstitutionLimiter, validate(schema.generateMcq, 'query'), controller.generateMcq);
 
 module.exports = router;

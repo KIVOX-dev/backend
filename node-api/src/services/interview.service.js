@@ -100,4 +100,19 @@ async function generateQuestions(role, company = 'general', round = 'technical')
   }
 }
 
-module.exports = { generateQuestions };
+// Round 1 of the mock interview: a written MCQ test for this role at this
+// company. Unlike generateQuestions there's no local pool that could be
+// role- and company-specific, so an unreachable AI service is reported as
+// source "unavailable" (same as the AI service's own failure answer) and
+// the frontend falls back to its company aptitude banks.
+async function generateMcq(role, company = 'general', count = 20) {
+  try {
+    return await callAiService('/v1/interview/generate-mcq', { role, company, count });
+  } catch (err) {
+    if (!(err instanceof AiServiceUnavailableError)) throw err;
+    logger.error('AI service unreachable, MCQ round will use fallback banks', { error: err.message });
+    return { source: 'unavailable', questions: [] };
+  }
+}
+
+module.exports = { generateQuestions, generateMcq };

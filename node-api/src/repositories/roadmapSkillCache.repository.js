@@ -10,12 +10,12 @@ class RoadmapSkillCacheRepository extends BaseRepository {
     return this.findOne({ skill_name: skillName });
   }
 
-  async upsertForSkill(skillName, videos) {
+  async upsertForSkill(skillName, playlists) {
     const existing = await this.findBySkill(skillName);
     if (existing) {
-      return this.updateById(existing.id, { videos, fetched_at: new Date() });
+      return this.updateById(existing.id, { playlists, fetched_at: new Date() });
     }
-    return this.create({ skill_name: skillName, videos, fetched_at: new Date() });
+    return this.create({ skill_name: skillName, playlists, fetched_at: new Date() });
   }
 }
 
