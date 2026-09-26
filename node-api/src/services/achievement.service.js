@@ -2,6 +2,7 @@ const achievementRepository = require('../repositories/achievement.repository');
 const studentRepository = require('../repositories/student.repository');
 const userRepository = require('../repositories/user.repository');
 const institutionRepository = require('../repositories/institution.repository');
+const departmentRepository = require('../repositories/department.repository');
 const assessmentAttemptRepository = require('../repositories/assessmentAttempt.repository');
 const interviewAttemptRepository = require('../repositories/interviewAttempt.repository');
 const placementRecordRepository = require('../repositories/placementRecord.repository');
@@ -94,6 +95,14 @@ class AchievementService {
     const { rows: users } = await userRepository.findAll({ page: 1, limit: 0, filters });
 
     const institutionCache = new Map();
+    // Department names, fetched once per id (a college has one row per
+    // department, shared by every student in it).
+    const departmentCache = new Map();
+    const departmentName = (id) => {
+      if (!id) return null;
+      if (!departmentCache.has(id)) departmentCache.set(id, departmentRepository.findById(id).then((d) => d?.name ?? null).catch(() => null));
+      return departmentCache.get(id);
+    };
     const rows = await Promise.all(
       users.map(async (user) => {
         const student = await studentRepository.findByUserId(user.id);
@@ -117,6 +126,7 @@ class AchievementService {
           }
           collegeName = institutionCache.get(user.institution_id);
         }
+        const department = (await departmentName(student?.department_id)) || student?.department || null;
 
         return {
           id: user.id,
@@ -124,6 +134,10 @@ class AchievementService {
           college: collegeName,
           score,
           accuracy,
+          // Returned so boards can show the numbers behind `score` (tests x
+          // accuracy) instead of guessing; both were previously omitted.
+          tests_completed: tests,
+          department,
           avatar: user.full_name ? user.full_name.charAt(0).toUpperCase() : 'U',
           trend,
           rank: 0,
