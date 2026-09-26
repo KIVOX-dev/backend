@@ -75,7 +75,7 @@ services:
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
       BREVO_API_KEY: ${BREVO_API_KEY:-}
       BREVO_SENDER_EMAIL: ${BREVO_SENDER_EMAIL:-}
-      BREVO_SENDER_NAME: ${BREVO_SENDER_NAME:-UpScaler-AI}
+      BREVO_SENDER_NAME: ${BREVO_SENDER_NAME:-TalentSnaps}
     depends_on:
       redis:
         condition: service_healthy
