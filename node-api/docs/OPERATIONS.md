@@ -34,6 +34,48 @@ server-side logging are both done; Phases 2–3 are future work, not yet schedul
 Do not skip straight to Phase 3 without confirming Phase 1's logs are actually clean — that log
 line is the only signal that anything still depends on the old path.
 
+## Private profile photos
+
+Student avatars and covers, and onboarding profile photos and signatures, are private files.
+
+- **What the database stores:** a reference, not a working link. New uploads look like
+  `gs://<GCS_BUCKET_NAME>/student-profile/<uuid>.png`, or `/uploads/profile/<uuid>.png` on local disk.
+- **What callers receive:** `middlewares/signPrivateMedia.js` swaps each reference for a short-lived
+  signed URL in every JSON response. The lifetime is set by `MEDIA_URL_TTL_SECONDS` (default 900).
+- **Older data:** rows still holding the old public `https://storage.googleapis.com/...` URLs are
+  signed the same way, so no data migration is needed.
+- **Local-disk files:** served by `routes/profileMediaFiles.routes.js`, which refuses any request
+  without a valid signature.
+- **Which fields and folders are covered:** only `avatar_url`, `cover_image_url`, `profilePhoto`
+  and `signature`, for objects under `student-profile/` or `profile/` in `GCS_BUCKET_NAME`.
+  Placement-proof offer letters are never signed here.
+
+**One-time cloud setup.** Do these in order. Removing public access before the new code is live
+would break every image.
+
+1. **Check that the bucket is configured.** Cloud Run → `node-api` → Edit & deploy new revision →
+   Variables & Secrets → confirm `GCS_BUCKET_NAME` is set. `cloudbuild.yaml`'s `--set-env-vars`
+   replaces every variable on each deploy and does not currently include it, so add it there too.
+2. **Let the runtime service account sign URLs.**
+   1. APIs & Services → Library → enable **IAM Service Account Credentials API**.
+   2. Cloud Run → `node-api` → Security tab → note the service account email.
+   3. IAM & Admin → Service Accounts → click that account → Permissions tab → Grant access.
+   4. Principal: the same email. Role: **Service Account Token Creator**. Save.
+3. **Deploy the new code**, then open a student profile and confirm the photo loads. Its URL should
+   contain `X-Goog-Signature`.
+4. **Stop browsers and caches reusing the old public copies.** Existing objects were uploaded with
+   `Cache-Control: public, max-age=31536000`. Replace it:
+   `gcloud storage objects update "gs://<BUCKET>/student-profile/**" --cache-control="private, max-age=300"`
+5. **Remove public access.** Cloud Storage → Buckets → `<BUCKET>` → Permissions:
+   1. Remove `allUsers` and `allAuthenticatedUsers`, if present.
+   2. Click **Prevent public access**.
+6. **Verify.** Open an old public URL in a private browser window. It must return `AccessDenied`.
+   A signed URL from the app must still load.
+
+**Local development:** signing needs a service-account key (`GOOGLE_APPLICATION_CREDENTIALS`).
+User credentials from `gcloud auth application-default login` can upload but can't sign, so images
+come back as `null`. Leave `GCS_BUCKET_NAME` unset to use signed local-disk links instead.
+
 ## Rate limiting architecture
 
 `middlewares/rateLimiter.js` exports the same three limiters (`apiLimiter`, `authLimiter`,
