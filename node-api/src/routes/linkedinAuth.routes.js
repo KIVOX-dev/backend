@@ -9,6 +9,10 @@ const router = express.Router();
 
 router.get('/connect', authenticate, authorize(ROLES.STUDENT), linkedinAuthController.connect);
 router.get('/callback', authLimiter, linkedinAuthController.callback);
+
+// Completes the link for the signed-in student (Bearer), only if the state
+// from the callback was minted for them.
+router.post('/confirm', authenticate, authorize(ROLES.STUDENT), authLimiter, linkedinAuthController.confirm);
 router.delete('/disconnect', authenticate, authorize(ROLES.STUDENT), linkedinAuthController.disconnect);
 
 module.exports = router;

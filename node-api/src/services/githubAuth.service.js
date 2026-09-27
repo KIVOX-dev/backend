@@ -1,5 +1,5 @@
 const studentRepository = require('../repositories/student.repository');
-const { signState, verifyState } = require('../utils/oauthState');
+const { signState, verifyState, pkceChallenge, pkceVerifier } = require('../utils/oauthState');
 const { exchangeCodeForToken, fetchGitHubUser, GitHubOAuthError } = require('../utils/githubClient');
 const env = require('../config/env');
 const ApiError = require('../utils/ApiError');
@@ -22,6 +22,8 @@ class GithubAuthService {
       redirect_uri: env.github.callbackUrl,
       scope: 'read:user',
       state,
+      code_challenge: pkceChallenge(state),
+      code_challenge_method: 'S256',
       allow_signup: 'false',
     });
     return `${GITHUB_AUTHORIZE_URL}?${params.toString()}`;
@@ -43,12 +45,31 @@ class GithubAuthService {
     if (error) return `${target}&github=error&reason=denied`;
     if (!code || !state) return `${target}&github=error&reason=invalid_request`;
 
+    try {
+      verifyState(state, 'github');
+    } catch {
+      return `${target}&github=error&reason=expired`;
+    }
+
+    // Not linked here: this request carries no session, so nothing ties it
+    // to the browser that started the connect, and an attacker could send
+    // someone an authorize link carrying the attacker's own state to attach
+    // that person's account to the attacker's profile. The app posts
+    // code+state to /confirm with its own Bearer token instead.
+    return `${target}&${new URLSearchParams({ github: 'confirm', code, state })}`;
+  }
+
+  // Finishes a connect for the signed-in student, only if the state was
+  // minted for that same student (see handleCallback). Returns 'connected' or
+  // one of the fixed error reasons the frontend already has messages for.
+  async confirm(actor, { code, state }) {
     let userId;
     try {
       userId = verifyState(state, 'github').sub;
     } catch {
-      return `${target}&github=error&reason=expired`;
+      return 'expired';
     }
+    if (String(userId) !== String(actor.id)) return 'wrong_account';
 
     try {
       const accessToken = await exchangeCodeForToken({
@@ -56,16 +77,17 @@ class GithubAuthService {
         clientId: env.github.clientId,
         clientSecret: env.github.clientSecret,
         redirectUri: env.github.callbackUrl,
+        codeVerifier: pkceVerifier(state),
       });
       const profile = await fetchGitHubUser(accessToken);
 
       const existingOwner = await studentRepository.findOne({ github_id: profile.id });
       if (existingOwner && existingOwner.user_id !== userId) {
-        return `${target}&github=error&reason=already_linked`;
+        return 'already_linked';
       }
 
       const student = await studentRepository.findByUserId(userId);
-      if (!student) return `${target}&github=error&reason=no_profile`;
+      if (!student) return 'no_profile';
 
       await studentRepository.updateById(student.id, {
         github_id: profile.id,
@@ -75,10 +97,10 @@ class GithubAuthService {
       });
       await recordActivity({ userId, action: 'github_connect', entityType: 'student', entityId: student.id });
 
-      return `${target}&github=connected`;
+      return 'connected';
     } catch (err) {
       logger.error('GitHub connect failed', { error: err.message });
-      return `${target}&github=error&reason=${err instanceof GitHubOAuthError ? 'github_error' : 'server_error'}`;
+      return err instanceof GitHubOAuthError ? 'github_error' : 'server_error';
     }
   }
 

@@ -59,7 +59,8 @@ describe('Security event logging', () => {
 
   async function login(user, password) {
     const res = await request(app).post('/api/v1/auth/login').send({ email: user.email, password }).expect(200);
-    return res.body.data;
+    const cookie = (res.headers['set-cookie'] || []).find((c) => c.startsWith('ts_refresh='));
+    return { ...res.body.data, refreshToken: cookie && cookie.split(';')[0].slice('ts_refresh='.length) };
   }
 
   it('logs a failed login with a reason, IP and pseudonymous email — never the password or email', async () => {
@@ -91,6 +92,7 @@ describe('Security event logging', () => {
     ]);
     const all = lines.join('\n');
     expect(all).not.toContain(accessToken);
+    expect(refreshToken).toBeTruthy();
     expect(all).not.toContain(refreshToken);
   });
 

@@ -36,12 +36,31 @@ class LinkedinAuthService {
     if (error) return `${target}&linkedin=error&reason=denied`;
     if (!code || !state) return `${target}&linkedin=error&reason=invalid_request`;
 
+    try {
+      verifyState(state, 'linkedin');
+    } catch {
+      return `${target}&linkedin=error&reason=expired`;
+    }
+
+    // Not linked here: this request carries no session, so nothing ties it
+    // to the browser that started the connect, and an attacker could send
+    // someone an authorize link carrying the attacker's own state to attach
+    // that person's account to the attacker's profile. The app posts
+    // code+state to /confirm with its own Bearer token instead.
+    return `${target}&${new URLSearchParams({ linkedin: 'confirm', code, state })}`;
+  }
+
+  // Finishes a connect for the signed-in student, only if the state was
+  // minted for that same student (see handleCallback). Returns 'connected' or
+  // one of the fixed error reasons the frontend already has messages for.
+  async confirm(actor, { code, state }) {
     let userId;
     try {
       userId = verifyState(state, 'linkedin').sub;
     } catch {
-      return `${target}&linkedin=error&reason=expired`;
+      return 'expired';
     }
+    if (String(userId) !== String(actor.id)) return 'wrong_account';
 
     try {
       const accessToken = await exchangeCodeForToken({
@@ -54,11 +73,11 @@ class LinkedinAuthService {
 
       const existingOwner = await studentRepository.findOne({ linkedin_id: profile.id });
       if (existingOwner && existingOwner.user_id !== userId) {
-        return `${target}&linkedin=error&reason=already_linked`;
+        return 'already_linked';
       }
 
       const student = await studentRepository.findByUserId(userId);
-      if (!student) return `${target}&linkedin=error&reason=no_profile`;
+      if (!student) return 'no_profile';
 
       await studentRepository.updateById(student.id, {
         linkedin_id: profile.id,
@@ -69,10 +88,10 @@ class LinkedinAuthService {
       });
       await recordActivity({ userId, action: 'linkedin_connect', entityType: 'student', entityId: student.id });
 
-      return `${target}&linkedin=connected`;
+      return 'connected';
     } catch (err) {
       logger.error('LinkedIn connect failed', { error: err.message });
-      return `${target}&linkedin=error&reason=${err instanceof LinkedInOAuthError ? 'linkedin_error' : 'server_error'}`;
+      return err instanceof LinkedInOAuthError ? 'linkedin_error' : 'server_error';
     }
   }
 

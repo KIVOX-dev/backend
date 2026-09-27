@@ -9,6 +9,7 @@
 require('dotenv').config({ path: '.env.node' });
 const jwt = require('jsonwebtoken');
 const env = require('../src/config/env');
+const { ISSUER, ACCESS_AUDIENCE } = require('../src/utils/jwt');
 
 const args = process.argv.slice(2).filter((a) => a !== '--ttl');
 const ttlIndex = process.argv.indexOf('--ttl');
@@ -17,7 +18,7 @@ const ttl = ttlIndex !== -1 ? process.argv[ttlIndex + 1] : '2h';
 const [userId = '000000000000000000000000', role = 'student', institutionId = '000000000000000000000000'] = args;
 
 const payload = { sub: userId, role, institutionId, tv: 0 };
-const token = jwt.sign(payload, env.jwt.secret, { expiresIn: ttl });
+const token = jwt.sign(payload, env.jwt.secret, { algorithm: 'HS256', issuer: ISSUER, audience: ACCESS_AUDIENCE, expiresIn: ttl });
 
 console.log(token);
 console.error(`\nMinted for sub=${userId} role=${role} institutionId=${institutionId}, expires in ${ttl}.`);

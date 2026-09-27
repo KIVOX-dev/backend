@@ -44,10 +44,14 @@ const googleLogin = Joi.object({
 // live frontend actually sends from its bare (non-interceptor) refresh call
 // in api.ts — stripUnknown otherwise dropped `refresh_token` before it ever
 // reached the controller, failing validation on every refresh attempt.
+//
+// Both optional: the token normally arrives in the ts_refresh cookie. The body
+// is only for sessions from before that cookie existed, still holding their
+// refresh token in localStorage (moved over on their first refresh).
 const refresh = Joi.object({
   refreshToken: Joi.string(),
   refresh_token: Joi.string(),
-}).or('refreshToken', 'refresh_token');
+});
 
 const forgotPassword = Joi.object({
   email: Joi.string().email().required(),

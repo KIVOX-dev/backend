@@ -23,11 +23,11 @@ async function fetchWithTimeout(url, options) {
 // GitHub's token endpoint returns HTTP 200 with an `error` field on failure
 // (e.g. a reused/expired code) rather than a non-2xx status, so both cases
 // need an explicit check.
-async function exchangeCodeForToken({ code, clientId, clientSecret, redirectUri }) {
+async function exchangeCodeForToken({ code, clientId, clientSecret, redirectUri, codeVerifier }) {
   const response = await fetchWithTimeout('https://github.com/login/oauth/access_token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify({ client_id: clientId, client_secret: clientSecret, code, redirect_uri: redirectUri }),
+    body: JSON.stringify({ client_id: clientId, client_secret: clientSecret, code, redirect_uri: redirectUri, code_verifier: codeVerifier }),
   });
 
   const data = await response.json().catch(() => null);

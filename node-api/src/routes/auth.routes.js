@@ -24,7 +24,12 @@ router.post('/google', authLimiter, validate(schema.googleLogin), authController
 router.post('/google/link', authenticate, authLimiter, validate(schema.googleLogin), authController.googleLink);
 router.delete('/google/unlink', authenticate, authLimiter, authController.googleUnlink);
 
-router.post('/refresh', authLimiter, validate(schema.refresh), authController.refresh);
+// Called on every page load now that the refresh token lives in an httpOnly
+// cookie (see utils/refreshCookie.js), so it's left to the global apiLimiter:
+// authLimiter's 20/15min per IP would log out a whole campus behind one NAT,
+// and a refresh token isn't something that can be brute-forced.
+router.post('/refresh', validate(schema.refresh), authController.refresh);
+router.post('/logout', authController.logout);
 router.get('/me', authenticate, authController.me);
 router.get('/me/activity-heatmap', authenticate, authController.activityHeatmap);
 

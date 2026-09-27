@@ -38,6 +38,12 @@ describe('Auth: register / login / refresh / change-password', () => {
     return `${prefix}-${emailCounter}@example.com`;
   }
 
+  // The ts_refresh cookie (name=value only) from a response, or null.
+  function refreshCookie(res) {
+    const cookie = (res.headers['set-cookie'] || []).find((c) => c.startsWith('ts_refresh='));
+    return cookie ? cookie.split(';')[0] : null;
+  }
+
   // Fresh account per call (rather than one shared account across every
   // `it()`) — this suite shares one in-memory DB for the whole file, so a
   // reused email would 409 on the second call.
@@ -49,7 +55,7 @@ describe('Auth: register / login / refresh / change-password', () => {
       .send({ email, password, name: 'Refresh User', turnstileToken: TURNSTILE_TOKEN })
       .expect(201);
     const res = await request(app).post('/api/v1/auth/login').send({ email, password }).expect(200);
-    return res.body.data;
+    return { ...res.body.data, cookie: refreshCookie(res), setCookie: res.headers['set-cookie'] };
   }
 
   it('registers a new student and immediately issues tokens', async () => {
@@ -59,7 +65,7 @@ describe('Auth: register / login / refresh / change-password', () => {
       .expect(201);
     expect(res.body.success).toBe(true);
     expect(res.body.data.accessToken).toBeTruthy();
-    expect(res.body.data.refreshToken).toBeTruthy();
+    expect(refreshCookie(res)).toBeTruthy();
   });
 
   it('logs in with valid credentials and returns both token casings', async () => {
@@ -67,6 +73,17 @@ describe('Auth: register / login / refresh / change-password', () => {
     expect(data.accessToken).toBeTruthy();
     expect(data.access_token).toBe(data.accessToken); // legacy-field compat, see auth.controller.js
     expect(data.user.email).toBeTruthy();
+  });
+
+  // R22: script on the page must never be able to read the refresh token.
+  it('puts the refresh token only in an httpOnly, SameSite=Strict cookie scoped to /auth', async () => {
+    const data = await registerAndLogin();
+    expect(data.refreshToken).toBeUndefined();
+    expect(data.refresh_token).toBeUndefined();
+    const cookie = data.setCookie.find((c) => c.startsWith('ts_refresh='));
+    expect(cookie).toMatch(/HttpOnly/i);
+    expect(cookie).toMatch(/SameSite=Strict/i);
+    expect(cookie).toMatch(/Path=\/api\/v1\/auth/i);
   });
 
   it('rejects login with the wrong password', async () => {
@@ -78,44 +95,41 @@ describe('Auth: register / login / refresh / change-password', () => {
     await request(app).post('/api/v1/auth/login').send({ email, password: 'wrong-password' }).expect(401);
   });
 
-  // Regression test for C-1: the live frontend's bare-axios refresh call
-  // sends `refresh_token` (snake_case) and reads access_token/refresh_token
-  // off the top level of the response body — see api.ts. Both used to be
-  // silently broken (Joi stripped the unrecognized field; the token fields
-  // were nested a level too deep).
-  it('refreshes with a snake_case refresh_token body and flat top-level token fields', async () => {
-    const { refreshToken } = await registerAndLogin();
+  // Regression test for C-1: the frontend's bare-axios refresh call reads
+  // access_token off the top level of the response body — see api.ts.
+  it('refreshes from the cookie with flat top-level token fields and a rotated cookie', async () => {
+    const { cookie } = await registerAndLogin();
 
-    const res = await request(app)
-      .post('/api/v1/auth/refresh')
-      .send({ refresh_token: refreshToken })
-      .expect(200);
+    const res = await request(app).post('/api/v1/auth/refresh').set('Cookie', cookie).expect(200);
 
     expect(res.body.access_token).toBeTruthy();
-    expect(res.body.refresh_token).toBeTruthy();
+    expect(res.body.refresh_token).toBeUndefined();
+    expect(refreshCookie(res)).toBeTruthy();
     // Envelope form still present for every other consumer.
     expect(res.body.data.accessToken).toBe(res.body.access_token);
   });
 
-  it('also accepts the camelCase refreshToken body', async () => {
-    const { refreshToken } = await registerAndLogin();
-    const res = await request(app).post('/api/v1/auth/refresh').send({ refreshToken }).expect(200);
-    expect(res.body.access_token).toBeTruthy();
+  // Sessions from before the cookie keep their refresh token in localStorage
+  // and send it in the body once; the response moves it into the cookie.
+  it('still accepts a refresh token in the body (snake_case or camelCase) and sets the cookie', async () => {
+    const { cookie } = await registerAndLogin();
+    const refreshToken = cookie.slice('ts_refresh='.length);
+    const snake = await request(app).post('/api/v1/auth/refresh').send({ refresh_token: refreshToken }).expect(200);
+    expect(refreshCookie(snake)).toBeTruthy();
+    const camel = await request(app).post('/api/v1/auth/refresh').send({ refreshToken }).expect(200);
+    expect(camel.body.access_token).toBeTruthy();
   });
 
   it('supports refreshing repeatedly without forcing a re-login', async () => {
-    const { refreshToken: first } = await registerAndLogin();
-    const res1 = await request(app).post('/api/v1/auth/refresh').send({ refresh_token: first }).expect(200);
-    const second = res1.body.refresh_token;
-    const res2 = await request(app).post('/api/v1/auth/refresh').send({ refresh_token: second }).expect(200);
+    const { cookie: first } = await registerAndLogin();
+    const res1 = await request(app).post('/api/v1/auth/refresh').set('Cookie', first).expect(200);
+    const res2 = await request(app).post('/api/v1/auth/refresh').set('Cookie', refreshCookie(res1)).expect(200);
     expect(res2.body.access_token).toBeTruthy();
   });
 
-  it('rejects a malformed/invalid refresh token', async () => {
-    await request(app)
-      .post('/api/v1/auth/refresh')
-      .send({ refresh_token: 'not-a-real-token' })
-      .expect(401);
+  it('rejects a malformed/invalid refresh token and clears the cookie', async () => {
+    const res = await request(app).post('/api/v1/auth/refresh').set('Cookie', 'ts_refresh=not-a-real-token').expect(401);
+    expect(res.headers['set-cookie'].join(';')).toMatch(/ts_refresh=;/);
   });
 
   it('rejects an expired refresh token', async () => {
@@ -123,8 +137,13 @@ describe('Auth: register / login / refresh / change-password', () => {
     await request(app).post('/api/v1/auth/refresh').send({ refresh_token: expired }).expect(401);
   });
 
-  it('rejects a refresh request with neither field present', async () => {
-    await request(app).post('/api/v1/auth/refresh').send({}).expect(400);
+  it('rejects a refresh request with no cookie and no body token', async () => {
+    await request(app).post('/api/v1/auth/refresh').send({}).expect(401);
+  });
+
+  it('logout clears the refresh cookie', async () => {
+    const res = await request(app).post('/api/v1/auth/logout').expect(200);
+    expect(res.headers['set-cookie'].join(';')).toMatch(/ts_refresh=;/);
   });
 
   // Regression test for C-3.
@@ -135,7 +154,8 @@ describe('Auth: register / login / refresh / change-password', () => {
       .send({ email, password: 'OldPass123!', name: 'Changer', turnstileToken: TURNSTILE_TOKEN })
       .expect(201);
     const login = await request(app).post('/api/v1/auth/login').send({ email, password: 'OldPass123!' }).expect(200);
-    const { accessToken, refreshToken } = login.body.data;
+    const { accessToken } = login.body.data;
+    const oldCookie = refreshCookie(login);
 
     await request(app)
       .put('/api/v1/auth/change-password')
@@ -152,7 +172,7 @@ describe('Auth: register / login / refresh / change-password', () => {
 
     // Old refresh token was issued before the password change and must now
     // be rejected (token_version bump) — see auth.service.js#changePassword.
-    await request(app).post('/api/v1/auth/refresh').send({ refresh_token: refreshToken }).expect(401);
+    await request(app).post('/api/v1/auth/refresh').set('Cookie', oldCookie).expect(401);
 
     // New credentials work.
     await request(app).post('/api/v1/auth/login').send({ email, password: 'NewPass123!' }).expect(200);

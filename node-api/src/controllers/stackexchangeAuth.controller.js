@@ -1,6 +1,7 @@
 const stackexchangeAuthService = require('../services/stackexchangeAuth.service');
 const asyncHandler = require('../utils/asyncHandler');
 const ApiResponse = require('../utils/ApiResponse');
+const ApiError = require('../utils/ApiError');
 
 const connect = asyncHandler(async (req, res) => {
   const url = stackexchangeAuthService.getAuthorizeUrl(req.user);
@@ -16,9 +17,20 @@ const callback = asyncHandler(async (req, res) => {
   res.redirect(redirectUrl);
 });
 
+// The signed-in student's app posts back the code/state the callback handed
+// it; see stackexchangeAuth.service.js#confirm for why linking happens here.
+const confirm = asyncHandler(async (req, res) => {
+  const { code, state } = req.body || {};
+  if (typeof code !== 'string' || typeof state !== 'string' || !code || !state) {
+    throw ApiError.badRequest('code and state are required');
+  }
+  const status = await stackexchangeAuthService.confirm(req.user, { code, state });
+  ApiResponse.ok(res, { status }, status === 'connected' ? 'Stack Overflow connected' : 'Stack Overflow not connected');
+});
+
 const disconnect = asyncHandler(async (req, res) => {
   const profile = await stackexchangeAuthService.disconnect(req.user);
   ApiResponse.ok(res, profile, 'Stack Overflow disconnected');
 });
 
-module.exports = { connect, callback, disconnect };
+module.exports = { connect, callback, confirm, disconnect };

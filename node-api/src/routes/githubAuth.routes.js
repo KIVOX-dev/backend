@@ -17,6 +17,10 @@ router.get('/connect', authenticate, authorize(ROLES.STUDENT), githubAuthControl
 // by /connect (see utils/oauthState.js), not from a session.
 router.get('/callback', authLimiter, githubAuthController.callback);
 
+// Completes the link for the signed-in student (Bearer), only if the state
+// from the callback was minted for them.
+router.post('/confirm', authenticate, authorize(ROLES.STUDENT), authLimiter, githubAuthController.confirm);
+
 router.delete('/disconnect', authenticate, authorize(ROLES.STUDENT), githubAuthController.disconnect);
 
 module.exports = router;
