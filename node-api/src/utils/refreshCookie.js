@@ -6,14 +6,23 @@ const env = require('../config/env');
 // it or carry it off. The frontend keeps just the short-lived access token,
 // in memory, and gets a new one from POST /auth/refresh on page load.
 //
-// SameSite=Strict still reaches us from www.talentsnaps.com: the API is on
-// api.talentsnaps.com, the same site. Scoped to the auth routes so the
+// In production the API is on its Cloud Run URL (*.run.app), a different
+// site from www.talentsnaps.com, so SameSite=Strict/Lax cookies are never
+// sent and every reload or new tab lost the session. SameSite=None lets the
+// browser send it; Partitioned (CHIPS) keys it to the top-level site, so it
+// only goes out while the visitor is on talentsnaps.com — a page on any
+// other site gets a separate, empty jar, which also rules out CSRF — and it
+// keeps working where third-party cookies are blocked. Local dev stays
+// SameSite=Strict: localhost:3000 -> localhost:5000 is same-site, and
+// SameSite=None requires Secure (HTTPS). Scoped to the auth routes so the
 // cookie isn't sent with every other API call.
 const NAME = 'ts_refresh';
 const PATH = `${env.apiPrefix}/auth`;
 
 function baseOptions() {
-  return { httpOnly: true, secure: env.isProduction, sameSite: 'strict', path: PATH };
+  return env.isProduction
+    ? { httpOnly: true, secure: true, sameSite: 'none', partitioned: true, path: PATH }
+    : { httpOnly: true, secure: false, sameSite: 'strict', path: PATH };
 }
 
 function setRefreshCookie(res, refreshToken) {
