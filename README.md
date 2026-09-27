@@ -1,8 +1,8 @@
-# UpScaler-AI Backend
+# TalentSnaps Backend
 
 [![CI](https://github.com/KIVOX-dev/backend/actions/workflows/ci.yml/badge.svg)](https://github.com/KIVOX-dev/backend/actions/workflows/ci.yml)
 
-UpScaler-AI is a placement and career-readiness platform. Students take tests and mock
+TalentSnaps is a placement and career-readiness platform. Students take tests and mock
 interviews, build resumes, and track placement applications. Faculty, HR, and institution admins
 manage the pipeline behind them. This repository holds the two backend services that run it.
 

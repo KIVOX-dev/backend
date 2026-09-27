@@ -1,4 +1,4 @@
-# UpScaler-AI — AI Service
+# TalentSnaps — AI Service
 
 A narrow FastAPI microservice that owns every Groq-backed AI feature the platform uses:
 

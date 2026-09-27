@@ -39,7 +39,7 @@ if settings.is_using_default_secret:
 # not a substitute for node-api's own user-facing rate limits.
 limiter = Limiter(key_func=get_remote_address, default_limits=["60/minute"])
 
-app = FastAPI(title="UpScaler-AI — AI Service", version="1.0.0")
+app = FastAPI(title="TalentSnaps — AI Service", version="1.0.0")
 app.state.limiter = limiter
 app.add_middleware(SlowAPIMiddleware)
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)

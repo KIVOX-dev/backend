@@ -1,8 +1,8 @@
 {
-  "name": "upscaler-ai-node-api",
+  "name": "talentsnaps-node-api",
   "version": "1.0.0",
   "private": true,
-  "description": "Node.js/Express REST API backend for UpScaler-AI, backed by MongoDB.",
+  "description": "Node.js/Express REST API backend for TalentSnaps, backed by MongoDB.",
   "main": "src/server.js",
   "type": "commonjs",
   "scripts": {
