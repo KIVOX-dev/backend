@@ -6,6 +6,7 @@ const { assertInstitutionOwnership } = require('../utils/authz');
 const { sign } = require('../utils/signedUrl');
 const placementProofStorage = require('../utils/placementProofStorage');
 const ApiError = require('../utils/ApiError');
+const { securityEvent, EVENTS } = require('../utils/securityLog');
 
 const STAFF_ROLES = [ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY, ROLES.HR];
 
@@ -102,6 +103,7 @@ class PlacementRecordService extends BaseService {
     }
 
     if (!record.proof_url) throw ApiError.notFound('This placement record has no proof document');
+    securityEvent(EVENTS.DOCUMENT_ACCESS_GRANTED, { document: 'placement_proof', targetId: record.id, studentId: record.student_id });
     return { url: sign(record.proof_url) };
   }
 

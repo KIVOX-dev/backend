@@ -19,6 +19,9 @@ module.exports = function requestLogger(req, res, next) {
       durationMs: Math.round(durationMs * 100) / 100,
       userId: req.user?.id,
       role: req.user?.role,
+      // Client address (trust proxy is 1 — see app.js), for CERT-In
+      // traceability of who made each request.
+      ip: req.ip,
     };
     if (res.statusCode >= 500) {
       logger.error('request', entry);

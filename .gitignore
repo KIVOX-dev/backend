@@ -10,3 +10,9 @@ node-api/uploads/
 node-api/coverage/
 .pytest_cache/
 .ruff_cache/
+
+# Terraform local state and inputs
+.terraform/
+*.tfstate
+*.tfstate.*
+terraform.tfvars

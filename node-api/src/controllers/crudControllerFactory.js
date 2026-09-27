@@ -1,5 +1,6 @@
 const asyncHandler = require('../utils/asyncHandler');
 const ApiResponse = require('../utils/ApiResponse');
+const { securityEvent, EVENTS } = require('../utils/securityLog');
 
 // Builds standard list/get/create/update/remove handlers bound to a service instance.
 // Entity controllers spread this and add/override anything module-specific.
@@ -41,6 +42,8 @@ function createCrudController(service) {
 
     remove: asyncHandler(async (req, res) => {
       await service.remove(req.params.id, req.user);
+      // entity is the collection's mount path (e.g. /api/v1/companies).
+      securityEvent(EVENTS.RECORD_DELETED, { entity: req.baseUrl, targetId: req.params.id });
       ApiResponse.ok(res, null, 'Deleted');
     }),
   };

@@ -14,6 +14,7 @@ const { notFoundHandler, errorHandler } = require('./middlewares/errorHandler');
 const requestId = require('./middlewares/requestId');
 const requestLogger = require('./middlewares/requestLogger');
 const signPrivateMedia = require('./middlewares/signPrivateMedia');
+const auditStaffActions = require('./middlewares/auditStaffActions');
 const logger = require('./utils/logger');
 
 const app = express();
@@ -24,6 +25,7 @@ app.set('trust proxy', 1);
 
 app.use(requestId);
 app.use(requestLogger);
+app.use(auditStaffActions);
 app.use(helmet());
 // Swaps private profile-photo/cover/signature references for short-lived
 // signed URLs in every JSON response (see utils/privateMedia.js).
@@ -43,7 +45,13 @@ app.use(
 app.use(compression());
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
-app.use(morgan(env.isProduction ? 'combined' : 'dev', { stream: { write: (msg) => logger.info(msg.trim()) } }));
+// Human-readable access log for local development only. In production,
+// requestLogger's structured line already covers every request — and
+// morgan's 'combined' format logged full URLs, query strings included,
+// which carry short-lived signed-link tokens (placement proofs, profile media).
+if (!env.isProduction) {
+  app.use(morgan('dev', { stream: { write: (msg) => logger.info(msg.trim()) } }));
+}
 
 // Registered *before* apiLimiter, deliberately: these are infrastructure
 // probes (load balancer / orchestrator health checks), not attacker-facing

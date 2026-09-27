@@ -18,6 +18,7 @@ const env = require('../config/env');
 const ApiError = require('../utils/ApiError');
 const recordActivity = require('../utils/recordActivity');
 const logger = require('../utils/logger');
+const { securityEvent, pseudonymize, EVENTS } = require('../utils/securityLog');
 
 const RESET_TOKEN_TTL_MINUTES = 15;
 const VERIFICATION_TOKEN_TTL_MINUTES = 15;
@@ -121,6 +122,7 @@ async function register({ email, password, name, fullName, phone, institutionId,
   }
 
   await recordActivity({ userId: user.id, action: 'register', entityType: 'user', entityId: user.id });
+  securityEvent(EVENTS.REGISTERED, { actorId: user.id, actorRole: finalRole, role: finalRole, status, method: 'password' });
 
   // Best-effort: registration must succeed regardless of whether the
   // verification email actually sends (e.g. Brevo not configured locally).
@@ -140,21 +142,30 @@ async function register({ email, password, name, fullName, phone, institutionId,
 
 async function login({ email, password }) {
   const user = await userRepository.findByEmail(email);
-  if (!user || !user.is_active) throw ApiError.unauthorized('Invalid email or password');
+  // The reason is logged, never returned: the client always gets the same
+  // message, so it can't be used to discover which emails have accounts.
+  const loginFailed = (reason) => {
+    securityEvent(EVENTS.LOGIN_FAILED, { reason, targetUserId: user?.id ?? null, emailHash: pseudonymize(email) });
+    return ApiError.unauthorized('Invalid email or password');
+  };
+  if (!user) throw loginFailed('unknown_user');
+  if (!user.is_active) throw loginFailed('account_inactive');
 
   const valid = await verifyPassword(password, user.password_hash);
-  if (!valid) throw ApiError.unauthorized('Invalid email or password');
+  if (!valid) throw loginFailed('bad_password');
 
   // Bulk-onboarded students with a generated temp password (see
   // utils/studentOnboarding.js) can't get a real session until they set their
   // own password — credentials did authenticate, so this is a "next step
   // required" outcome, not an auth failure.
   if (user.must_change_password) {
+    securityEvent(EVENTS.LOGIN_SUCCEEDED, { actorId: user.id, actorRole: user.role, method: 'password', mustChangePassword: true });
     return { mustChangePassword: true, user: sanitizeUser(user) };
   }
 
   await userRepository.updateById(user.id, { last_login_at: new Date() });
   await recordActivity({ userId: user.id, action: 'login', entityType: 'user', entityId: user.id });
+  securityEvent(EVENTS.LOGIN_SUCCEEDED, { actorId: user.id, actorRole: user.role, method: 'password' });
   return { user: await withCollegeName(sanitizeUser(user)), ...issueTokens(user) };
 }
 
@@ -165,13 +176,18 @@ async function login({ email, password }) {
 // forgotPassword are for.
 async function changeInitialPassword({ email, currentPassword, newPassword }) {
   const user = await userRepository.findByEmail(email);
-  if (!user || !user.is_active) throw ApiError.unauthorized('Invalid email or password');
+  const failed = (reason) => {
+    securityEvent(EVENTS.LOGIN_FAILED, { reason, method: 'initial_password', targetUserId: user?.id ?? null, emailHash: pseudonymize(email) });
+    return ApiError.unauthorized('Invalid email or password');
+  };
+  if (!user) throw failed('unknown_user');
+  if (!user.is_active) throw failed('account_inactive');
   if (!user.must_change_password) {
     throw ApiError.badRequest('This account does not require a password change');
   }
 
   const valid = await verifyPassword(currentPassword, user.password_hash);
-  if (!valid) throw ApiError.unauthorized('Invalid email or password');
+  if (!valid) throw failed('bad_password');
 
   const passwordHash = await hashPassword(newPassword);
   const updated = await userRepository.updateById(user.id, {
@@ -183,6 +199,7 @@ async function changeInitialPassword({ email, currentPassword, newPassword }) {
     last_login_at: new Date(),
   });
   await recordActivity({ userId: user.id, action: 'change_initial_password', entityType: 'user', entityId: user.id });
+  securityEvent(EVENTS.PASSWORD_CHANGED, { actorId: user.id, actorRole: user.role, initial: true, sessionsRevoked: true });
 
   return { user: await withCollegeName(sanitizeUser(updated)), ...issueTokens(updated) };
 }
@@ -217,10 +234,14 @@ async function googleLogin(idToken) {
     }
   }
 
-  if (!user.is_active) throw ApiError.unauthorized('This account has been deactivated');
+  if (!user.is_active) {
+    securityEvent(EVENTS.LOGIN_FAILED, { reason: 'account_inactive', method: 'google', targetUserId: user.id });
+    throw ApiError.unauthorized('This account has been deactivated');
+  }
 
   await userRepository.updateById(user.id, { last_login_at: new Date() });
   await recordActivity({ userId: user.id, action: 'google_login', entityType: 'user', entityId: user.id });
+  securityEvent(EVENTS.LOGIN_SUCCEEDED, { actorId: user.id, actorRole: user.role, method: 'google' });
   return { user: await withCollegeName(sanitizeUser(user)), ...issueTokens(user) };
 }
 
@@ -244,6 +265,7 @@ async function googleLink(actor, idToken) {
     google_connected_at: new Date(),
   });
   await recordActivity({ userId: actor.id, action: 'google_link', entityType: 'user', entityId: actor.id });
+  securityEvent(EVENTS.SIGN_IN_METHOD_LINKED, { provider: 'google' });
   return sanitizeUser(updated);
 }
 
@@ -265,6 +287,7 @@ async function googleUnlink(actor) {
     google_connected_at: null,
   });
   await recordActivity({ userId: actor.id, action: 'google_unlink', entityType: 'user', entityId: actor.id });
+  securityEvent(EVENTS.SIGN_IN_METHOD_UNLINKED, { provider: 'google' });
   return sanitizeUser(updated);
 }
 
@@ -273,16 +296,21 @@ async function refresh(refreshToken) {
   try {
     payload = verifyRefreshToken(refreshToken);
   } catch {
+    securityEvent(EVENTS.REFRESH_FAILED, { reason: 'invalid_or_expired' });
     throw ApiError.unauthorized('Invalid or expired refresh token');
   }
 
   const user = await userRepository.findById(payload.sub);
-  if (!user || !user.is_active) throw ApiError.unauthorized('Account no longer active');
+  if (!user || !user.is_active) {
+    securityEvent(EVENTS.REFRESH_FAILED, { reason: 'account_inactive', targetUserId: payload.sub });
+    throw ApiError.unauthorized('Account no longer active');
+  }
 
   // A password reset bumps token_version — any refresh token issued before
   // that point (payload.tv holds the version at issuance time) is rejected,
   // even though it's still a validly-signed, unexpired JWT.
   if ((payload.tv || 0) !== (user.token_version || 0)) {
+    securityEvent(EVENTS.REFRESH_FAILED, { reason: 'session_revoked', targetUserId: user.id });
     throw ApiError.unauthorized('Session no longer valid, please log in again');
   }
 
@@ -360,7 +388,7 @@ async function activityHeatmap(userId) {
 async function forgotPassword(email) {
   const user = await userRepository.findByEmail(email);
   if (!user) {
-    logger.info('Password reset requested for unknown email (no-op)', { email });
+    securityEvent(EVENTS.PASSWORD_RESET_REQUESTED, { accountExists: false, emailHash: pseudonymize(email) });
     return;
   }
 
@@ -369,7 +397,7 @@ async function forgotPassword(email) {
     reset_password_token_hash: hashToken(rawToken),
     reset_password_expires: new Date(Date.now() + RESET_TOKEN_TTL_MINUTES * 60 * 1000),
   });
-  logger.info('Password reset requested', { userId: user.id });
+  securityEvent(EVENTS.PASSWORD_RESET_REQUESTED, { accountExists: true, targetUserId: user.id });
 
   const resetUrl = `${env.frontendUrl}/reset-password?token=${rawToken}`;
   const { subject, html, text } = passwordResetTemplate({
@@ -400,7 +428,7 @@ async function resetPassword(rawToken, newPassword) {
     // before this reset — see issueTokens()/refresh() above.
     token_version: (user.token_version || 0) + 1,
   });
-  logger.info('Password reset completed', { userId: user.id });
+  securityEvent(EVENTS.PASSWORD_RESET_COMPLETED, { actorId: user.id, actorRole: user.role, sessionsRevoked: true });
 }
 
 // Authenticated password change (as opposed to the token-based reset flow
@@ -426,7 +454,7 @@ async function changePassword(userId, currentPassword, newPassword) {
     token_version: (user.token_version || 0) + 1,
   });
   await recordActivity({ userId: user.id, action: 'change_password', entityType: 'user', entityId: user.id });
-  logger.info('Password changed', { userId: user.id });
+  securityEvent(EVENTS.PASSWORD_CHANGED, { actorId: user.id, actorRole: user.role, sessionsRevoked: true });
 
   return { user: sanitizeUser(updated), ...issueTokens(updated) };
 }
@@ -444,7 +472,7 @@ async function verifyEmail(rawToken) {
     email_verification_token_hash: null,
     email_verification_expires: null,
   });
-  logger.info('Email verification completed', { userId: user.id });
+  securityEvent(EVENTS.EMAIL_VERIFIED, { actorId: user.id, actorRole: user.role });
 }
 
 module.exports = {

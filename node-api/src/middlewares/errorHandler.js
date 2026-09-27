@@ -1,6 +1,7 @@
 const ApiError = require('../utils/ApiError');
 const logger = require('../utils/logger');
 const env = require('../config/env');
+const { securityEvent, EVENTS } = require('../utils/securityLog');
 
 function notFoundHandler(req, res, next) {
   next(ApiError.notFound(`Route ${req.method} ${req.originalUrl} not found`));
@@ -47,6 +48,13 @@ function errorHandler(err, req, res, next) {
   // future branch above that forgets to set one) still gets a stable
   // fallback derived from the status, rather than `code: undefined`.
   code = code || ApiError.codeForStatus(statusCode);
+
+  // Every 403 in the app — route-level role checks (authorize.js) and
+  // service-level ownership/institution checks alike — ends up here, so this
+  // one line covers all of them.
+  if (statusCode === 403) {
+    securityEvent(EVENTS.ACCESS_DENIED, { method: req.method, path: req.originalUrl.split('?')[0], reason: message }, req);
+  }
 
   if (statusCode >= 500) {
     logger.error(err.message || message, { stack: err.stack, path: req.originalUrl });

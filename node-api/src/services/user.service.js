@@ -10,11 +10,38 @@ const { resolveDepartmentIdByName } = require('../utils/departmentMatch');
 const { ROLES } = require('../config/constants');
 const { assertSameInstitution } = require('../utils/authz');
 const ApiError = require('../utils/ApiError');
+const { securityEvent, EVENTS } = require('../utils/securityLog');
+
+// Fields whose change alters what an account may do or whether it can sign
+// in at all — each change is a security event (see update() below).
+const ACCESS_STATUS_FIELDS = ['is_active', 'status', 'is_email_verified'];
 
 function sanitize(user) {
   if (!user) return user;
   const { password_hash, ...safe } = user;
   return safe;
+}
+
+// One event per privilege/access change actually made (a no-op "change" to
+// the same value logs nothing). Old and new values are roles/flags, never
+// personal data. (Named oldValue/newValue, not from/to: `to` is masked as an
+// email recipient by utils/logRedaction.js.)
+function logAccessChanges(before, changes, { passwordSet = false, bySelf = false } = {}) {
+  const base = { targetUserId: before.id, institutionId: before.institution_id ?? null };
+  if ('role' in changes && changes.role !== before.role) {
+    securityEvent(EVENTS.ROLE_CHANGED, { ...base, oldValue: before.role, newValue: changes.role });
+  }
+  if ('institution_id' in changes && changes.institution_id !== before.institution_id) {
+    securityEvent(EVENTS.ROLE_CHANGED, { ...base, field: 'institution_id', oldValue: before.institution_id ?? null, newValue: changes.institution_id ?? null });
+  }
+  for (const field of ACCESS_STATUS_FIELDS) {
+    if (field in changes && changes[field] !== before[field]) {
+      securityEvent(EVENTS.STATUS_CHANGED, { ...base, field, oldValue: before[field] ?? null, newValue: changes[field] });
+    }
+  }
+  if (passwordSet) {
+    securityEvent(EVENTS.PASSWORD_CHANGED, { ...base, setByAdmin: !bySelf, via: 'users_update' });
+  }
 }
 
 class UserService extends BaseService {
@@ -125,6 +152,7 @@ class UserService extends BaseService {
     delete userFields.password;
 
     const user = await this.repository.create(userFields);
+    securityEvent(EVENTS.USER_CREATED, { targetUserId: user.id, role: user.role, institutionId: user.institution_id ?? null });
 
     // Cascade-create the role-specific linked row, mirroring python-service's
     // create_user (which auto-creates student_profiles/faculty_profiles/
@@ -204,11 +232,14 @@ class UserService extends BaseService {
       );
     }
 
+    const passwordSet = Boolean(payload.password);
     if (payload.password) {
       payload.password_hash = await hashPassword(payload.password);
       delete payload.password;
     }
-    return sanitize(await super.update(id, payload));
+    const updated = await super.update(id, payload);
+    logAccessChanges(target, payload, { passwordSet, bySelf: isSelf });
+    return sanitize(updated);
   }
 
   async remove(id, actor) {
@@ -218,7 +249,9 @@ class UserService extends BaseService {
       throw ApiError.forbidden('Not authorized');
     }
     assertSameInstitution(actor, target);
-    return super.remove(id);
+    const result = await super.remove(id);
+    securityEvent(EVENTS.USER_DELETED, { targetUserId: target.id, role: target.role, institutionId: target.institution_id ?? null });
+    return result;
   }
 
   // institution_admin may approve/reject pending signups within their own
@@ -244,6 +277,7 @@ class UserService extends BaseService {
   async approve(id, actor) {
     const target = await this.assertCanReview(id, actor);
     const user = sanitize(await super.update(id, { status: 'approved' }));
+    logAccessChanges(target, { status: 'approved' });
 
     // Backfill graduation year for students whose upload didn't resolve
     // one (e.g. no department/year_of_study available yet at upload time,
@@ -288,8 +322,10 @@ class UserService extends BaseService {
   }
 
   async reject(id, actor) {
-    await this.assertCanReview(id, actor);
-    return sanitize(await super.update(id, { status: 'rejected' }));
+    const target = await this.assertCanReview(id, actor);
+    const user = sanitize(await super.update(id, { status: 'rejected' }));
+    logAccessChanges(target, { status: 'rejected' });
+    return user;
   }
 }
 

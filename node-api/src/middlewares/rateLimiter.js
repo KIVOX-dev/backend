@@ -1,6 +1,7 @@
 const rateLimit = require('express-rate-limit');
 const env = require('../config/env');
 const { HybridRateLimitStore } = require('./rateLimitStore');
+const { securityEvent, EVENTS } = require('../utils/securityLog');
 
 // Redis-backed when REDIS_URL is set (shared limits across every node-api
 // instance — required once this runs behind a load balancer with more than
@@ -12,6 +13,16 @@ function storeFor(name, windowMs) {
   return new HybridRateLimitStore({ prefix: `rl:${name}:`, windowMs });
 }
 
+// Same response express-rate-limit sends by default, plus a security event —
+// a 429 on the auth or kiosk-lookup limiters is what brute forcing and
+// credential stuffing look like from the server side.
+function loggingHandler(limiter, event = EVENTS.RATE_LIMITED) {
+  return (req, res, next, options) => {
+    securityEvent(event, { limiter, method: req.method, path: req.originalUrl.split('?')[0] }, req);
+    res.status(options.statusCode).send(options.message);
+  };
+}
+
 // General API limiter, applied globally.
 const apiLimiter = rateLimit({
   windowMs: env.rateLimit.windowMs,
@@ -19,6 +30,7 @@ const apiLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: 'Too many requests, please try again later.' },
+  handler: loggingHandler('api'),
   store: storeFor('api', env.rateLimit.windowMs),
 });
 
@@ -35,6 +47,7 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: 'Too many authentication attempts, please try again later.' },
+  handler: loggingHandler('auth', EVENTS.AUTH_RATE_LIMITED),
   store: storeFor('auth', AUTH_WINDOW_MS),
 });
 
@@ -48,6 +61,7 @@ const identifyLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: 'Too many lookup attempts, please try again later.' },
+  handler: loggingHandler('identify'),
   store: storeFor('identify', IDENTIFY_WINDOW_MS),
 });
 
