@@ -21,7 +21,7 @@ function getClient() {
 // both htmlContent and textContent — the text fallback is what renders in
 // email clients/previews that don't (or won't) show HTML, and is required by
 // some spam filters as a signal of a legitimate transactional message.
-async function sendEmail({ to, subject, html, text }) {
+async function sendEmail({ to, subject, html, text, replyTo }) {
   if (!isEmailConfigured()) {
     logger.warn('Email not sent — Brevo is not configured (BREVO_API_KEY/BREVO_SENDER_EMAIL unset)', {
       to,
@@ -38,6 +38,7 @@ async function sendEmail({ to, subject, html, text }) {
       subject,
       htmlContent: html,
       textContent: text,
+      ...(replyTo ? { replyTo: { email: replyTo } } : {}),
     });
     logger.info('Email sent', { to, subject });
     return { sent: true };

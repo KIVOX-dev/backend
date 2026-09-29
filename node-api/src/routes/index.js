@@ -56,5 +56,6 @@ router.use('/dashboard', require('./dashboard.routes'));
 router.use('/batches', require('./batch.routes'));
 router.use('/chat', require('./chat.routes'));
 router.use('/search', require('./search.routes'));
+router.use('/contact', require('./contact.routes'));
 
 module.exports = router;

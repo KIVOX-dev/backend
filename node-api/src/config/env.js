@@ -129,6 +129,11 @@ module.exports = {
     senderName: process.env.BREVO_SENDER_NAME || '',
   },
 
+  // Where "Talk to Sales" requests from the public site are emailed.
+  contact: {
+    salesInbox: process.env.SALES_INBOX_EMAIL || 'admin@talentsnaps.com',
+  },
+
   // Used to build reset-password/verify-email links sent by email.
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
 
