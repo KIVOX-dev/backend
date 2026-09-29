@@ -150,11 +150,11 @@ steps:
       # frontend Google Identity Services request) — GOOGLE_CLIENT_SECRET is deliberately
       # NOT set here: src/utils/googleAuth.js only verifies ID tokens (audience check),
       # which never needs the secret; nothing in this codebase reads it.
-      - --set-env-vars=^;^NODE_ENV=production;AI_SERVICE_URL=https://ai-service-177421000110.asia-south1.run.app;CORS_ORIGINS=https://www.talentsnaps.com,https://talentsnaps.com,http://localhost:3000;BREVO_SENDER_EMAIL=admin@talentsnaps.com;BREVO_SENDER_NAME=TalentSnaps;FRONTEND_URL=https://www.talentsnaps.com;TURNSTILE_HOSTNAMES=talentsnaps.com,www.talentsnaps.com;GOOGLE_CLIENT_ID=435349081708-0inh7fen8dnse14g6vlsmm6r5n25ap44.apps.googleusercontent.com;GCS_DOCUMENTS_BUCKET_NAME=project-0914cba0-b5c1-4eca-8d1-offer-letters
+      - --set-env-vars=^;^NODE_ENV=production;AI_SERVICE_URL=https://ai-service-177421000110.asia-south1.run.app;CORS_ORIGINS=https://www.talentsnaps.com,https://talentsnaps.com,http://localhost:3000;BREVO_SENDER_EMAIL=admin@talentsnaps.com;BREVO_SENDER_NAME=TalentSnaps;FRONTEND_URL=https://www.talentsnaps.com;TURNSTILE_HOSTNAMES=talentsnaps.com,www.talentsnaps.com;GOOGLE_CLIENT_ID=435349081708-0inh7fen8dnse14g6vlsmm6r5n25ap44.apps.googleusercontent.com;GCS_DOCUMENTS_BUCKET_NAME=project-0914cba0-b5c1-4eca-8d1-offer-letters;GITHUB_CLIENT_ID=Ov23liiX4DWXIrdVbBVI;GITHUB_CALLBACK_URL=https://node-api-177421000110.asia-south1.run.app/api/v1/auth/github/callback
       # TURNSTILE_SECRET_KEY: create this secret in Secret Manager BEFORE the next
       # deploy runs — env.js requires it at boot (same as the JWT secrets), so a
       # missing secret here means node-api fails to start in production, not just
       # a degraded feature. See node-api/docs/API.md's Auth section.
-      - --set-secrets=JWT_SECRET=node-api-jwt-secret:latest,JWT_REFRESH_SECRET=node-api-jwt-refresh-secret:latest,MONGODB_URI=node-api-mongodb-uri:latest,AI_SERVICE_SHARED_SECRET=ai-service-shared-secret:latest,BREVO_API_KEY=node-api-brevo-api-key:latest,TURNSTILE_SECRET_KEY=node-api-turnstile-secret-key:latest,YOUTUBE_API_KEY=node-api-youtube-api-key:latest
+      - --set-secrets=JWT_SECRET=node-api-jwt-secret:latest,JWT_REFRESH_SECRET=node-api-jwt-refresh-secret:latest,MONGODB_URI=node-api-mongodb-uri:latest,AI_SERVICE_SHARED_SECRET=ai-service-shared-secret:latest,BREVO_API_KEY=node-api-brevo-api-key:latest,TURNSTILE_SECRET_KEY=node-api-turnstile-secret-key:latest,YOUTUBE_API_KEY=node-api-youtube-api-key:latest,GITHUB_CLIENT_SECRET=node-api-github-client-secret:latest
       - --quiet
     waitFor: [push-node-api, deploy-ai-service]
