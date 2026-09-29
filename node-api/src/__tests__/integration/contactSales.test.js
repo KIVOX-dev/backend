@@ -44,7 +44,10 @@ describe('POST /contact/sales (Talk to Sales)', () => {
   it('emails the request to the sales inbox with Reply-To set to the visitor', async () => {
     await request(app).post('/api/v1/contact/sales').send(valid).expect(200);
 
-    expect(emailService.sendEmail).toHaveBeenCalledTimes(1);
+    expect(emailService.sendEmail).toHaveBeenCalledTimes(2);
+    const ack = emailService.sendEmail.mock.calls[1][0];
+    expect(ack.to).toBe('priya@psg.edu');
+    expect(ack.text).toContain('Thank you for contacting TalentSnaps');
     const mail = emailService.sendEmail.mock.calls[0][0];
     expect(mail).toMatchObject({ to: 'sales-inbox@example.com', replyTo: 'priya@psg.edu' });
     expect(mail.subject).toContain('PSG College');

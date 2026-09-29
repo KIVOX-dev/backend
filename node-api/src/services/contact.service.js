@@ -53,6 +53,25 @@ ${rows.map(([k, v]) => `<tr><td style="padding:6px 16px 6px 0;color:#666;vertica
     logger.error('Talk to Sales request not delivered', { reason: result.reason });
     throw ApiError.serviceUnavailable(`We couldn't send your request right now. Please email ${env.contact.salesInbox}.`);
   }
+
+  // Acknowledgement to the visitor. Best-effort: the request already reached
+  // the sales team, so a failure here must not fail the submission.
+  try {
+    const ack = await sendEmail({
+      to: email,
+      subject: 'Thank you for contacting TalentSnaps',
+      html: `<div style="font-family:sans-serif;font-size:15px;line-height:1.6;color:#222">
+<p>Hi ${escapeHtml(name)},</p>
+<p>Thank you for contacting TalentSnaps. You'll receive a return call, or our team will contact you soon.</p>
+<p>If it's urgent, write to us at <a href="mailto:${escapeHtml(env.contact.salesInbox)}">${escapeHtml(env.contact.salesInbox)}</a>.</p>
+<p>Regards,<br>Team TalentSnaps</p>
+</div>`,
+      text: `Hi ${name},\n\nThank you for contacting TalentSnaps. You'll receive a return call, or our team will contact you soon.\n\nIf it's urgent, write to us at ${env.contact.salesInbox}.\n\nRegards,\nTeam TalentSnaps`,
+    });
+    if (!ack.sent) logger.warn('Talk to Sales acknowledgement not delivered', { reason: ack.reason });
+  } catch (err) {
+    logger.warn('Talk to Sales acknowledgement failed', { error: err.message });
+  }
 }
 
 module.exports = { submitSalesRequest, PRODUCT_LABELS };
