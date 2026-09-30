@@ -48,6 +48,7 @@ router.use('/certificates', require('./certificateVerification.routes'));
 router.use('/activity-logs', require('./activityLog.routes'));
 router.use('/user-data', require('./userData.routes'));
 router.use('/placement-records', require('./placementRecord.routes'));
+router.use('/reports', require('./report.routes'));
 router.use('/profile', require('./profile.routes'));
 router.use('/ai', require('./ai.routes'));
 router.use('/interviews', require('./interview.routes'));
