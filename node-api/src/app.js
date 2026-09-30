@@ -8,6 +8,7 @@ const env = require('./config/env');
 const routes = require('./routes');
 const healthRoutes = require('./routes/health.routes');
 const placementProofFilesRoutes = require('./routes/placementProofFiles.routes');
+const outcomeProofFilesRoutes = require('./routes/outcomeProofFiles.routes');
 const profileMediaFilesRoutes = require('./routes/profileMediaFiles.routes');
 const { apiLimiter, healthLimiter } = require('./middlewares/rateLimiter');
 const { notFoundHandler, errorHandler } = require('./middlewares/errorHandler');
@@ -74,6 +75,7 @@ app.use(apiLimiter);
 // express.static mount. See routes/profileMediaFiles.routes.js.
 app.use('/uploads/profile', profileMediaFilesRoutes);
 app.use('/uploads/placement-proof', placementProofFilesRoutes);
+app.use('/uploads/outcome-proof', outcomeProofFilesRoutes);
 
 app.use(env.apiPrefix, routes);
 

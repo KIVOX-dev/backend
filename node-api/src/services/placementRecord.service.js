@@ -110,6 +110,49 @@ class PlacementRecordService extends BaseService {
     return { url: sign(record.proof_url) };
   }
 
+  // Adds or replaces the offer letter on an existing placement — how a
+  // student acts on an "offer letter needed" reminder. A student may do this
+  // only while the record is unverified (swapping the letter on something an
+  // admin already verified would quietly void that check); re-uploading over
+  // a rejected one sends it back for review. Staff can attach at any time.
+  async attachProof(id, actor, proofFile) {
+    if (!proofFile) throw ApiError.badRequest('Attach a PDF, JPEG or PNG file');
+    const record = await this.repository.findById(id);
+    if (!record) throw ApiError.notFound('Placement record not found');
+
+    const isStudent = actor.role === ROLES.STUDENT;
+    if (isStudent) {
+      const student = await studentRepository.findByUserId(actor.id);
+      if (!student || student.id !== record.student_id) throw ApiError.forbidden('You do not have access to this resource');
+      if (record.verification_status === 'verified') {
+        throw ApiError.forbidden('This placement is already verified — ask your placement office to change it');
+      }
+    } else if (STAFF_ROLES.includes(actor.role)) {
+      assertInstitutionOwnership(actor, record);
+    } else {
+      throw ApiError.forbidden('Not authorized to change this placement');
+    }
+
+    const newUrl = await placementProofStorage.save(proofFile.buffer, {
+      institutionId: record.institution_id,
+      extension: proofFile.extension,
+      contentType: proofFile.mimetype,
+    });
+    const patch = { proof_url: newUrl };
+    if (isStudent && record.verification_status === 'rejected') patch.verification_status = 'pending';
+    const updated = await this.repository.updateById(id, patch);
+
+    if (record.proof_url) {
+      try {
+        await placementProofStorage.remove(record.proof_url);
+      } catch (err) {
+        logger.error('Replaced placement proof file delete failed', { proofUrl: record.proof_url, error: err.message });
+      }
+    }
+    await recordPlacementEvent(actor, PLACEMENT_ACTIONS.LETTER_ATTACHED, record);
+    return updated;
+  }
+
   // The only way an offer letter is ever deleted: an admin removing the
   // whole record. The record goes first, then its file — a failed file
   // delete leaves an orphan (logged, and versioning keeps it recoverable)

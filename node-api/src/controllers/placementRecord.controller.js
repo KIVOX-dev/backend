@@ -28,4 +28,10 @@ const getProofUrl = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, result);
 });
 
-module.exports = { ...base, list, create, listForStudent, verify, getProofUrl };
+const attachProof = asyncHandler(async (req, res) => {
+  const proofFile = (req.files || []).find((f) => f.fieldname === 'proof_file');
+  const record = await placementRecordService.attachProof(req.params.id, req.user, proofFile);
+  ApiResponse.ok(res, record, 'Offer letter attached');
+});
+
+module.exports = { ...base, list, create, listForStudent, verify, getProofUrl, attachProof };

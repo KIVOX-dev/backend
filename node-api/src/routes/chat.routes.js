@@ -8,6 +8,7 @@ router.use(authenticate);
 // Registered before /history/:otherUserId so neither is ever captured by
 // that route's :otherUserId param.
 router.get('/threads', controller.threads);
+router.get('/contacts', controller.contacts);
 router.get('/broadcast-history/:scope', controller.broadcastHistory);
 router.get('/history/:otherUserId', controller.history);
 

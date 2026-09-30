@@ -16,6 +16,10 @@ const threads = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, result);
 });
 
+const contacts = asyncHandler(async (req, res) => {
+  ApiResponse.ok(res, await chatService.getContacts(req.user));
+});
+
 const broadcastHistory = asyncHandler(async (req, res) => {
   const { scope } = req.params;
   if (!VALID_BROADCAST_SCOPES.has(scope)) {
@@ -26,4 +30,4 @@ const broadcastHistory = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, result);
 });
 
-module.exports = { history, threads, broadcastHistory };
+module.exports = { history, threads, contacts, broadcastHistory };

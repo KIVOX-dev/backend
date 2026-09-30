@@ -8,6 +8,8 @@ const filters = Joi.object({
   year: Joi.number().integer().min(2000).max(2100),
   department_id: Joi.string().uuid(),
   institution_id: Joi.string().uuid(),
+  // Student-picker search (GET /reports/students): name or roll number.
+  q: Joi.string().trim().max(100).allow(''),
 });
 
 const auditLog = filters.keys({

@@ -10,13 +10,19 @@ const ApiResponse = require('../utils/ApiResponse');
 // numbers.
 const parsed = (joiSchema, req) => joiSchema.validate(req.query, { stripUnknown: true }).value;
 
-const nirf = asyncHandler(async (req, res) => {
-  ApiResponse.ok(res, await reportService.nirf(req.user, parsed(schema.filters, req)));
-});
+// One handler per report that just runs a service method on the filters.
+const report = (method) =>
+  asyncHandler(async (req, res) => {
+    ApiResponse.ok(res, await reportService[method](req.user, parsed(schema.filters, req)));
+  });
 
-const offerLetters = asyncHandler(async (req, res) => {
-  ApiResponse.ok(res, await reportService.offerLetters(req.user, parsed(schema.filters, req)));
-});
+const nirf = report('nirf');
+const nba = report('nba');
+const naac = report('naac');
+const higherStudies = report('higherStudies');
+const competitiveExams = report('competitiveExams');
+const offerLetters = report('offerLetters');
+const studentOptions = report('studentOptions');
 
 const remindOfferLetters = asyncHandler(async (req, res) => {
   const result = await reportService.remindOfferLetters(req.user, parsed(schema.filters, req));
@@ -27,4 +33,4 @@ const auditLog = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, await reportService.auditLog(req.user, parsed(schema.auditLog, req)));
 });
 
-module.exports = { nirf, offerLetters, remindOfferLetters, auditLog };
+module.exports = { nirf, nba, naac, higherStudies, competitiveExams, offerLetters, studentOptions, remindOfferLetters, auditLog };

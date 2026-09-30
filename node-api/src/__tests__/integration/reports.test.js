@@ -86,10 +86,10 @@ describe('Reports & Compliance', () => {
     const res = await request(app).get('/api/v1/reports/nirf?year=2026').set('Authorization', `Bearer ${token}`).expect(200);
 
     const row = res.body.data.rows.find((r) => r.batch_year === 2026);
-    expect(row).toMatchObject({ department: 'Computer Science', graduating: 4, placed: 2, median_salary_lpa: 8, higher_studies: null });
+    expect(row).toMatchObject({ department: 'Computer Science', graduating: 4, placed: 2, median_salary_lpa: 8, higher_studies: 0 });
     expect(row.placement_pct).toBe(50);
     expect(res.body.data.batches).toEqual([2026, 2025, 2024]);
-    expect(res.body.data.completeness).toEqual({ missing_outcome: 1, total_students: 4 });
+    expect(res.body.data.completeness).toEqual({ missing_outcome: 1, total_students: 4, pending_verification: 1 });
   });
 
   it('offer letters: buckets records by letter status, and reminders go only to students still missing one', async () => {

@@ -27,6 +27,10 @@ router.post(
   controller.create
 ); // role-gated inside the service (student=self, staff=on behalf of)
 
+// Add or replace the offer letter on an existing placement (the student's own,
+// or any in the admin's institution) — see placementRecord.service.js#attachProof.
+router.put('/:id/proof', documentUpload.any(), verifyDocument, controller.attachProof);
+
 router.put(
   '/:id/verify',
   authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN),
