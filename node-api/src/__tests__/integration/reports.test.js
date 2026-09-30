@@ -43,7 +43,7 @@ describe('Reports & Compliance', () => {
   }
 
   async function seedStudent(institutionId, departmentId, batchYear, record) {
-    const { user } = await seedUser(repos.userRepository, hashPassword, {
+    const { user, password } = await seedUser(repos.userRepository, hashPassword, {
       role: 'student',
       institutionId,
       email: `report-student-${uniq()}@example.com`,
@@ -64,7 +64,7 @@ describe('Reports & Compliance', () => {
           ...record,
         })
       : null;
-    return { user, student, record: created };
+    return { user, password, student, record: created };
   }
 
   async function setup() {
@@ -115,9 +115,22 @@ describe('Reports & Compliance', () => {
     const notes = await notificationRepository.findAll({ filters: { user_id: needs.user.id } });
     expect(notes.rows).toHaveLength(1);
 
-    // An unread reminder is already waiting, so a second press doesn't stack another.
+    // ...and the student can actually see it, and mark it read.
+    const studentAuth = { Authorization: `Bearer ${await login(needs.user.email, needs.password)}` };
+    const inbox = await request(app).get('/api/v1/notifications').set(studentAuth).expect(200);
+    expect(inbox.body.data).toHaveLength(1);
+    expect(inbox.body.data[0]).toMatchObject({ title: 'Offer letter needed', is_read: false });
+    await request(app).patch(`/api/v1/notifications/${inbox.body.data[0].id}/read`).set(studentAuth).expect(200);
+    const after = await request(app).get('/api/v1/notifications').set(studentAuth).expect(200);
+    expect(after.body.data[0].is_read).toBe(true);
+
+    // Once read, a fresh reminder is allowed again — the student dealt with the last one.
     const second = await request(app).post('/api/v1/reports/offer-letters/remind').set(auth).expect(200);
-    expect(second.body.data).toMatchObject({ sent: 0, skipped: 1 });
+    expect(second.body.data).toMatchObject({ sent: 1, skipped: 0 });
+
+    // But an unread one already waiting isn't stacked on.
+    const third = await request(app).post('/api/v1/reports/offer-letters/remind').set(auth).expect(200);
+    expect(third.body.data).toMatchObject({ sent: 0, skipped: 1 });
   });
 
   it('audit log: verifications and deletions are recorded with who did it, and stay inside the institution', async () => {
