@@ -38,6 +38,13 @@ async function downloadFile({ bucketName, destination }) {
   return { buffer, contentType: metadata.contentType };
 }
 
+// Deletes one object; a missing object is not an error. With bucket
+// versioning on, this leaves a noncurrent version behind, so a mistaken
+// delete stays recoverable.
+async function deleteFile({ bucketName, destination }) {
+  await storage.bucket(bucketName).file(destination).delete({ ignoreNotFound: true });
+}
+
 // Short-lived, read-only V4 signed URL for one object. On Cloud Run the
 // runtime service account has no private key, so the library signs through
 // the IAM Credentials API (signBlob) — that needs the service account to
@@ -52,4 +59,4 @@ async function signReadUrl({ bucketName, destination, ttlSeconds }) {
   return url;
 }
 
-module.exports = { uploadPrivateFile, downloadFile, signReadUrl };
+module.exports = { uploadPrivateFile, downloadFile, deleteFile, signReadUrl };

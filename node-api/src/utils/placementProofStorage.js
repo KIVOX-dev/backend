@@ -2,7 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const env = require('../config/env');
-const { uploadPrivateFile, downloadFile } = require('./gcsClient');
+const ApiError = require('./ApiError');
+const { uploadPrivateFile, downloadFile, deleteFile } = require('./gcsClient');
 const { documentUploadDir } = require('../middlewares/upload');
 
 // Placement-proof offer letters, one folder per institution:
@@ -39,6 +40,11 @@ async function save(buffer, { institutionId, extension, contentType }) {
       destination: `${OBJECT_PREFIX}/${folder}/${filename}`,
       contentType,
     });
+  } else if (env.isProduction) {
+    // Cloud Run's disk is wiped on every redeploy/restart, so a letter saved
+    // there is silently lost later — that is how offer letters went missing.
+    // Refuse the upload now instead of accepting a file we can't keep.
+    throw ApiError.serviceUnavailable("Document storage isn't configured — the offer letter wasn't saved. Contact support.");
   } else {
     const dir = path.join(documentUploadDir, folder);
     await fs.promises.mkdir(dir, { recursive: true });
@@ -71,4 +77,21 @@ async function load(segments) {
   }
 }
 
-module.exports = { save, load, URL_PREFIX };
+// Deletes the file behind a record's proof_url. Only an admin deleting the
+// record reaches this — nothing else removes offer letters. Returns quietly
+// for a url that isn't ours or a file that's already gone.
+async function remove(proofUrl) {
+  if (typeof proofUrl !== 'string' || !proofUrl.startsWith(`${URL_PREFIX}/`)) return;
+  const segments = proofUrl.slice(URL_PREFIX.length + 1).split('/');
+  if (!segments.every(isSafeSegment)) return;
+
+  if (env.gcs.documentsBucketName) {
+    await deleteFile({
+      bucketName: env.gcs.documentsBucketName,
+      destination: [OBJECT_PREFIX, ...segments].join('/'),
+    });
+  }
+  await fs.promises.rm(path.join(documentUploadDir, ...segments), { force: true });
+}
+
+module.exports = { save, load, remove, URL_PREFIX };

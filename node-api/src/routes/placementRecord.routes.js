@@ -34,4 +34,12 @@ router.put(
   controller.verify
 );
 
+// Deletes the record and its offer letter. Admin-only: this is the single
+// path by which a stored document is ever removed.
+router.delete(
+  '/:id',
+  authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN),
+  controller.remove
+);
+
 module.exports = router;

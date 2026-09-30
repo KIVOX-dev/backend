@@ -6,6 +6,8 @@ const { assertInstitutionOwnership } = require('../utils/authz');
 const { sign } = require('../utils/signedUrl');
 const placementProofStorage = require('../utils/placementProofStorage');
 const ApiError = require('../utils/ApiError');
+const logger = require('../utils/logger');
+const { PLACEMENT_ACTIONS, recordPlacementEvent } = require('../utils/placementAudit');
 const { securityEvent, EVENTS } = require('../utils/securityLog');
 
 const STAFF_ROLES = [ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY, ROLES.HR];
@@ -79,6 +81,7 @@ class PlacementRecordService extends BaseService {
     });
 
     await studentRepository.updateById(student.id, { placement_status: 'placed' });
+    await recordPlacementEvent(actor, PLACEMENT_ACTIONS.ADDED, record, { has_offer_letter: Boolean(proofUrl) });
     return record;
   }
 
@@ -107,16 +110,45 @@ class PlacementRecordService extends BaseService {
     return { url: sign(record.proof_url) };
   }
 
+  // The only way an offer letter is ever deleted: an admin removing the
+  // whole record. The record goes first, then its file — a failed file
+  // delete leaves an orphan (logged, and versioning keeps it recoverable)
+  // rather than a record pointing at nothing.
+  async remove(id, actor) {
+    const record = await this.repository.findById(id);
+    if (!record) throw ApiError.notFound('Placement record not found');
+    assertInstitutionOwnership(actor, record);
+
+    await this.repository.deleteById(id);
+    await recordPlacementEvent(actor, PLACEMENT_ACTIONS.DELETED, record, { had_offer_letter: Boolean(record.proof_url) });
+    securityEvent(EVENTS.RECORD_DELETED, { document: 'placement_record', targetId: record.id, studentId: record.student_id });
+
+    if (record.proof_url) {
+      try {
+        await placementProofStorage.remove(record.proof_url);
+      } catch (err) {
+        logger.error('Placement proof file delete failed', { proofUrl: record.proof_url, error: err.message });
+      }
+    }
+
+    // No records left = no longer "placed".
+    if ((await this.repository.countForStudent(record.student_id)) === 0) {
+      await studentRepository.updateById(record.student_id, { placement_status: null });
+    }
+  }
+
   async verify(id, verificationStatus, actor) {
     const record = await this.repository.findById(id);
     if (!record) throw ApiError.notFound('Placement record not found');
     assertInstitutionOwnership(actor, record);
 
-    return this.repository.updateById(id, {
+    const updated = await this.repository.updateById(id, {
       verification_status: verificationStatus,
       verified_by: actor.id,
       verified_at: new Date(),
     });
+    await recordPlacementEvent(actor, PLACEMENT_ACTIONS.VERIFIED, record, { verification_status: verificationStatus });
+    return updated;
   }
 }
 
