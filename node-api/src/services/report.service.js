@@ -12,6 +12,9 @@ const { AUDIT_ACTIONS } = require('../utils/placementAudit');
 
 // NIRF and NBA both look at the last three graduating batches.
 const BATCHES = 3;
+// Same bounds as the `year` filter in validations/report.validation.js.
+const MIN_BATCH_YEAR = 2000;
+const MAX_BATCH_YEAR = 2100;
 const REMINDER_TITLE = 'Offer letter needed';
 
 function median(values) {
@@ -80,7 +83,9 @@ class ReportService {
 
   async availableYears(institutionId) {
     const values = await studentRepository.collection.distinct('batch_year', { institution_id: institutionId });
-    return [...new Set(values.map((v) => Number(v)).filter((n) => Number.isInteger(n)))].sort((a, b) => b - a);
+    // Number(null) and Number('') are 0, so students with no batch year would
+    // surface as year 0. The range matches what the `year` query filter accepts.
+    return [...new Set(values.map((v) => Number(v)).filter((n) => Number.isInteger(n) && n >= MIN_BATCH_YEAR && n <= MAX_BATCH_YEAR))].sort((a, b) => b - a);
   }
 
   // Names/departments for a set of students, for the tables that list people.
