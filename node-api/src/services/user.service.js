@@ -4,6 +4,9 @@ const studentRepository = require('../repositories/student.repository');
 const facultyRepository = require('../repositories/faculty.repository');
 const hrRepository = require('../repositories/hr.repository');
 const departmentRepository = require('../repositories/department.repository');
+const institutionRepository = require('../repositories/institution.repository');
+const placementRecordRepository = require('../repositories/placementRecord.repository');
+const studentOutcomeRepository = require('../repositories/studentOutcome.repository');
 const { hashPassword } = require('../utils/password');
 const { computeGraduationYear } = require('../utils/graduationYear');
 const { resolveDepartmentIdByName } = require('../utils/departmentMatch');
@@ -237,9 +240,34 @@ class UserService extends BaseService {
       payload.password_hash = await hashPassword(payload.password);
       delete payload.password;
     }
+    const movedInstitution =
+      isAdmin && target.role === ROLES.STUDENT && payload.institution_id && payload.institution_id !== target.institution_id;
+    if (movedInstitution && !(await institutionRepository.findById(payload.institution_id))) {
+      throw ApiError.badRequest('Institution not found');
+    }
     const updated = await super.update(id, payload);
+    if (movedInstitution) await this._moveStudentToInstitution(target.id, payload.institution_id);
     logAccessChanges(target, payload, { passwordSet, bySelf: isSelf });
     return sanitize(updated);
+  }
+
+  // Everything institution-scoped about a student hangs off the `students` row
+  // and the records keyed by its id, not off the user — so moving a student to
+  // another college has to carry those across, or reports and the college
+  // admin's lists keep showing (or missing) them under the old college. The
+  // department belongs to the old college, so it is cleared for the new
+  // admin to assign. Uploaded documents stay where they are: the record keeps
+  // the stored path and the file is served from it regardless of institution.
+  async _moveStudentToInstitution(userId, institutionId) {
+    const student = await studentRepository.findByUserId(userId);
+    if (!student) return;
+    await studentRepository.updateById(student.id, { institution_id: institutionId, department_id: null });
+    const scope = { student_id: student.id };
+    const set = { $set: { institution_id: institutionId } };
+    await Promise.all([
+      placementRecordRepository.collection.updateMany(scope, set),
+      studentOutcomeRepository.collection.updateMany(scope, set),
+    ]);
   }
 
   async remove(id, actor) {
