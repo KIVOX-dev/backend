@@ -40,6 +40,12 @@ class PlacementRecordService extends BaseService {
     if (actor.role === ROLES.STUDENT) {
       student = await studentRepository.findByUserId(actor.id);
       if (!student) throw ApiError.badRequest('No student profile is linked to this account');
+      // A record is scoped to its student's institution. Without one (e.g. a
+      // Google sign-up that hasn't picked a college) it would be saved with
+      // institution_id null and never reach any college admin's lists or reports.
+      if (!student.institution_id) {
+        throw ApiError.badRequest('Select your college in your profile before reporting a placement');
+      }
     } else if (STAFF_ROLES.includes(actor.role)) {
       if (!data.student_id) throw ApiError.badRequest('student_id is required');
       student = await studentRepository.findById(data.student_id);
