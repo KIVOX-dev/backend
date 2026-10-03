@@ -193,11 +193,15 @@ class TestAssignmentService extends BaseService {
     const byId = new Map(questions.map((q) => [q.id, q]));
 
     let score = 0;
+    const review = [];
     for (const questionId of questionIds) {
       const question = byId.get(questionId);
       if (!question) continue;
       const submitted = data.answers?.[questionId];
-      if (submitted && resolveAnswer(question) === submitted) score += 1;
+      const correctAnswer = resolveAnswer(question);
+      const isCorrect = Boolean(submitted) && correctAnswer === submitted;
+      if (isCorrect) score += 1;
+      review.push({ question_id: questionId, selected: submitted || null, correct_answer: correctAnswer, is_correct: isCorrect });
     }
     const maxScore = questionIds.length;
     const percentage = maxScore ? Math.round((score / maxScore) * 10000) / 100 : 0;
@@ -217,7 +221,9 @@ class TestAssignmentService extends BaseService {
 
     await this.repository.updateById(assignment.id, { status: 'completed' });
     await applyTestResult(student.id, percentage);
-    return attempt;
+    // The answer key is only released now that the attempt is final, and only
+    // if the test is set to show results straight away.
+    return test?.show_result_immediately === false ? attempt : { ...attempt, review };
   }
 }
 

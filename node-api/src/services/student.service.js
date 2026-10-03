@@ -63,7 +63,22 @@ class StudentService extends BaseService {
       });
       result = { rows, meta: { page: 1, limit, total } };
     }
-    if (STAFF_ROLES.includes(actor.role)) return result;
+    if (STAFF_ROLES.includes(actor.role)) {
+      // The plain branch returns raw student rows, which carry no name or
+      // email (those live on the user) — fill them in so staff screens that
+      // list students always have something to show.
+      const needNames = result.rows.filter((r) => !r.full_name && r.user_id);
+      if (needNames.length === 0) return result;
+      const users = await userRepository.findByIds(needNames.map((r) => r.user_id));
+      const userById = new Map(users.map((u) => [u.id, u]));
+      return {
+        rows: result.rows.map((r) => {
+          const user = userById.get(r.user_id);
+          return user ? { ...r, full_name: user.full_name, email: user.email, department: r.department ?? user.department } : r;
+        }),
+        meta: result.meta,
+      };
+    }
     return { rows: await this.toDirectory(result.rows), meta: result.meta };
   }
 
@@ -171,7 +186,9 @@ class StudentService extends BaseService {
       limit: HISTORY_LIMIT,
       filters: { student_id: student.id },
     });
-    return rows;
+    const tests = await testRepository.findByIds(rows.map((r) => r.test_id));
+    const titleById = new Map(tests.map((t) => [t.id, t.title]));
+    return rows.map((r) => ({ ...r, test_title: titleById.get(r.test_id) || 'Practice Test' }));
   }
 
   // python-service's log_student_test had NO auth/ownership check at all —
