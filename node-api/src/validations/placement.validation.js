@@ -40,6 +40,8 @@ const create = Joi.object({
   eligible_departments: Joi.array().items(Joi.string().max(100)),
   eligible_years: stringOrArray(Joi.number().integer(), { toInt: true }),
   min_cgpa: Joi.number().min(0).max(10).allow(null),
+  // Private reference returned by POST /placements/logo (checked in the service).
+  company_logo_url: Joi.string().max(500).allow('', null),
   min_experience_years: Joi.number().min(0).max(40).allow(null),
   openings: Joi.number().integer().min(1).max(10000),
   eligibility_criteria: Joi.object().unknown(true),

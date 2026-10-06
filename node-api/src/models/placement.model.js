@@ -13,6 +13,9 @@ module.exports = {
     'required_skills', 'eligible_departments', 'eligible_years', 'min_cgpa', 'is_active',
     // HR module: experience requirement (years) and number of openings.
     'min_experience_years', 'openings',
+    // Private storage reference to the company logo (see utils/companyLogo.js);
+    // signed on the way out like profile photos.
+    'company_logo_url',
   ],
   defaults: { job_type: 'full_time', eligibility_criteria: {}, status: 'draft', is_active: true },
 };

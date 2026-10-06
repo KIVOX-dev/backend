@@ -17,13 +17,13 @@ const { signReadUrl } = require('./gcsClient');
 // Only these response keys are ever rewritten. The stored value must also
 // parse as one of this app's own references (parseRef below) — anything else
 // (a GitHub/LinkedIn avatar URL, a user-typed link) passes through untouched.
-const MEDIA_FIELDS = new Set(['avatar_url', 'cover_image_url', 'profilePhoto', 'signature']);
+const MEDIA_FIELDS = new Set(['avatar_url', 'cover_image_url', 'profilePhoto', 'signature', 'company_logo_url']);
 
 // Object-name prefixes this module may sign. Anything else in the same
 // bucket (e.g. placement-proof/ offer letters, when GCS_DOCUMENTS_BUCKET_NAME
 // falls back to this bucket) is never signed here, even if a value somehow
 // points at it.
-const SIGNABLE_PREFIXES = ['student-profile/', 'profile/'];
+const SIGNABLE_PREFIXES = ['student-profile/', 'profile/', 'company-logo/'];
 
 const LOCAL_URL_PREFIX = '/uploads/profile/';
 const GCS_PUBLIC_HOST = 'https://storage.googleapis.com/';

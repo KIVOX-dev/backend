@@ -2,6 +2,7 @@ const createCrudController = require('./crudControllerFactory');
 const placementService = require('../services/placement.service');
 const asyncHandler = require('../utils/asyncHandler');
 const ApiResponse = require('../utils/ApiResponse');
+const ApiError = require('../utils/ApiError');
 
 const base = createCrudController(placementService);
 
@@ -31,4 +32,10 @@ const listApplicationsForRecruiter = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, rows);
 });
 
-module.exports = { ...base, create, listMine, listDrives, listApplicationsForRecruiter };
+const uploadLogo = asyncHandler(async (req, res) => {
+  const file = (req.files || [])[0];
+  if (!file) throw new ApiError(400, 'No logo uploaded', null, 'BAD_REQUEST');
+  ApiResponse.ok(res, await placementService.logoUploaded(file.storageRef), 'Logo uploaded');
+});
+
+module.exports = { ...base, uploadLogo, create, listMine, listDrives, listApplicationsForRecruiter };

@@ -189,8 +189,36 @@ const verifyAndUploadToGcs = asyncHandler(async (req, res, next) => {
   next();
 });
 
+// Company logo for a vacancy: same image allow-list + magic-byte check as
+// avatars, stored under company-logo/ in the private bucket (or local disk in
+// dev/tests). Sets `file.storageRef`; the logo is shown to students through
+// signed URLs only (utils/privateMedia.js).
+const verifyAndUploadLogo = asyncHandler(async (req, res, next) => {
+  const files = req.files || [];
+  if (files.length !== 1) throw ApiError.badRequest('Upload exactly one logo image');
+  const [file] = files;
+  const rule = ALLOWED_TYPES[file.mimetype];
+  if (!rule || !rule.magic(file.buffer)) {
+    throw ApiError.badRequest(`"${file.originalname}" does not look like a valid ${file.mimetype.split('/')[1].toUpperCase()} file.`);
+  }
+  const ext = extensionOf(file.originalname);
+  if (env.gcs.bucketName) {
+    const destination = `company-logo/${crypto.randomUUID()}${ext}`;
+    await uploadPrivateFile(file.buffer, { bucketName: env.gcs.bucketName, destination, contentType: file.mimetype, cacheControl: MEDIA_CACHE_CONTROL });
+    file.storageRef = gcsRef(destination);
+  } else if (env.isProduction) {
+    throw ApiError.serviceUnavailable('Image uploads are not configured');
+  } else {
+    const filename = `logo-${crypto.randomUUID()}${ext}`; // logo- prefix: only these local files may ever be deleted as logos (utils/companyLogo.js)
+    await fs.promises.writeFile(path.join(uploadDir, filename), file.buffer);
+    file.storageRef = `${LOCAL_URL_PREFIX}${filename}`;
+  }
+  next();
+});
+
 module.exports = {
   upload,
+  verifyAndUploadLogo,
   uploadDir,
   verifyAndPersist,
   verifyAndUploadToGcs,

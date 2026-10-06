@@ -7,6 +7,9 @@ const studentRepository = require('../repositories/student.repository');
 const userRepository = require('../repositories/user.repository');
 const { ROLES } = require('../config/constants');
 const ApiError = require('../utils/ApiError');
+const { ownsPlacement } = require('../utils/hrScope');
+const { assertLogoRef, removeLogo } = require('../utils/companyLogo');
+const { signMediaInBody } = require('../utils/privateMedia');
 
 class PlacementService extends BaseService {
   constructor() {
@@ -23,6 +26,7 @@ class PlacementService extends BaseService {
     }
 
     const payload = { ...data, created_by: actor.id };
+    if ('company_logo_url' in payload) payload.company_logo_url = assertLogoRef(payload.company_logo_url);
 
     if (actor.role === ROLES.INSTITUTION_ADMIN) {
       payload.institution_id = actor.institutionId;
@@ -39,6 +43,39 @@ class PlacementService extends BaseService {
     }
 
     return this.repository.create(payload);
+  }
+
+  // Stores an uploaded logo's reference and returns it with a signed preview
+  // URL: the client sends `logo_ref` back as company_logo_url when it saves the
+  // vacancy, and shows `preview_url` meanwhile. The reference itself is
+  // deliberately not under a signed response key, so it reaches the client intact.
+  async logoUploaded(storageRef) {
+    const { company_logo_url: previewUrl } = await signMediaInBody({ company_logo_url: storageRef });
+    return { logo_ref: storageRef, preview_url: previewUrl };
+  }
+
+  // HR may only edit vacancies they own (BaseService's institution check is a
+  // no-op for HR postings, which carry no institution_id — so without this any
+  // HR user could edit any posting). A replaced or cleared logo's file is deleted.
+  async update(id, data, actor) {
+    const existing = await this.repository.findById(id);
+    if (!existing) throw ApiError.notFound('Placement not found');
+    if (actor.role === ROLES.HR && !(await ownsPlacement(actor, existing))) {
+      throw ApiError.forbidden('This vacancy belongs to another recruiter');
+    }
+    const patch = { ...data };
+    if ('company_logo_url' in patch) patch.company_logo_url = assertLogoRef(patch.company_logo_url);
+    const updated = await super.update(id, patch, actor);
+    if ('company_logo_url' in patch && existing.company_logo_url && existing.company_logo_url !== updated.company_logo_url) {
+      await removeLogo(existing.company_logo_url);
+    }
+    return updated;
+  }
+
+  async remove(id, actor) {
+    const existing = await this.repository.findById(id);
+    await super.remove(id, actor);
+    if (existing && existing.company_logo_url) await removeLogo(existing.company_logo_url);
   }
 
   // The general "browse" list (GET /placements, aliased as GET /jobs) —
