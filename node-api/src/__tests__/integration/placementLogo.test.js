@@ -63,7 +63,7 @@ describe('Vacancy company logo', () => {
   });
 
   it('refuses logo references that were not produced by the upload endpoint', async () => {
-    const bad = (company_logo_url) => request(app).post('/api/v1/jobs').set(auth(hrToken)).send({ title: 'X', company_logo_url });
+    const bad = (company_logo_url) => request(app).post('/api/v1/jobs').set(auth(hrToken)).send({ title: 'Logo check', company_logo_url });
     expect((await bad('https://evil.example.com/pixel.png').expect(400)).body.code).toBe('INVALID_LOGO');
     await bad('/uploads/profile/someones-avatar.png').expect(400); // another user's profile photo, not a logo-
     await bad('gs://other-bucket/company-logo/x.png').expect(400);

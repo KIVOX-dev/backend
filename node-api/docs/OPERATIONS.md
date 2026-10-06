@@ -47,7 +47,7 @@ Student avatars and covers, and onboarding profile photos and signatures, are pr
 - **Local-disk files:** served by `routes/profileMediaFiles.routes.js`, which refuses any request
   without a valid signature.
 - **Which fields and folders are covered:** only `avatar_url`, `cover_image_url`, `profilePhoto`
-  and `signature`, for objects under `student-profile/` or `profile/` in `GCS_BUCKET_NAME`.
+  and `signature`, for objects under `student-profile/`, `profile/` or `company-logo/` (vacancy logos, uploaded via `POST /jobs/logo`) in `GCS_BUCKET_NAME`.
   Placement-proof offer letters are never signed here.
 
 **One-time cloud setup.** Do these in order. Removing public access before the new code is live
