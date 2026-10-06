@@ -6,7 +6,7 @@
 | Dependencies | `package.json` (npm) — `npm install` (run from inside `node-api/`) |
 | Database | MongoDB 6+ (MongoDB Atlas in production) |
 | Config | `.env.node` (copy from `.env.node.example`) |
-| Run | `npm run dev` (nodemon) or `npm start` |
+| Run | `npm run dev` (node --watch) or `npm start` |
 | Indexes | `npm run db:setup-indexes` — creates all collections' indexes (idempotent, safe to re-run) |
 | Connection check | `npm run db:test` |
 | Docker | `Dockerfile` — build context is this folder: `docker build -f Dockerfile .` from inside `node-api/` |
