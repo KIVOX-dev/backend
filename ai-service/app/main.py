@@ -10,7 +10,7 @@ from slowapi.util import get_remote_address
 
 from app.config import get_settings
 from app.db import ping_mongo
-from app.routers import assessment, interview, resume
+from app.routers import assessment, interview, practice, resume
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 logger = logging.getLogger("ai-service")
@@ -56,6 +56,7 @@ if settings.cors_origin_list:
 app.include_router(interview.router)
 app.include_router(resume.router)
 app.include_router(assessment.router)
+app.include_router(practice.router)
 
 
 @app.get("/health")

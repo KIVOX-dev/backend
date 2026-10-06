@@ -71,6 +71,9 @@ const INDEX_PLAN = {
   ],
   // HR module (see services/hr*.service.js). Applications are also queried by
   // recruiter and by stage for the pipeline/analytics views.
+  question_explanations: [
+    { key: { key: 1 }, options: { unique: true } },
+  ],
   hr_interviews: [
     { key: { placement_id: 1, scheduled_at: 1 }, options: {} },
     { key: { application_id: 1 }, options: {} },

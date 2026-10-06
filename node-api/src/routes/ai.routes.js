@@ -10,4 +10,8 @@ router.use(authenticate);
 
 router.post('/resume/improve', aiLimiter, aiInstitutionLimiter, validate(schema.improveResume), controller.improveResume);
 
+// Explanations for the practice results screen. Mostly cache hits after the
+// first student sees a question, so it shares the AI limiters but costs little.
+router.post('/explain-questions', aiLimiter, aiInstitutionLimiter, validate(schema.explainQuestions), controller.explainQuestions);
+
 module.exports = router;

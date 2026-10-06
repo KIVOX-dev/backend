@@ -1,4 +1,5 @@
 const resumeBuilderService = require('../services/resumeBuilder.service');
+const questionExplanationService = require('../services/questionExplanation.service');
 const asyncHandler = require('../utils/asyncHandler');
 const ApiResponse = require('../utils/ApiResponse');
 
@@ -10,4 +11,8 @@ const improveResume = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, result);
 });
 
-module.exports = { improveResume };
+const explainQuestions = asyncHandler(async (req, res) => {
+  ApiResponse.ok(res, await questionExplanationService.explain(req.body.questions));
+});
+
+module.exports = { improveResume, explainQuestions };
