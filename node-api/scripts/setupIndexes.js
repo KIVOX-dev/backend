@@ -63,9 +63,33 @@ const INDEX_PLAN = {
     { key: { student_id: 1 }, options: {} },
     { key: { status: 1 }, options: {} },
     { key: { institution_id: 1 }, options: {} },
+    { key: { recruiter_id: 1, status: 1 }, options: {} },
+    { key: { placement_id: 1, status: 1 }, options: {} },
   ],
   tests: [
     { key: { institution_id: 1 }, options: {} },
+  ],
+  // HR module (see services/hr*.service.js). Applications are also queried by
+  // recruiter and by stage for the pipeline/analytics views.
+  hr_interviews: [
+    { key: { placement_id: 1, scheduled_at: 1 }, options: {} },
+    { key: { application_id: 1 }, options: {} },
+    { key: { scheduled_at: 1, end_at: 1, status: 1 }, options: {} },
+    { key: { 'interviewers.user_id': 1 }, options: {} },
+  ],
+  hr_evaluations: [
+    { key: { application_id: 1, evaluator_id: 1 }, options: { unique: true } },
+    { key: { placement_id: 1 }, options: {} },
+  ],
+  hr_talent_pool: [
+    { key: { org_id: 1, student_id: 1 }, options: { unique: true } },
+    { key: { org_id: 1, category: 1 }, options: {} },
+    { key: { org_id: 1, tags: 1 }, options: {} },
+  ],
+  hr_employees: [
+    { key: { org_id: 1, employee_code: 1 }, options: { unique: true } },
+    { key: { org_id: 1, status: 1 }, options: {} },
+    { key: { application_id: 1 }, options: { sparse: true } },
   ],
   test_assignments: [
     { key: { test_id: 1, student_id: 1 }, options: { unique: true } },

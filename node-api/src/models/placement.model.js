@@ -11,6 +11,8 @@ module.exports = {
     // collection, matching python's behavior.
     'recruiter_id', 'company_name', 'location', 'salary_min_lpa', 'salary_max_lpa',
     'required_skills', 'eligible_departments', 'eligible_years', 'min_cgpa', 'is_active',
+    // HR module: experience requirement (years) and number of openings.
+    'min_experience_years', 'openings',
   ],
   defaults: { job_type: 'full_time', eligibility_criteria: {}, status: 'draft', is_active: true },
 };

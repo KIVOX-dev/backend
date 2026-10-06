@@ -2,6 +2,8 @@ const BaseService = require('./BaseService');
 const placementApplicationRepository = require('../repositories/placementApplication.repository');
 const placementRepository = require('../repositories/placement.repository');
 const studentRepository = require('../repositories/student.repository');
+const hrPipeline = require('./hrPipeline.service');
+const { ownsPlacement } = require('../utils/hrScope');
 const { ROLES } = require('../config/constants');
 const { buildInstitutionFilter, assertInstitutionOwnership } = require('../utils/authz');
 const ApiError = require('../utils/ApiError');
@@ -50,12 +52,27 @@ class PlacementApplicationService extends BaseService {
     const student = await studentRepository.findByUserId(actor.id);
     if (!student) throw ApiError.badRequest('No student profile is linked to this account');
 
+    const placement = await placementRepository.findById(data.placement_id);
     return this.repository.create({
       placement_id: data.placement_id,
       student_id: student.id,
       institution_id: student.institution_id,
       status: 'applied',
+      source: 'direct_application',
+      recruiter_id: placement ? placement.recruiter_id || null : null,
+      stage_history: [{ from: null, to: 'applied', at: new Date(), by: actor.id }],
     });
+  }
+
+  // History entry + timestamp for a staff shortlist, so shortlisted candidates
+  // show up correctly in the HR pipeline and analytics.
+  _shortlistFields(actor, placement) {
+    return {
+      source: 'campus_shortlist',
+      recruiter_id: placement.recruiter_id || null,
+      shortlisted_at: new Date(),
+      stage_history: [{ from: null, to: 'shortlisted', at: new Date(), by: actor.id }],
+    };
   }
 
   // Staff proactively shortlisting a candidate for a drive — e.g. a recruiter
@@ -79,7 +96,8 @@ class PlacementApplicationService extends BaseService {
     const roundFields = data.round ? { round: data.round } : {};
     const existing = await this.repository.findOne({ placement_id: data.placement_id, student_id: data.student_id });
     if (existing) {
-      return this.repository.updateById(existing.id, { status: 'shortlisted', ...roundFields });
+      const updated = await hrPipeline.applyTransition(existing, 'shortlisted', actor);
+      return roundFields.round ? this.repository.updateById(existing.id, roundFields) : updated;
     }
 
     return this.repository.create({
@@ -87,6 +105,7 @@ class PlacementApplicationService extends BaseService {
       student_id: data.student_id,
       institution_id: student.institution_id,
       status: 'shortlisted',
+      ...this._shortlistFields(actor, placement),
       ...roundFields,
     });
   }
@@ -116,22 +135,31 @@ class PlacementApplicationService extends BaseService {
     const existingByStudentId = new Map(existingApplications.map((a) => [a.student_id, a]));
     const roundFields = data.round ? { round: data.round } : {};
 
+    let skipped = 0;
     for (const student of inInstitution) {
       const existing = existingByStudentId.get(student.id);
       if (existing) {
-        await this.repository.updateById(existing.id, { status: 'shortlisted', ...roundFields });
+        try {
+          await hrPipeline.applyTransition(existing, 'shortlisted', actor);
+        } catch (err) {
+          if (err.statusCode !== 409) throw err;
+          skipped += 1; // already hired/withdrawn — can't be re-shortlisted
+          continue;
+        }
+        if (roundFields.round) await this.repository.updateById(existing.id, roundFields);
       } else {
         await this.repository.create({
           placement_id: data.placement_id,
           student_id: student.id,
           institution_id: student.institution_id,
           status: 'shortlisted',
+          ...this._shortlistFields(actor, placement),
           ...roundFields,
         });
       }
     }
 
-    return { shortlisted_count: inInstitution.length, requested_count: uniqueStudentIds.length };
+    return { shortlisted_count: inInstitution.length - skipped, requested_count: uniqueStudentIds.length };
   }
 
   async updateStatus(id, status, actor) {
@@ -146,13 +174,21 @@ class PlacementApplicationService extends BaseService {
       if (!student || application.student_id !== student.id) {
         throw ApiError.forbidden('You may only withdraw your own application');
       }
+    } else if (actor.role === ROLES.HR) {
+      // HR is exempt from institution scoping (it recruits across institutions)
+      // but must still own the vacancy — previously any HR user could move any
+      // application in the system.
+      const placement = await placementRepository.findById(application.placement_id);
+      if (!placement || !(await ownsPlacement(actor, placement))) {
+        throw ApiError.forbidden("This application belongs to another recruiter's vacancy");
+      }
     } else if (actor.role === ROLES.INSTITUTION_ADMIN || actor.role === ROLES.FACULTY) {
-      // HR and SUPER_ADMIN are exempt by design: HR recruits across institutions
-      // via /placements/applications/me, and super_admin is global.
       assertInstitutionOwnership(actor, application);
     }
 
-    return this.repository.updateById(id, { status });
+    // Single transition path shared with the HR portal: records stage history
+    // and timestamps, notifies the student, and opens onboarding on hire.
+    return hrPipeline.applyTransition(application, status, actor);
   }
 }
 

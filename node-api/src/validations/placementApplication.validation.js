@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const { ALL_STATUSES } = require('../utils/hrPipeline');
 
 const create = Joi.object({
   placement_id: Joi.string().uuid().required(),
@@ -11,7 +12,7 @@ const create = Joi.object({
 
 const updateStatus = Joi.object({
   status: Joi.string()
-    .valid('applied', 'shortlisted', 'interview', 'selected', 'rejected', 'withdrawn')
+    .valid(...ALL_STATUSES)
     .required(),
 });
 

@@ -9,6 +9,7 @@ const routes = require('./routes');
 const healthRoutes = require('./routes/health.routes');
 const placementProofFilesRoutes = require('./routes/placementProofFiles.routes');
 const outcomeProofFilesRoutes = require('./routes/outcomeProofFiles.routes');
+const employeeDocFilesRoutes = require('./routes/employeeDocFiles.routes');
 const profileMediaFilesRoutes = require('./routes/profileMediaFiles.routes');
 const { apiLimiter, healthLimiter } = require('./middlewares/rateLimiter');
 const { notFoundHandler, errorHandler } = require('./middlewares/errorHandler');
@@ -76,6 +77,7 @@ app.use(apiLimiter);
 app.use('/uploads/profile', profileMediaFilesRoutes);
 app.use('/uploads/placement-proof', placementProofFilesRoutes);
 app.use('/uploads/outcome-proof', outcomeProofFilesRoutes);
+app.use('/uploads/employee-docs', employeeDocFilesRoutes);
 
 app.use(env.apiPrefix, routes);
 
