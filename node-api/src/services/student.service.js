@@ -69,15 +69,21 @@ class StudentService extends BaseService {
       // list students always have something to show.
       // `status` (approval state) also lives on the user, not the student row.
       const needUsers = result.rows.filter((r) => (!r.full_name || !r.status) && r.user_id);
-      if (needUsers.length === 0) return result;
-      const users = await userRepository.findByIds(needUsers.map((r) => r.user_id));
+      // department name often lives only on the department record (via
+      // department_id), not on the student/user rows.
+      const needDeptIds = [...new Set(result.rows.filter((r) => !r.department && r.department_id).map((r) => r.department_id))];
+      if (needUsers.length === 0 && needDeptIds.length === 0) return result;
+      const users = needUsers.length ? await userRepository.findByIds(needUsers.map((r) => r.user_id)) : [];
       const userById = new Map(users.map((u) => [u.id, u]));
+      const depts = needDeptIds.length ? await departmentRepository.findByIds(needDeptIds) : [];
+      const deptNameById = new Map(depts.map((d) => [d.id, d.name]));
       return {
         rows: result.rows.map((r) => {
           const user = userById.get(r.user_id);
+          const department = r.department || user?.department || deptNameById.get(r.department_id) || r.department;
           return user
-            ? { ...r, full_name: r.full_name || user.full_name, email: r.email || user.email, department: r.department ?? user.department, status: r.status ?? user.status }
-            : r;
+            ? { ...r, full_name: r.full_name || user.full_name, email: r.email || user.email, department, status: r.status ?? user.status }
+            : { ...r, department };
         }),
         meta: result.meta,
       };
