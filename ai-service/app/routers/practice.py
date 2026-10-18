@@ -5,7 +5,12 @@ from fastapi import APIRouter, Depends
 from app.config import get_settings
 from app.db import timed_log
 from app.groq_client import GroqError, groq_complete
-from app.schemas.practice import ExplainItem, ExplainRequest, ExplainResponse, Explanation
+from app.schemas.practice import (
+    ExplainItem,
+    ExplainRequest,
+    ExplainResponse,
+    Explanation,
+)
 from app.security import verify_service_token
 
 logger = logging.getLogger("ai-service.practice")

@@ -10,6 +10,12 @@ class InterviewAttemptRepository extends BaseRepository {
     return this.collection.countDocuments({ student_id: studentId });
   }
 
+  // Oldest-first, like assessmentAttemptRepository#recentForStudent.
+  async recentForStudent(studentId, limit = 50) {
+    const docs = await this.collection.find({ student_id: studentId }).sort({ created_at: -1 }).limit(limit).toArray();
+    return docs.map((d) => this._toEntity(d)).reverse();
+  }
+
   // Same day-grouping purpose as assessmentAttemptRepository#countByDay —
   // see auth.service.js#activityHeatmap, which merges this with the other
   // sources.

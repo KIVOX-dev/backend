@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import jwt
 from fastapi import Header, HTTPException, status
@@ -15,7 +15,7 @@ def mint_service_token(shared_secret: str, ttl_seconds: int = 60) -> str:
     """Used only by tests / local tooling — node-api has its own minting
     logic in utils/aiServiceClient.js that must stay byte-for-byte compatible
     with the claims verified below (iss/aud/exp)."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     payload = {"iss": ISSUER, "aud": AUDIENCE, "iat": now, "exp": now + timedelta(seconds=ttl_seconds)}
     return jwt.encode(payload, shared_secret, algorithm=ALGORITHM)
 

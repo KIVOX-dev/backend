@@ -4,6 +4,10 @@ const testRepository = require('../repositories/test.repository');
 const assessmentAttemptRepository = require('../repositories/assessmentAttempt.repository');
 const interviewAttemptRepository = require('../repositories/interviewAttempt.repository');
 const placementRecordRepository = require('../repositories/placementRecord.repository');
+const studentSkillBadgeRepository = require('../repositories/studentSkillBadge.repository');
+const studentCertificateRepository = require('../repositories/studentCertificate.repository');
+const departmentRepository = require('../repositories/department.repository');
+const env = require('../config/env');
 const { ROLES } = require('../config/constants');
 const { canActOnStudent } = require('../utils/authz');
 const ApiError = require('../utils/ApiError');
@@ -11,6 +15,8 @@ const { CATEGORY_META } = require('../config/aptitudeCategories');
 
 const RECENT_LIMIT = 5;
 const HISTORY_LIMIT = 100;
+const INTERVIEW_LIMIT = 50;
+const BADGES_PER_CERTIFICATE = 5;
 
 function average(values) {
   return values.length ? values.reduce((sum, v) => sum + v, 0) / values.length : 0;
@@ -65,13 +71,26 @@ class DashboardService {
     if (!student) throw ApiError.notFound('Student not found');
     if (!canActOnStudent(actor, student)) throw ApiError.forbidden('Not authorized');
 
-    const [stats, history, interviewsCompleted, placements, user] = await Promise.all([
+    const [stats, history, interviewsCompleted, placements, user, interviews, badges, certificates, department, batchmates] = await Promise.all([
       assessmentAttemptRepository.aggregateStatsForStudent(studentId),
       assessmentAttemptRepository.recentForStudent(studentId, HISTORY_LIMIT),
       interviewAttemptRepository.countForStudent(studentId),
       placementRecordRepository.countForStudent(studentId),
       userRepository.findById(student.user_id),
+      interviewAttemptRepository.recentForStudent(studentId, INTERVIEW_LIMIT),
+      studentSkillBadgeRepository.findForStudent(studentId),
+      studentCertificateRepository.findForStudent(studentId),
+      student.department_id ? departmentRepository.findById(student.department_id) : null,
+      student.institution_id
+        ? studentRepository.findAll({ page: 1, limit: 10000, filters: { institution_id: student.institution_id, ...(student.batch_year ? { batch_year: student.batch_year } : {}) } })
+        : { rows: [] },
     ]);
+
+    // Batch rank by cached average accuracy, same cohort (institution +
+    // batch year) the admin is looking at the student against.
+    const myAccuracy = stats.avg_accuracy || 0;
+    const batchSize = batchmates.rows.length;
+    const batchRank = batchSize ? 1 + batchmates.rows.filter((r) => (r.avg_accuracy || 0) > myAccuracy).length : null;
 
     // Same 4-category breakdown as studentProfile.service.js's Practice
     // Module trend charts, but for an admin looking up any student by id —
@@ -121,6 +140,41 @@ class DashboardService {
       history,
       category_trends: categoryTrends,
       focus_message: focusMessage,
+      profile: {
+        name: user?.full_name || null,
+        email: user?.email || null,
+        roll_number: student.roll_number || null,
+        batch_year: student.batch_year || null,
+        cgpa: student.cgpa ?? null,
+        department: department?.name || user?.department || null,
+        target_job_role: student.target_job_role || null,
+        batch_rank: batchRank,
+        batch_size: batchSize || null,
+      },
+      interviews: interviews.map((i) => ({
+        id: i.id,
+        role: i.role,
+        category: i.category,
+        overall_rating: i.overall_rating,
+        strengths: i.strengths,
+        improvements: i.improvements,
+        status: i.status,
+        created_at: i.created_at,
+      })),
+      badges: badges.map((b) => ({
+        skill_name: b.skill_name,
+        badge_count: b.badge_count,
+        certificate_issued: b.certificate_issued,
+        badges_remaining: b.certificate_issued ? 0 : Math.max(0, BADGES_PER_CERTIFICATE - b.badge_count),
+      })),
+      certificates: certificates.map((c) => ({
+        id: c.id,
+        type: c.type || 'skill',
+        skill_name: c.skill_name,
+        role_title: c.role_title,
+        issued_at: c.issued_at,
+        verify_url: `${env.frontendUrl}/verify/${c.id}`,
+      })),
     };
   }
 
