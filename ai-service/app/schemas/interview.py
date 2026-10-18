@@ -16,6 +16,34 @@ class InterviewQuestion(BaseModel):
     text: str
     time_limit_seconds: int = 60
     type: str
+    # What a strong answer covers; used only to score the spoken answer. Empty
+    # for the canned fallback pool, which has no model answers.
+    expected_answer: str = ""
+
+
+class AnswerToEvaluate(BaseModel):
+    question_id: int
+    question: str
+    expected_answer: str = ""
+    answer: str = ""
+
+
+class EvaluateAnswersRequest(BaseModel):
+    role: str = "general"
+    answers: list[AnswerToEvaluate] = Field(min_length=1, max_length=20)
+
+
+class AnswerEvaluation(BaseModel):
+    question_id: int
+    score: int = Field(ge=0, le=10)
+    feedback: str
+
+
+class EvaluateAnswersResponse(BaseModel):
+    # "ai" when the LLM graded against the expected answers; "heuristic" when
+    # it couldn't and keyword overlap / answer length was used instead.
+    source: Literal["ai", "heuristic"]
+    results: list[AnswerEvaluation]
 
 
 class GenerateMcqRequest(BaseModel):

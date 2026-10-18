@@ -14,4 +14,20 @@ const generateMcq = Joi.object({
   count: Joi.number().integer().min(5).max(30).default(20),
 });
 
-module.exports = { generate, generateMcq, INTERVIEW_ROUNDS };
+const evaluate = Joi.object({
+  role: Joi.string().max(255).default('general'),
+  answers: Joi.array()
+    .items(
+      Joi.object({
+        question_id: Joi.number().integer().required(),
+        question: Joi.string().max(2000).required(),
+        expected_answer: Joi.string().max(4000).allow('').default(''),
+        answer: Joi.string().max(8000).allow('').default(''),
+      })
+    )
+    .min(1)
+    .max(20)
+    .required(),
+});
+
+module.exports = { generate, generateMcq, evaluate, INTERVIEW_ROUNDS };

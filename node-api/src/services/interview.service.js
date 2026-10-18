@@ -115,4 +115,17 @@ async function generateMcq(role, company = 'general', count = 20) {
   }
 }
 
-module.exports = { generateQuestions, generateMcq };
+// Round 2 scoring: each spoken answer graded against its question's expected
+// answer. Unreachable AI service is reported as source "unavailable" so the
+// frontend can score locally instead of failing the whole interview.
+async function evaluateAnswers(role, answers) {
+  try {
+    return await callAiService('/v1/interview/evaluate', { role, answers });
+  } catch (err) {
+    if (!(err instanceof AiServiceUnavailableError)) throw err;
+    logger.error('AI service unreachable, answers will be scored locally', { error: err.message });
+    return { source: 'unavailable', results: [] };
+  }
+}
+
+module.exports = { generateQuestions, generateMcq, evaluateAnswers };

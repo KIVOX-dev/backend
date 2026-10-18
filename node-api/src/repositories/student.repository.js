@@ -89,6 +89,7 @@ class StudentRepository extends BaseRepository {
       full_name: user.full_name,
       email: user.email,
       department: user.department,
+      status: user.status,
     }));
     return { rows, total };
   }

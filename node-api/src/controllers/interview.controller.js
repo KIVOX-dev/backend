@@ -12,4 +12,9 @@ const generateMcq = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, result);
 });
 
-module.exports = { generate, generateMcq };
+const evaluate = asyncHandler(async (req, res) => {
+  const result = await interviewService.evaluateAnswers(req.body.role, req.body.answers);
+  ApiResponse.ok(res, result);
+});
+
+module.exports = { generate, generateMcq, evaluate };

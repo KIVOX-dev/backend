@@ -13,5 +13,6 @@ router.use(authenticate);
 // under FastAPI's inference rules).
 router.post('/generate', aiLimiter, aiInstitutionLimiter, validate(schema.generate, 'query'), controller.generate);
 router.post('/generate-mcq', aiLimiter, aiInstitutionLimiter, validate(schema.generateMcq, 'query'), controller.generateMcq);
+router.post('/evaluate', aiLimiter, aiInstitutionLimiter, validate(schema.evaluate), controller.evaluate);
 
 module.exports = router;

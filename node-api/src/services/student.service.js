@@ -67,14 +67,17 @@ class StudentService extends BaseService {
       // The plain branch returns raw student rows, which carry no name or
       // email (those live on the user) — fill them in so staff screens that
       // list students always have something to show.
-      const needNames = result.rows.filter((r) => !r.full_name && r.user_id);
-      if (needNames.length === 0) return result;
-      const users = await userRepository.findByIds(needNames.map((r) => r.user_id));
+      // `status` (approval state) also lives on the user, not the student row.
+      const needUsers = result.rows.filter((r) => (!r.full_name || !r.status) && r.user_id);
+      if (needUsers.length === 0) return result;
+      const users = await userRepository.findByIds(needUsers.map((r) => r.user_id));
       const userById = new Map(users.map((u) => [u.id, u]));
       return {
         rows: result.rows.map((r) => {
           const user = userById.get(r.user_id);
-          return user ? { ...r, full_name: user.full_name, email: user.email, department: r.department ?? user.department } : r;
+          return user
+            ? { ...r, full_name: r.full_name || user.full_name, email: r.email || user.email, department: r.department ?? user.department, status: r.status ?? user.status }
+            : r;
         }),
         meta: result.meta,
       };

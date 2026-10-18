@@ -1,5 +1,6 @@
 import logging
 import random
+import re
 
 from fastapi import APIRouter, Depends
 
@@ -7,6 +8,10 @@ from app.config import get_settings
 from app.db import timed_log
 from app.groq_client import GroqError, groq_complete
 from app.schemas.interview import (
+    AnswerEvaluation,
+    AnswerToEvaluate,
+    EvaluateAnswersRequest,
+    EvaluateAnswersResponse,
     GenerateMcqRequest,
     GenerateMcqResponse,
     GenerateQuestionsRequest,
@@ -143,7 +148,9 @@ async def generate_questions(payload: GenerateQuestionsRequest):
     user_prompt = (
         "Generate exactly 10 interview questions for this specific role, company and round.\n"
         f"{spec['focus']}\n"
-        'Return the result as a raw JSON object with a single key "questions" containing a list of strings.'
+        'Return the result as a raw JSON object with a single key "questions" containing a list of objects, '
+        'each with "question" (string) and "expected_answer" (2-3 sentences covering the key points a strong '
+        "spoken answer should include)."
     )
 
     async with timed_log("interview.generate_questions") as detail:
@@ -155,7 +162,15 @@ async def generate_questions(payload: GenerateQuestionsRequest):
             # reasoning before the JSON, and at 1024 the list was sometimes cut
             # off mid-array — silently falling back to the canned pool.
             result = await groq_complete(system_prompt, user_prompt, temperature=0.7, max_tokens=2048, json_response=True)
-            questions = result.get("questions", []) if isinstance(result, dict) else []
+            raw = result.get("questions", []) if isinstance(result, dict) else []
+            # Accept plain strings too, in case the model ignores the object shape.
+            questions = [
+                (str(q.get("question", "")).strip(), str(q.get("expected_answer", "")).strip())
+                if isinstance(q, dict)
+                else (str(q).strip(), "")
+                for q in raw
+            ]
+            questions = [q for q in questions if q[0]]
             if len(questions) < 10:
                 raise GroqError("LLM did not return enough questions")
         except GroqError as exc:
@@ -163,9 +178,84 @@ async def generate_questions(payload: GenerateQuestionsRequest):
             return _fallback_questions(payload.company, payload.role, payload.round)
 
     return [
-        InterviewQuestion(id=i + 1, text=q, time_limit_seconds=60, type=spec["types"][i])
-        for i, q in enumerate(questions[:10])
+        InterviewQuestion(id=i + 1, text=q, time_limit_seconds=60, type=spec["types"][i], expected_answer=expected)
+        for i, (q, expected) in enumerate(questions[:10])
     ]
+
+
+_STOPWORDS = {"the", "and", "that", "this", "with", "for", "you", "your", "are", "was", "have", "from", "they", "will", "can", "what", "when", "how", "its", "which", "their", "about", "would", "should", "could", "into", "than", "then", "also"}
+
+
+def _keywords(text: str) -> set[str]:
+    return {w for w in re.findall(r"[a-z0-9+#]+", text.lower()) if len(w) > 3 and w not in _STOPWORDS}
+
+
+def _heuristic_score(item: AnswerToEvaluate) -> AnswerEvaluation:
+    """Fallback grader: overlap with the expected answer, else with the question."""
+    words = len(item.answer.split())
+    if words == 0:
+        return AnswerEvaluation(question_id=item.question_id, score=0, feedback="No answer was given.")
+    reference = _keywords(item.expected_answer) or _keywords(item.question)
+    coverage = len(reference & _keywords(item.answer)) / len(reference) if reference else 0.0
+    length_factor = min(words / 40, 1.0)
+    # With a model answer, coverage dominates; without one it can only be a rough guide.
+    weight = 0.8 if item.expected_answer else 0.5
+    score = round(10 * (weight * min(coverage * 1.5, 1.0) + (1 - weight) * length_factor))
+    if item.expected_answer and coverage < 0.3:
+        feedback = "Your answer missed most of the key points expected."
+    elif words < 25:
+        feedback = "Good start, but add more detail and an example."
+    else:
+        feedback = "Covered the main points; keep answers structured."
+    return AnswerEvaluation(question_id=item.question_id, score=max(0, min(10, score)), feedback=feedback)
+
+
+@router.post("/evaluate", response_model=EvaluateAnswersResponse)
+async def evaluate_answers(payload: EvaluateAnswersRequest):
+    """Round 2 scoring: grades each spoken answer against the question's expected answer."""
+    settings = get_settings()
+    heuristic = EvaluateAnswersResponse(source="heuristic", results=[_heuristic_score(a) for a in payload.answers])
+    answered = [a for a in payload.answers if a.answer.strip()]
+    if not settings.is_groq_configured or not answered:
+        return heuristic
+
+    system_prompt = (
+        f"You are a strict but fair interviewer grading spoken interview answers for a {payload.role} position. "
+        "The answers are speech-to-text transcripts, so ignore minor transcription errors and filler words."
+    )
+    items = [
+        {"question_id": a.question_id, "question": a.question, "expected_answer": a.expected_answer, "answer": a.answer}
+        for a in answered
+    ]
+    user_prompt = (
+        "Grade each answer from 0 to 10 by how well it covers the key points of the expected answer "
+        "(or, when expected_answer is empty, how correct, relevant and well structured it is). "
+        "Give a score of 0 for an irrelevant answer.\n"
+        f"Items: {items}\n"
+        'Return a raw JSON object {"results": [{"question_id": int, "score": int, "feedback": "one short sentence"}]}.'
+    )
+    async with timed_log("interview.evaluate") as detail:
+        detail["answers"] = len(answered)
+        try:
+            result = await groq_complete(system_prompt, user_prompt, temperature=0.2, max_tokens=2048, json_response=True)
+            graded: dict[int, AnswerEvaluation] = {}
+            for r in result.get("results", []) if isinstance(result, dict) else []:
+                try:
+                    graded[int(r["question_id"])] = AnswerEvaluation(
+                        question_id=int(r["question_id"]),
+                        score=max(0, min(10, round(float(r["score"])))),
+                        feedback=str(r.get("feedback", "")).strip()[:300],
+                    )
+                except (KeyError, TypeError, ValueError):
+                    continue
+            if len(graded) < len(answered):
+                raise GroqError("LLM did not grade every answer")
+        except GroqError as exc:
+            logger.error("Answer evaluation failed, using heuristic: %s", exc)
+            return heuristic
+
+    results = [graded.get(a.question_id) or _heuristic_score(a) for a in payload.answers]
+    return EvaluateAnswersResponse(source="ai", results=results)
 
 
 def _valid_mcqs(raw: list, limit: int) -> list[McqQuestion]:
