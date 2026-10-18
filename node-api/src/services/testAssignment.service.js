@@ -215,7 +215,8 @@ class TestAssignmentService extends BaseService {
       score,
       max_score: maxScore,
       percentage,
-      passed: percentage >= (test?.pass_percentage != null ? test.pass_percentage : 40),
+      passed: !data.malpractice && percentage >= (test?.pass_percentage != null ? test.pass_percentage : 40),
+      status: data.malpractice ? 'malpractice' : 'completed',
       completed_at: new Date(),
     });
 

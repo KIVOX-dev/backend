@@ -333,7 +333,9 @@ class CourseService {
       return { question: q.question, options: q.options, correct_answer: q.correct_answer, selected: selected ?? null, is_correct: isCorrect };
     });
 
-    const isMalpractice = Boolean(violations && violations.device_detected > 0);
+    // Leaving the assessment screen (tab_switches) is malpractice, same as
+    // an external device: the client ends the assessment on the spot.
+    const isMalpractice = Boolean(violations && (violations.device_detected > 0 || violations.tab_switches > 0));
     const percentage = Math.round((score / questions.length) * 100);
     const attempt = await lessonAssessmentAttemptRepository.create({
       student_id: student.id,

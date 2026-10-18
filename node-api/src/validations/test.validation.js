@@ -39,6 +39,9 @@ const submit = Joi.object({
   time_taken_seconds: Joi.number().integer().min(0).allow(null),
   section_scores: Joi.object().unknown(true).allow(null),
   weak_areas: Joi.array().items(Joi.string()).allow(null),
+  // Client-detected: the candidate left the test screen. Self-reported like
+  // course violations; recorded as status 'malpractice' (never passed).
+  malpractice: Joi.boolean(),
 });
 
 module.exports = { create, update, generateQuestions, submit };

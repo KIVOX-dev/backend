@@ -29,6 +29,8 @@ const submit = Joi.object({
   // question — the moment a student submitted (or the timer auto-submitted)
   // with anything left blank.
   answers: Joi.object().pattern(Joi.string().uuid(), Joi.string().max(2000).allow('')).required(),
+  // The candidate left the test screen — submitted as-is and flagged.
+  malpractice: Joi.boolean(),
 });
 
 module.exports = { create, update, submit };
