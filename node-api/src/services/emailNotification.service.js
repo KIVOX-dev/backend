@@ -19,8 +19,8 @@ class EmailNotificationService {
   // Records a `queued` row per student not already notified for this scope
   // (the idempotency check) and enqueues the send. Returns how many students
   // will be emailed.
-  async queueRecipients(scope, institutionId, studentIds) {
-    const newIds = await notificationRepository.insertQueued(scope, institutionId, studentIds);
+  async queueRecipients(scope, institutionId, studentIds, extra) {
+    const newIds = await notificationRepository.insertQueued(scope, institutionId, studentIds, extra);
     if (newIds.length > 0) await queue().enqueue(scope);
     return newIds.length;
   }
@@ -100,7 +100,7 @@ class EmailNotificationService {
         name: user.full_name || undefined,
         params: {
           ...ctx.params,
-          ...handler.rowParams(ctx, { student, user, department: departmentById.get(student.department_id) }),
+          ...handler.rowParams(ctx, { student, user, row, department: departmentById.get(student.department_id) }),
         },
       });
     }

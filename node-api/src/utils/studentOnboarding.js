@@ -1,11 +1,9 @@
 const userRepository = require('../repositories/user.repository');
 const studentRepository = require('../repositories/student.repository');
 const { hashPassword } = require('./password');
-const { sendEmail } = require('../services/email.service');
-const { studentWelcomeTemplate } = require('../services/emailTemplates');
 const { computeGraduationYear } = require('./graduationYear');
-const { ROLES } = require('../config/constants');
-const env = require('../config/env');
+const { ROLES, DEFAULT_STUDENT_PASSWORD } = require('../config/constants');
+const onboardingNotificationService = require('../services/onboardingNotification.service');
 
 // The upload/CSV "year" field has always been ambiguous — used for a plain
 // calendar year (e.g. 2026, "graduation year") in some rosters and a 1-6
@@ -16,16 +14,13 @@ const env = require('../config/env');
 // to compute one instead.
 const CALENDAR_YEAR_THRESHOLD = 1000;
 
-// Matches AddStudentPanel.tsx's single-student "Add Student" form, which
-// already defaults to this exact password without forcing a change on
-// first login — bulk upload previously generated a random secret instead,
-// which nobody (faculty or student) actually had, making every
-// bulk-uploaded account unusable until someone dug the auto-generated
-// password out of an email. Not treated as a one-time temp credential
-// (must_change_password stays false for it) since the frontend doesn't
-// handle that flow anywhere — forcing it here would just trade "wrong
-// password" for a silent broken-auth dead end after login.
-const DEFAULT_STUDENT_PASSWORD = 'student123';
+// Every bulk-uploaded student gets DEFAULT_STUDENT_PASSWORD (config/constants.js)
+// unless the row supplies one. It matches AddStudentPanel.tsx's single-student
+// form, which defaults to the same password without forcing a change on first
+// login — bulk upload previously generated a random secret instead, which
+// nobody actually had. Not treated as a one-time temp credential
+// (must_change_password stays false) since the frontend doesn't handle that
+// flow; students are only *recommended* to change it, by the welcome email.
 
 function resolveStudyYear({ item, yearOfStudy, year }) {
   return item.year_of_study
@@ -50,6 +45,8 @@ async function findOrCreateStudentUser({ item, institutionId, department, depart
   let user = await userRepository.findByEmail(email);
   let created = false;
   let tempPassword = null;
+  let student = null;
+  let usesDefaultPassword = false;
 
   if (!user) {
     // An explicitly admin-supplied password is respected as-is; otherwise
@@ -68,7 +65,7 @@ async function findOrCreateStudentUser({ item, institutionId, department, depart
       status,
     });
     const studyYear = resolveStudyYear({ item, yearOfStudy, year });
-    await studentRepository.create({
+    student = await studentRepository.create({
       user_id: user.id,
       institution_id: institutionId,
       department_id: item.department_id || departmentId || null,
@@ -77,31 +74,20 @@ async function findOrCreateStudentUser({ item, institutionId, department, depart
       year_of_study: studyYear || null,
     });
     created = true;
-
-    if (!suppliedPassword) {
-      tempPassword = resolvedPassword;
-      // Best-effort — sendEmail never throws, and there's nowhere to send a
-      // synthetic @upscaler-ai.local fallback address anyway. Deliberately
-      // NOT awaited: this runs once per newly-created row, and a batch
-      // upload of any real size was serializing an external network call
-      // to the email provider on top of every single row, turning what
-      // should be a fast DB-bound loop into one bounded by email-API
-      // latency — large rosters routinely blew past the frontend's 30s
-      // request timeout. The welcome email still gets sent; the response
-      // just doesn't wait on it.
-      if (!isSyntheticEmail) {
-        const { subject, html, text } = studentWelcomeTemplate({
-          fullName: item.name,
-          email,
-          tempPassword,
-          loginUrl: `${env.frontendUrl}/institutional`,
-        });
-        sendEmail({ to: email, subject, html, text });
-      }
-    }
+    usesDefaultPassword = resolvedPassword === DEFAULT_STUDENT_PASSWORD;
+    if (!suppliedPassword) tempPassword = resolvedPassword;
   }
 
-  return { user, created, tempPassword };
+  // The welcome email is NOT sent from here: callers collect `onboarding`
+  // entries for every row they create and queue them once afterwards, so a
+  // roster of any size is a single background job instead of one email API
+  // call per row. No entry for a synthetic @upscaler-ai.local address —
+  // there is nobody to send those to.
+  const onboarding = created && !isSyntheticEmail ? { studentId: student.id, usesDefaultPassword } : null;
+  return { user, student, created, tempPassword, onboarding };
 }
 
-module.exports = { findOrCreateStudentUser };
+const queueWelcomeEmails = (institutionId, entries) =>
+  onboardingNotificationService.notifyAccountCreated(institutionId, entries.filter(Boolean));
+
+module.exports = { findOrCreateStudentUser, queueWelcomeEmails };

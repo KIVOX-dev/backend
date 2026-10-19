@@ -33,7 +33,8 @@ class EmailNotificationRepository extends BaseRepository {
   // (any status). Returns the student ids that were actually newly inserted —
   // that is the idempotency check: a student with an existing row is never
   // re-queued here, only via resetFailed().
-  async insertQueued(scope, institutionId, studentIds) {
+  // `extra` is merged into every newly inserted row (e.g. uses_default_password).
+  async insertQueued(scope, institutionId, studentIds, extra = {}) {
     const unique = [...new Set(studentIds)].filter(Boolean);
     if (unique.length === 0) return [];
     const now = new Date();
@@ -46,6 +47,7 @@ class EmailNotificationRepository extends BaseRepository {
             $setOnInsert: {
               _id: randomUUID(),
               ...defaults,
+              ...extra,
               ...base,
               student_id: studentId,
               institution_id: institutionId,

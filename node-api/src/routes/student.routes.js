@@ -22,6 +22,9 @@ router.use(authenticate, scopeInstitution);
 // flagged in the audit for python-service's students.py itself (/pending
 // vs /{student_id}).
 router.get('/pending', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN), controller.listPending);
+// Welcome-email status + resend for students that failed to get one.
+router.get('/onboarding-emails', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY), controller.getOnboardingEmails);
+router.post('/onboarding-emails/resend-failed', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY), controller.resendOnboardingEmails);
 router.post(
   '/batch',
   authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY),

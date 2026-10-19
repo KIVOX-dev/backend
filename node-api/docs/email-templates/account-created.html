@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<title>Your TalentSnaps account is ready</title>
+<!--
+  Brevo template for BREVO_ACCOUNT_CREATED_TEMPLATE_ID (New Template Language).
+  Subject line (set in Brevo):
+    Your TalentSnaps account is ready
+  Params: studentName, email, tempPassword, loginUrl.
+  tempPassword is the default password ("student123") only for a student who was
+  given it and hasn't logged in yet; otherwise it is "" and the
+  {% if %} below tells them to use the password their administrator gave them.
+-->
+<style>
+  body { margin: 0; padding: 0; background: #ffffff; }
+  table { border-collapse: collapse; }
+  img { border: 0; }
+  @media only screen and (max-width: 520px) {
+    .container { width: 100% !important; }
+    .pad { padding-left: 20px !important; padding-right: 20px !important; }
+    .hero-title { font-size: 26px !important; line-height: 32px !important; }
+    .hero-inner { padding: 22px 16px !important; }
+  }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#ffffff;font-family:Inter,'Segoe UI',Helvetica,Arial,sans-serif;">
+
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#ffffff;">
+  Your TalentSnaps account is ready &mdash; log in to get started
+</div>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;">
+<tr><td align="center" style="padding:12px 12px 0;">
+
+  <table role="presentation" class="container" width="480" cellpadding="0" cellspacing="0" style="width:480px;max-width:100%;">
+
+    <tr><td align="center" style="background:#f4f4f6;border-radius:8px;padding:9px 12px;font-size:12px;color:#1a1a2e;">
+      <a href="{{ mirror }}" style="color:#1a1a2e;text-decoration:none;">View this email in your browser</a>
+    </td></tr>
+
+    <tr><td align="center" style="padding:26px 0 22px;font-size:22px;font-weight:700;letter-spacing:-0.3px;color:#3b4cf0;">
+      Talent<span style="color:#c25bd0;">Snaps</span>
+    </td></tr>
+
+    <!-- hero -->
+    <tr><td style="background:#0b0620;background-image:linear-gradient(135deg,#050312 0%,#1b0f6b 55%,#2a1a9e 100%);border-radius:24px 24px 0 0;padding:30px 30px;" class="pad">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <tr><td class="hero-inner" align="center" style="border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.07);border-radius:18px;padding:30px 24px;">
+          <div style="font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#b9b4f5;padding-bottom:10px;">Welcome</div>
+          <div class="hero-title" style="font-size:30px;line-height:36px;font-weight:700;color:#ffffff;">Your account<br>is ready</div>
+        </td></tr>
+      </table>
+    </td></tr>
+
+    <!-- body card -->
+    <tr><td class="pad" style="background:#f4f4f6;border-radius:0 0 24px 24px;padding:28px 34px 34px;">
+      <p style="margin:0 0 14px;font-size:15px;line-height:22px;color:#6b6b7a;">Hi {{ params.studentName }},</p>
+
+      {% if params.tempPassword %}
+      <p style="margin:0 0 14px;font-size:15px;line-height:22px;color:#6b6b7a;">
+        An account has been created for you on TalentSnaps. Log in with these details:
+      </p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:14px;margin-bottom:16px;">
+        <tr><td style="padding:16px 18px;font-family:monospace;font-size:14px;line-height:22px;color:#1a1a2e;">
+          Email: {{ params.email }}<br>
+          Password: {{ params.tempPassword }}
+        </td></tr>
+      </table>
+      {% else %}
+      <p style="margin:0 0 14px;font-size:15px;line-height:22px;color:#6b6b7a;">
+        An account has been created for you on TalentSnaps. Log in with your email
+        (<strong style="color:#1a1a2e;">{{ params.email }}</strong>) and the password your administrator gave you.
+      </p>
+      {% endif %}
+
+      <p style="margin:0 0 22px;font-size:14px;line-height:21px;color:#6b6b7a;">
+        We recommend changing your password after your first login.
+      </p>
+
+      <table role="presentation" align="center" cellpadding="0" cellspacing="0">
+        <tr><td align="center" style="background:#1f3bff;border-radius:999px;">
+          <a href="{{ params.loginUrl }}" style="display:inline-block;padding:13px 30px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;">Log in</a>
+        </td></tr>
+      </table>
+
+      <p style="margin:20px 0 0;font-size:12px;line-height:18px;color:#8a8a98;text-align:center;">
+        Button not working? Copy this link into your browser:<br>
+        <a href="{{ params.loginUrl }}" style="color:#3b4cf0;word-break:break-all;">{{ params.loginUrl }}</a>
+      </p>
+    </td></tr>
+
+    <tr><td style="height:36px;line-height:36px;font-size:0;">&nbsp;</td></tr>
+
+    <tr><td class="pad" align="center" style="background:#f4f4f6;border-radius:24px;padding:26px 28px 20px;font-size:12px;line-height:19px;color:#6b6b7a;">
+      <p style="margin:0 0 12px;">You received this email because your institution created a TalentSnaps account for you.</p>
+      <p style="margin:0 0 12px;">Trouble logging in? Contact your department coordinator.</p>
+      <p style="margin:0 0 10px;">&copy; TalentSnaps. All rights reserved.</p>
+      <div style="font-size:64px;line-height:64px;font-weight:800;letter-spacing:-2px;color:#e6e8fb;padding-top:10px;">Talent<span style="color:#f3e4f6;">Snaps</span></div>
+    </td></tr>
+
+    <tr><td style="height:24px;line-height:24px;font-size:0;">&nbsp;</td></tr>
+  </table>
+
+</td></tr>
+</table>
+</body>
+</html>

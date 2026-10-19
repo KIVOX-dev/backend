@@ -7,6 +7,7 @@ const handlers = [
   require('./testAssigned'),
   require('./driveAssigned'),
   require('./roundShortlisted'),
+  require('./accountCreated'),
 ];
 
 const byEventType = new Map(handlers.map((h) => [h.eventType, h]));

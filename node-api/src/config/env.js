@@ -138,6 +138,7 @@ module.exports = {
       test_assigned: parseInt(process.env.BREVO_TEST_ASSIGNED_TEMPLATE_ID, 10) || 0,
       drive_assigned: parseInt(process.env.BREVO_DRIVE_ASSIGNED_TEMPLATE_ID, 10) || 0,
       round_shortlisted: parseInt(process.env.BREVO_ROUND_SHORTLIST_TEMPLATE_ID, 10) || 0,
+      account_created: parseInt(process.env.BREVO_ACCOUNT_CREATED_TEMPLATE_ID, 10) || 0,
     },
     // messageVersions per POST /smtp/email call. Brevo allows up to 1000
     // versions / 2000 recipients per request (99 recipients per version);

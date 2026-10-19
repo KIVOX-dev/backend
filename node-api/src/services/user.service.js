@@ -10,7 +10,8 @@ const studentOutcomeRepository = require('../repositories/studentOutcome.reposit
 const { hashPassword } = require('../utils/password');
 const { computeGraduationYear } = require('../utils/graduationYear');
 const { resolveDepartmentIdByName } = require('../utils/departmentMatch');
-const { ROLES } = require('../config/constants');
+const { ROLES, DEFAULT_STUDENT_PASSWORD } = require('../config/constants');
+const onboardingNotificationService = require('./onboardingNotification.service');
 const { assertSameInstitution } = require('../utils/authz');
 const ApiError = require('../utils/ApiError');
 const { securityEvent, EVENTS } = require('../utils/securityLog');
@@ -151,6 +152,9 @@ class UserService extends BaseService {
       throw ApiError.forbidden('Not authorized to create users');
     }
 
+    // Remembered only as a yes/no for the welcome email — the plaintext is
+    // never stored or logged.
+    const usesDefaultPassword = userFields.password === DEFAULT_STUDENT_PASSWORD;
     userFields.password_hash = await hashPassword(userFields.password);
     delete userFields.password;
 
@@ -177,8 +181,9 @@ class UserService extends BaseService {
     // auth.service.js was fixed). `profile_completed: false` (student.model.js's
     // own default) is exactly the flag this app already has for "linked but
     // not fully filled in yet".
+    let notifyingCount = 0;
     if (user.role === ROLES.STUDENT) {
-      await studentRepository.create({
+      const student = await studentRepository.create({
         user_id: user.id,
         institution_id: user.institution_id,
         department_id: department_id || null,
@@ -186,6 +191,11 @@ class UserService extends BaseService {
         batch_year: resolvedBatchYear || null,
         year_of_study: yearOfStudy || null,
       });
+      // Same "your account is ready" email a roster upload sends, so a student
+      // added one at a time hears about it too.
+      notifyingCount = await onboardingNotificationService.notifyAccountCreated(user.institution_id, [
+        { studentId: student.id, usesDefaultPassword },
+      ]);
     } else if (user.role === ROLES.FACULTY && department_id) {
       await facultyRepository.create({
         user_id: user.id,
@@ -197,7 +207,7 @@ class UserService extends BaseService {
       await hrRepository.create({ user_id: user.id, company_id, designation: designation || null });
     }
 
-    return sanitize(user);
+    return user.role === ROLES.STUDENT ? { ...sanitize(user), notifying_count: notifyingCount } : sanitize(user);
   }
 
   // Two distinct authorization paths, not one role list: an admin (scoped to

@@ -7,11 +7,14 @@
 // Email clients can't reach localhost, so the logo is always the public
 // production asset (served from the frontend's /public/brand/).
 const LOGO_URL = 'https://www.talentsnaps.com/brand/lockup.png';
+// Hero backgrounds live in the frontend's public/email/ (hero-<variant>.png).
+// Override the host to preview unpublished images locally.
+const ASSET_BASE = process.env.EMAIL_ASSET_BASE_URL || 'https://www.talentsnaps.com';
 const SUPPORT_EMAIL = 'admin@talentsnaps.com';
 
 // Same visual design as docs/email-templates/test-assigned.html (the Brevo
 // template), so every email the platform sends looks like one family.
-function baseLayout({ preheader, eyebrow, title, bodyHtml }) {
+function baseLayout({ preheader, eyebrow, title, hero = 'security', bodyHtml }) {
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -43,7 +46,7 @@ function baseLayout({ preheader, eyebrow, title, bodyHtml }) {
               </td>
             </tr>
             <tr>
-              <td class="pad" style="background:#0b0620; background-image:linear-gradient(135deg,#050312 0%,#1b0f6b 55%,#2a1a9e 100%); border-radius:24px 24px 0 0; padding:30px;">
+              <td class="pad" background="${ASSET_BASE}/email/hero-${hero}.png" bgcolor="#1b0f6b" style="background-color:#1b0f6b; background-image:url('${ASSET_BASE}/email/hero-${hero}.png'), linear-gradient(135deg,#050312 0%,#1b0f6b 55%,#2a1a9e 100%); background-size:cover; background-position:center; border-radius:24px 24px 0 0; padding:30px;">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                   <tr>
                     <td class="hero-inner" align="center" style="border:1px solid rgba(255,255,255,0.22); background:rgba(255,255,255,0.07); border-radius:18px; padding:30px 24px;">
@@ -90,6 +93,7 @@ function button(href, label) {
 function passwordResetTemplate({ fullName, resetUrl, expiresInMinutes = 15 }) {
   const greeting = fullName ? `Hi ${fullName},` : 'Hi,';
   const html = baseLayout({
+    hero: 'security',
     eyebrow: 'Account security',
     title: 'Reset your<br />password',
     preheader: 'Reset your TalentSnaps password',
@@ -120,6 +124,7 @@ Need help? Contact us at ${SUPPORT_EMAIL}`;
 function verificationTemplate({ fullName, verifyUrl, expiresInMinutes = 15 }) {
   const greeting = fullName ? `Hi ${fullName},` : 'Hi,';
   const html = baseLayout({
+    hero: 'verify',
     eyebrow: 'Verify email',
     title: 'Confirm your<br />email address',
     preheader: 'Verify your email to finish setting up your TalentSnaps account',
@@ -150,6 +155,7 @@ Need help? Contact us at ${SUPPORT_EMAIL}`;
 function studentWelcomeTemplate({ fullName, email, tempPassword, loginUrl }) {
   const greeting = fullName ? `Hi ${fullName},` : 'Hi,';
   const html = baseLayout({
+    hero: 'welcome',
     eyebrow: 'Welcome',
     title: 'Your account<br />is ready',
     preheader: 'Your TalentSnaps account is ready — set your password to get started',

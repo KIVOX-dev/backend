@@ -4,7 +4,7 @@ const batchRepository = require('../repositories/batch.repository');
 const batchStudentRepository = require('../repositories/batchStudent.repository');
 const userRepository = require('../repositories/user.repository');
 const studentRepository = require('../repositories/student.repository');
-const { findOrCreateStudentUser } = require('../utils/studentOnboarding');
+const { findOrCreateStudentUser, queueWelcomeEmails } = require('../utils/studentOnboarding');
 const { ROLES } = require('../config/constants');
 const ApiError = require('../utils/ApiError');
 
@@ -24,8 +24,9 @@ class BatchService extends BaseService {
     });
 
     const createdStudents = [];
+    const onboardingEntries = [];
     for (const item of students) {
-      const { user, created, tempPassword } = await findOrCreateStudentUser({
+      const { user, created, tempPassword, onboarding } = await findOrCreateStudentUser({
         item,
         institutionId: batch.institution_id,
         department: batch.department,
@@ -53,9 +54,12 @@ class BatchService extends BaseService {
       if (created && tempPassword) {
         createdStudents.push({ id: user.id, email: user.email, name: user.full_name, tempPassword });
       }
+      if (created) onboardingEntries.push(onboarding);
     }
 
-    return { ...batch, createdStudents };
+    // One queued job for the whole roster, not an email call per row.
+    const notifyingCount = await queueWelcomeEmails(batch.institution_id, onboardingEntries);
+    return { ...batch, createdStudents, notifying_count: notifyingCount };
   }
 
   async history(actor) {

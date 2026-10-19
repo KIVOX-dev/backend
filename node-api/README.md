@@ -61,6 +61,7 @@ Three transactional emails go out through Brevo, all through one engine
 | `test_assigned` | A student is assigned an `active` test (or a `draft` test is activated) | `BREVO_TEST_ASSIGNED_TEMPLATE_ID` |
 | `drive_assigned` | A placement drive is `open`/`active` and the student is eligible | `BREVO_DRIVE_ASSIGNED_TEMPLATE_ID` |
 | `round_shortlisted` | A student is shortlisted for round 2 or later of a drive | `BREVO_ROUND_SHORTLIST_TEMPLATE_ID` |
+| `account_created` | A student is onboarded: roster upload (`POST /students/batch`), batch import, or the single Add Student form (`POST /users`) | `BREVO_ACCOUNT_CREATED_TEMPLATE_ID` |
 
 **Never twice.** `email_notifications` has one row per `(entity_type, entity_id, student_id, event_type,
 round_number)` with a unique index (run `npm run db:setup-indexes`). Re-saving, re-assigning, or
@@ -102,6 +103,24 @@ an inactive account are recorded as `failed` with the reason and logged.
 
    The same `{% if %}` hides the location, drive date, apply-by date, round time, venue/link and instructions
    when they're empty.
+
+### Onboarding ("account created") emails
+
+Students are onboarded with the default password `student123` unless a row/form supplies another; students
+are only *recommended* to change it (nothing is forced). Each onboarding request queues one job for all the
+students it created — a 500-row roster is one job, sent in `messageVersions` batches, with retries. Template
+params: `studentName, email, tempPassword, loginUrl` (`loginUrl` = `FRONTEND_URL/institutional`). `tempPassword`
+is `student123` only for a student who was given the default and hasn't logged in yet; the password is never
+stored in the log. Otherwise it's `""` and the template (`docs/email-templates/account-created.html`) says to
+use the password the administrator gave them. Rows with no real email (the `@upscaler-ai.local` placeholder)
+are never emailed. Responses of `POST /students/batch`, batch create and `POST /users` (students) include
+`notifying_count`.
+
+- `GET /students/onboarding-emails` → `{ sent, failed, pending, total, failed_recipients }` for your institution
+  (super admin: `?institution_id=`).
+- `POST /students/onboarding-emails/resend-failed` re-queues failed rows only (super admin: body
+  `{ "institution_id" }`). Staff: institution admin, faculty, super admin.
+- Until `BREVO_ACCOUNT_CREATED_TEMPLATE_ID` is set these emails are recorded as failed; set it and resend.
 
 ### Company logos
 

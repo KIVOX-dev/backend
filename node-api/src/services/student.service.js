@@ -9,7 +9,7 @@ const interviewResponseRepository = require('../repositories/interviewResponse.r
 const testRepository = require('../repositories/test.repository');
 const userService = require('./user.service');
 const { applyTestResult } = require('../utils/studentStats');
-const { findOrCreateStudentUser } = require('../utils/studentOnboarding');
+const { findOrCreateStudentUser, queueWelcomeEmails } = require('../utils/studentOnboarding');
 const { ROLES } = require('../config/constants');
 const { canActOnStudent } = require('../utils/authz');
 const ApiError = require('../utils/ApiError');
@@ -322,6 +322,7 @@ class StudentService extends BaseService {
     const defaultStatus = actor.role === ROLES.FACULTY ? 'pending' : 'approved';
     let created = 0;
     const createdStudents = [];
+    const onboardingEntries = [];
 
     // Cached by department id — a roster is usually a handful of
     // departments across many rows, not one lookup per row.
@@ -365,15 +366,19 @@ class StudentService extends BaseService {
           });
         })
       );
-      for (const { user, created: wasCreated, tempPassword } of results) {
+      for (const { user, created: wasCreated, tempPassword, onboarding } of results) {
         if (wasCreated) {
           created += 1;
           if (tempPassword) createdStudents.push({ id: user.id, email: user.email, name: user.full_name, tempPassword });
+          onboardingEntries.push(onboarding);
         }
       }
     }
 
-    return { created, status: defaultStatus, students: createdStudents };
+    // One queued job for the whole roster, not an email call per row.
+    const notifyingCount = await queueWelcomeEmails(actor.institutionId, onboardingEntries);
+
+    return { created, status: defaultStatus, students: createdStudents, notifying_count: notifyingCount };
   }
 
   // Delegates to the users merge's tiered pending-list logic (see

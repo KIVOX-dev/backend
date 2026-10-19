@@ -1,6 +1,7 @@
 const createCrudController = require('./crudControllerFactory');
 const studentService = require('../services/student.service');
 const achievementService = require('../services/achievement.service');
+const onboardingNotificationService = require('../services/onboardingNotification.service');
 const asyncHandler = require('../utils/asyncHandler');
 const ApiResponse = require('../utils/ApiResponse');
 
@@ -59,6 +60,17 @@ const batchCreate = asyncHandler(async (req, res) => {
   ApiResponse.created(res, result, `Successfully onboarded ${result.created} students. Status: ${result.status}`);
 });
 
+// Welcome-email status for the caller's institution (a super admin passes
+// ?institution_id=): { sent, failed, pending, total, failed_recipients }.
+const getOnboardingEmails = asyncHandler(async (req, res) => {
+  ApiResponse.ok(res, await onboardingNotificationService.getSummary(req.user, req.query.institution_id));
+});
+
+const resendOnboardingEmails = asyncHandler(async (req, res) => {
+  const result = await onboardingNotificationService.resendFailed(req.user, req.body?.institution_id);
+  ApiResponse.ok(res, result, 'Resend queued');
+});
+
 const listAchievements = asyncHandler(async (req, res) => {
   const rows = await achievementService.listForStudent(req.params.id, req.user);
   ApiResponse.ok(res, rows);
@@ -81,6 +93,8 @@ module.exports = {
   listInterviews,
   logInterview,
   batchCreate,
+  getOnboardingEmails,
+  resendOnboardingEmails,
   listAchievements,
   evaluateAchievements,
 };

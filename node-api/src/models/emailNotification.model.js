@@ -9,8 +9,9 @@
 // guarantees one email per student per event. round_number is always written
 // (null for events that have no round) so the index treats those rows as equal.
 //
-// entity_type: 'test' | 'drive'
-// event_type:  'test_assigned' | 'drive_assigned' | 'round_shortlisted'
+// entity_type: 'test' | 'drive' | 'institution' (account_created: one row per
+//              onboarded student, grouped by the institution they joined)
+// event_type:  'test_assigned' | 'drive_assigned' | 'round_shortlisted' | 'account_created'
 //              (a future 'not_selected' only needs a new handler — see
 //              services/notificationHandlers/)
 // status: queued -> sending -> sent | failed. `sending` is internal (a worker
@@ -20,6 +21,9 @@ module.exports = {
   columns: [
     'entity_type', 'entity_id', 'student_id', 'event_type', 'round_number', 'institution_id',
     'email', 'status', 'attempts', 'brevo_message_id', 'error_message', 'sent_at', 'locked_at',
+    // account_created only: whether the student was given the default password
+    // (so the email may show it). The password itself is never stored here.
+    'uses_default_password',
   ],
   defaults: { status: 'queued', attempts: 0, round_number: null },
 };
