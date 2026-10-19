@@ -39,13 +39,20 @@ async def openai_complete(
     if json_response:
         body["response_format"] = {"type": "json_object"}
 
+    url = f"{settings.openai_base_url}/chat/completions"
+    headers = {"Authorization": f"Bearer {settings.openai_api_key}"}
+
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
-            resp = await client.post(
-                f"{settings.openai_base_url}/chat/completions",
-                headers={"Authorization": f"Bearer {settings.openai_api_key}"},
-                json=body,
-            )
+            resp = await client.post(url, headers=headers, json=body)
+            # Some models (reasoning-style) only accept the default temperature
+            # and answer 400 otherwise — retry once without it.
+            if resp.status_code == 400 and "temperature" in resp.text:
+                logger.warning("Model rejected temperature, retrying without it: %s", resp.text)
+                body.pop("temperature", None)
+                resp = await client.post(url, headers=headers, json=body)
+            if resp.is_error:
+                logger.error("OpenAI returned %s: %s", resp.status_code, resp.text)
             resp.raise_for_status()
             data = resp.json()
     except httpx.HTTPError as exc:
