@@ -5,14 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="x-apple-disable-message-reformatting">
 <title>Shortlisted: {{ params.companyName }}</title>
-<!--
-  Brevo template - paste into a Brevo "New Template Language" HTML template.
-  Subject line (set in Brevo):
-    You are shortlisted for {{ params.roundName }} - {{ params.companyName }}
-  Params sent by the API: studentName, companyName, companyLogoUrl, jobRole, driveLink, roundNumber, roundName, roundDateTime, venueOrLink, instructions.
-  Empty params ('') hide their row via {% if %}. {{ mirror }} is Brevo's own
-  "view in browser" URL.
--->
+<!-- Brevo template for BREVO_ROUND_SHORTLIST_TEMPLATE_ID (New Template Language). Params: studentName, companyName, companyLogoUrl, jobRole, roundNumber, roundName, roundDateTime, venueOrLink, instructions, driveLink. See node-api/README.md. -->
 <style>
   body { margin: 0; padding: 0; background: #ffffff; }
   table { border-collapse: collapse; }
