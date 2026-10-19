@@ -65,14 +65,14 @@ const identifyLimiter = rateLimit({
   store: storeFor('identify', IDENTIFY_WINDOW_MS),
 });
 
-// Every endpoint that proxies to ai-service/Groq (resume analyze/match-jd/
+// Every endpoint that proxies to ai-service/OpenAI (resume analyze/match-jd/
 // ai-suggest/parse/improve, interview question generation, assessment
 // question generation) shares this one bucket per user — see
 // PROJECT_AUDIT_REPORT.md P1-5: these used to fall under only the generic
 // apiLimiter, and resumeBuilder.service.js has its own comment flagging
-// "an easy way to burn through the Groq quota with no accountability".
+// "an easy way to burn through the OpenAI quota with no accountability".
 // One shared limiter (not one per route) is deliberate: the resource being
-// protected is the Groq quota itself, so a user hitting 7 different AI
+// protected is the OpenAI quota itself, so a user hitting 7 different AI
 // routes should still draw down a single quota, not get 7x the budget by
 // spreading requests across endpoints. Keyed by user id, never IP — every
 // route this is applied to already runs behind `authenticate`, so req.user
@@ -91,7 +91,7 @@ const aiLimiter = rateLimit({
 // Second, coarser ceiling on top of aiLimiter: caps one institution's total
 // AI usage regardless of how many individual users it spreads the requests
 // across, so a large institution with many accounts can't collectively
-// exhaust the shared Groq quota just by virtue of headcount. Actors with no
+// exhaust the shared OpenAI quota just by virtue of headcount. Actors with no
 // institution (super_admin) fall back to their own user id, matching
 // canActOnStudent's own super_admin handling elsewhere — never a single
 // shared "no institution" bucket every institutionless actor would compete for.

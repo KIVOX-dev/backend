@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.config import get_settings
 from app.db import timed_log
-from app.groq_client import GroqError, groq_complete
+from app.openai_client import OpenAIError, openai_complete
 from app.schemas.assessment import (
     AssessmentQuestion,
     GenerateAssessmentQuestionsRequest,
@@ -41,7 +41,7 @@ def _fallback_question(payload: GenerateAssessmentQuestionsRequest) -> GenerateA
 @router.post("/generate-questions", response_model=GenerateAssessmentQuestionsResponse)
 async def generate_questions(payload: GenerateAssessmentQuestionsRequest):
     settings = get_settings()
-    if not settings.is_groq_configured:
+    if not settings.is_openai_configured:
         return _fallback_question(payload)
 
     user_prompt = f'Title: "{payload.title}"\nType: {payload.type}\nDifficulty: {payload.difficulty}'
@@ -49,7 +49,7 @@ async def generate_questions(payload: GenerateAssessmentQuestionsRequest):
     async with timed_log("assessment.generate_questions") as detail:
         detail["title"] = payload.title
         try:
-            result = await groq_complete(
+            result = await openai_complete(
                 _question_gen_system_prompt(payload.count),
                 user_prompt,
                 temperature=0.7,
@@ -59,7 +59,7 @@ async def generate_questions(payload: GenerateAssessmentQuestionsRequest):
                 max_tokens=max(2048, payload.count * 220),
                 json_response=True,
             )
-        except GroqError as exc:
+        except OpenAIError as exc:
             logger.error("Assessment question generation failed: %s", exc)
             raise HTTPException(
                 status_code=status.HTTP_502_BAD_GATEWAY, detail=f"Failed to generate questions: {exc}"

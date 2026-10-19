@@ -74,12 +74,12 @@ async def health_ready():
     settings = get_settings()
     mongo_ok = await ping_mongo() if settings.is_mongo_configured else None
     checks = {
-        "groq": {"status": "configured" if settings.is_groq_configured else "not_configured"},
+        "openai": {"status": "configured" if settings.is_openai_configured else "not_configured"},
         "mongo": (
             {"status": "ok" if mongo_ok else "error"} if settings.is_mongo_configured else {"status": "not_configured"}
         ),
     }
-    # "ready" only requires the process to be able to serve requests — Groq
+    # "ready" only requires the process to be able to serve requests — OpenAI
     # being unconfigured is a valid, intentionally-supported deployment state
     # (every route degrades gracefully rather than depending on it), so it
     # never fails readiness. An unreachable Mongo *would* fail it, but Mongo

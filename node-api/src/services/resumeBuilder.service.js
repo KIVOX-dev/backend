@@ -32,8 +32,8 @@ function defaultResume(user) {
 // Maps an AI-service failure onto the same error contract these methods
 // already had before AI features moved out of node-api — the frontend
 // never needs to change to handle this. AiServiceUpstreamError(503, '...not
-// configured') becomes the exact ApiError.internal('GROQ_API_KEY is not
-// configured') these methods always threw when Groq wasn't configured;
+// configured') becomes the exact ApiError.internal('OPENAI_API_KEY is not
+// configured') these methods always threw when OpenAI wasn't configured;
 // anything else the AI service returns (502 upstream failure, 400 bad
 // input) is forwarded with its own status and message; total unreachability
 // becomes a 503 the frontend's existing generic error/toast handling
@@ -43,7 +43,7 @@ function translateAiServiceError(err, fallbackMessage) {
     return ApiError.serviceUnavailable('AI service is currently unavailable');
   }
   if (err instanceof AiServiceUpstreamError) {
-    if (err.statusCode === 503) return ApiError.internal(err.detail || 'GROQ_API_KEY is not configured');
+    if (err.statusCode === 503) return ApiError.internal(err.detail || 'OPENAI_API_KEY is not configured');
     if (err.statusCode === 400) return ApiError.badRequest(err.detail || 'Invalid request');
     return ApiError.internal(err.detail || fallbackMessage);
   }
@@ -189,7 +189,7 @@ class ResumeBuilderService extends BaseService {
   // Depends(get_current_user) at all, callable by anyone. Deliberately
   // tightened in this port (see the Phase 3 migration plan): every other AI
   // endpoint requires login, and an unauthenticated LLM-calling endpoint is
-  // an easy way to burn through the Groq quota with no accountability.
+  // an easy way to burn through the OpenAI quota with no accountability.
   async parseResumeText(text) {
     try {
       return await callAiService('/v1/resume/parse', { text });
@@ -202,7 +202,7 @@ class ResumeBuilderService extends BaseService {
   // Distinct fallback shape from every method above: a MISSING key returns
   // the original text untouched (200, not an error — the AI service itself
   // handles that case and returns it as a normal 200). Only a genuine
-  // failure — the AI service unreachable, or Groq itself erroring once
+  // failure — the AI service unreachable, or OpenAI itself erroring once
   // configured — is still a hard error here, matching this method's
   // original behavior before AI features moved out of node-api.
   async improveResumeText({ objective, education, skills, experience }) {

@@ -9,7 +9,7 @@ to this repository. It must be treated as compromised and rotated, independent o
 
 This document is the general-purpose process for rotating any credential this service depends on
 (`MONGODB_URI`, `JWT_SECRET`, `JWT_REFRESH_SECRET`, `GOOGLE_CLIENT_SECRET`, `BREVO_API_KEY`,
-`GROQ_API_KEY`, `REDIS_URL`), not just the one that's already known-compromised.
+`OPENAI_API_KEY`, `REDIS_URL`), not just the one that's already known-compromised.
 
 ## What actually has to happen, and who does it
 
@@ -106,6 +106,6 @@ applies to:
   degrade to their single-instance fallback automatically if Redis becomes unreachable mid-rotation
   (see `config/redis.js`), so this one is lower-risk to rotate than the others — nothing goes down,
   it just temporarily loses cross-instance coordination.
-- **`BREVO_API_KEY` / `GROQ_API_KEY`** — lowest risk: `email.service.js`/`groqClient.js` both
-  already check `isEmailConfigured()`/`isGroqConfigured()` and degrade gracefully rather than crash
+- **`BREVO_API_KEY` / `OPENAI_API_KEY`** — lowest risk: `email.service.js`/`openaiClient.js` both
+  already check `isEmailConfigured()`/`isOpenAIConfigured()` and degrade gracefully rather than crash
   if these are absent or invalid — email sending / AI features pause, nothing else breaks.

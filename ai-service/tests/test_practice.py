@@ -7,10 +7,10 @@ ITEMS = [
     {"question": "What is the output? let x = 15; console.log(++x + x++);", "options": ["32", "31", "30", "33"], "correct_answer": "32"},
     {"question": "Which data structure uses LIFO?", "options": ["Array", "Stack", "Graph", "Queue"], "correct_answer": "Stack"},
 ]
-GROQ = "https://api.groq.com/openai/v1/chat/completions"
+OPENAI = "https://api.openai.com/v1/chat/completions"
 
 
-def _groq(content: dict):
+def _openai(content: dict):
     return Response(200, json={"choices": [{"message": {"content": json.dumps(content)}}]})
 
 
@@ -18,7 +18,7 @@ def test_explain_requires_service_token(client):
     assert client.post("/v1/practice/explain", json={"questions": ITEMS}).status_code in (401, 403)
 
 
-def test_explain_is_unavailable_without_groq(client, auth_headers):
+def test_explain_is_unavailable_without_openai(client, auth_headers):
     resp = client.post("/v1/practice/explain", json={"questions": ITEMS}, headers=auth_headers)
     assert resp.status_code == 200
     body = resp.json()
@@ -35,9 +35,9 @@ def test_explain_validates_input(client, auth_headers):
 
 
 @respx.mock
-def test_explain_maps_explanations_back_by_question_number(client, auth_headers, groq_configured):
+def test_explain_maps_explanations_back_by_question_number(client, auth_headers, openai_configured):
     # Returned out of order, with one entry missing its text — the response must still line up with the request.
-    route = respx.post(GROQ).mock(return_value=_groq({"explanations": [
+    route = respx.post(OPENAI).mock(return_value=_openai({"explanations": [
         {"n": 2, "explanation": "A stack is last-in, first-out.", "disputed": False},
         {"n": 1, "explanation": "++x makes x 16 and returns 16; x++ returns 16 then x becomes 17. 16 + 16 = 32."},
         {"n": 9, "explanation": "out of range"},
@@ -53,8 +53,8 @@ def test_explain_maps_explanations_back_by_question_number(client, auth_headers,
 
 
 @respx.mock
-def test_explain_surfaces_a_disputed_answer_key(client, auth_headers, groq_configured):
-    respx.post(GROQ).mock(return_value=_groq({"explanations": [
+def test_explain_surfaces_a_disputed_answer_key(client, auth_headers, openai_configured):
+    respx.post(OPENAI).mock(return_value=_openai({"explanations": [
         {"n": 1, "explanation": "The sum is 17, not 18.", "disputed": True, "suggested_answer": "17"},
     ]}))
     resp = client.post("/v1/practice/explain", json={"questions": ITEMS[:1]}, headers=auth_headers)
@@ -63,8 +63,8 @@ def test_explain_surfaces_a_disputed_answer_key(client, auth_headers, groq_confi
 
 
 @respx.mock
-def test_explain_degrades_when_groq_fails(client, auth_headers, groq_configured):
-    respx.post(GROQ).mock(return_value=Response(500))
+def test_explain_degrades_when_openai_fails(client, auth_headers, openai_configured):
+    respx.post(OPENAI).mock(return_value=Response(500))
     resp = client.post("/v1/practice/explain", json={"questions": ITEMS}, headers=auth_headers)
     assert resp.status_code == 200
     assert resp.json()["source"] == "unavailable"

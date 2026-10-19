@@ -68,9 +68,9 @@ class TestService extends BaseService {
   }
 
   // Proxies to the AI service (ai-service/app/routers/assessment.py), which
-  // owns the "Groq not configured" soft-fallback (a single placeholder
+  // owns the "OpenAI not configured" soft-fallback (a single placeholder
   // question) itself. Only a genuine failure — the AI service unreachable,
-  // or Groq erroring once configured — reaches this catch block.
+  // or OpenAI erroring once configured — reaches this catch block.
   async generateQuestions({ title = 'Assessment', type = 'general', difficulty = 'medium' }) {
     try {
       return await callAiService('/v1/assessment/generate-questions', { title, type, difficulty });

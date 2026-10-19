@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.config import get_settings
 from app.db import timed_log
-from app.groq_client import GroqError, groq_complete
+from app.openai_client import OpenAIError, openai_complete
 from app.schemas.resume import (
     AiSuggestRequest,
     AiSuggestResponse,
@@ -20,14 +20,14 @@ from app.security import verify_service_token
 logger = logging.getLogger("ai-service.resume")
 router = APIRouter(prefix="/v1/resume", tags=["resume"], dependencies=[Depends(verify_service_token)])
 
-NOT_CONFIGURED_DETAIL = "GROQ_API_KEY is not configured"
+NOT_CONFIGURED_DETAIL = "OPENAI_API_KEY is not configured"
 
 
-def _require_groq() -> None:
-    if not get_settings().is_groq_configured:
+def _require_openai() -> None:
+    if not get_settings().is_openai_configured:
         # 503, not 500 — this is a missing optional dependency of the AI
         # service, not a bug in it. node-api's aiServiceClient.js maps this
-        # specific status back to the same ApiError.internal('GROQ_API_KEY is
+        # specific status back to the same ApiError.internal('OPENAI_API_KEY is
         # not configured') the frontend already handled before this endpoint
         # existed, so the contract callers see is unchanged.
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=NOT_CONFIGURED_DETAIL)
@@ -49,15 +49,15 @@ ANALYZE_KEYS = """Required JSON keys:
 
 @router.post("/analyze")
 async def analyze(payload: AnalyzeRequest):
-    _require_groq()
+    _require_openai()
     user_prompt = (
         f"Analyze the following resume and return a highly detailed, professional feedback report.\n\n"
         f"{ANALYZE_KEYS}\n\nResume Data:\n{json.dumps(payload.resume, indent=2)}"
     )
     async with timed_log("resume.analyze"):
         try:
-            return await groq_complete(ANALYZE_SYSTEM_PROMPT, user_prompt, temperature=0.3, max_tokens=2048, json_response=True)
-        except GroqError as exc:
+            return await openai_complete(ANALYZE_SYSTEM_PROMPT, user_prompt, temperature=0.3, max_tokens=2048, json_response=True)
+        except OpenAIError as exc:
             raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"ATS Analysis failed: {exc}") from exc
 
 
@@ -76,15 +76,15 @@ MATCH_KEYS = """Required JSON keys:
 
 @router.post("/match-jd")
 async def match_job_description(payload: MatchJdRequest):
-    _require_groq()
+    _require_openai()
     user_prompt = (
         "Compare the candidate's resume with the provided Job Description. Return a detailed compatibility report.\n\n"
         f"{MATCH_KEYS}\n\nJob Description:\n{payload.jd_text}\n\nCandidate Resume:\n{json.dumps(payload.resume, indent=2)}"
     )
     async with timed_log("resume.match_jd"):
         try:
-            return await groq_complete(MATCH_SYSTEM_PROMPT, user_prompt, temperature=0.3, max_tokens=2048, json_response=True)
-        except GroqError as exc:
+            return await openai_complete(MATCH_SYSTEM_PROMPT, user_prompt, temperature=0.3, max_tokens=2048, json_response=True)
+        except OpenAIError as exc:
             raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"JD Matching failed: {exc}") from exc
 
 
@@ -93,7 +93,7 @@ AI_SUGGEST_SYSTEM_PROMPT = "You are a professional ATS resume writer. Help the s
 
 @router.post("/suggest", response_model=AiSuggestResponse)
 async def ai_suggest(payload: AiSuggestRequest):
-    _require_groq()
+    _require_openai()
 
     action = payload.action
     content = payload.content or ""
@@ -136,8 +136,8 @@ async def ai_suggest(payload: AiSuggestRequest):
     async with timed_log("resume.ai_suggest") as detail:
         detail["action"] = action
         try:
-            output = await groq_complete(AI_SUGGEST_SYSTEM_PROMPT, user_prompt, temperature=0.5, max_tokens=1500)
-        except GroqError as exc:
+            output = await openai_complete(AI_SUGGEST_SYSTEM_PROMPT, user_prompt, temperature=0.5, max_tokens=1500)
+        except OpenAIError as exc:
             raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"AI suggestion failed: {exc}") from exc
 
     output = output.strip()
@@ -163,15 +163,15 @@ PARSE_SCHEMA = """- "personal": { "name": "", "email": "", "phone": "", "linkedi
 
 @router.post("/parse")
 async def parse_resume_text(payload: ParseResumeRequest):
-    _require_groq()
+    _require_openai()
     user_prompt = (
         "Extract the candidate information from the following text into structured JSON fields matching this "
         f"exact key structure:\n\n{PARSE_SCHEMA}\n\nText content:\n{payload.text}"
     )
     async with timed_log("resume.parse"):
         try:
-            return await groq_complete(PARSE_SYSTEM_PROMPT, user_prompt, temperature=0.1, max_tokens=2048, json_response=True)
-        except GroqError as exc:
+            return await openai_complete(PARSE_SYSTEM_PROMPT, user_prompt, temperature=0.1, max_tokens=2048, json_response=True)
+        except OpenAIError as exc:
             raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"Resume parsing failed: {exc}") from exc
 
 
@@ -181,13 +181,13 @@ IMPROVE_SYSTEM_PROMPT = "You are an expert Resume Writer and Career Coach."
 @router.post("/improve", response_model=ImproveResumeResponse)
 async def improve_resume_text(payload: ImproveResumeRequest):
     settings = get_settings()
-    if not settings.is_groq_configured:
+    if not settings.is_openai_configured:
         return ImproveResumeResponse(
             objective=payload.objective,
             education=payload.education,
             skills=payload.skills,
             experience=payload.experience,
-            message="GROQ_API_KEY not configured. Returning original text.",
+            message="OPENAI_API_KEY not configured. Returning original text.",
         )
 
     user_prompt = (
@@ -198,8 +198,8 @@ async def improve_resume_text(payload: ImproveResumeRequest):
     )
     async with timed_log("resume.improve"):
         try:
-            result = await groq_complete(IMPROVE_SYSTEM_PROMPT, user_prompt, temperature=0.7, max_tokens=1024, json_response=True)
-        except GroqError as exc:
+            result = await openai_complete(IMPROVE_SYSTEM_PROMPT, user_prompt, temperature=0.7, max_tokens=1024, json_response=True)
+        except OpenAIError as exc:
             raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"Failed to improve resume: {exc}") from exc
 
     return ImproveResumeResponse(

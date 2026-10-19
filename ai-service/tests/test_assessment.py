@@ -3,10 +3,10 @@ import json
 import respx
 from httpx import Response
 
-GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+OPENAI_URL = "https://api.openai.com/v1/chat/completions"
 
 
-def test_generate_questions_falls_back_when_groq_unconfigured(client, auth_headers):
+def test_generate_questions_falls_back_when_openai_unconfigured(client, auth_headers):
     resp = client.post(
         "/v1/assessment/generate-questions",
         json={"title": "Data Structures", "type": "quiz", "difficulty": "hard"},
@@ -28,9 +28,9 @@ def test_generate_questions_uses_defaults(client, auth_headers):
 
 
 @respx.mock
-def test_generate_questions_uses_groq_when_configured(client, auth_headers, groq_configured):
+def test_generate_questions_uses_openai_when_configured(client, auth_headers, openai_configured):
     questions = [{"question": "What is a stack?", "options": ["A", "B", "C", "D"], "correct_answer": "B"}]
-    respx.post(GROQ_URL).mock(
+    respx.post(OPENAI_URL).mock(
         return_value=Response(200, json={"choices": [{"message": {"content": json.dumps({"questions": questions})}}]})
     )
     resp = client.post(
@@ -41,8 +41,8 @@ def test_generate_questions_uses_groq_when_configured(client, auth_headers, groq
 
 
 @respx.mock
-def test_generate_questions_returns_502_when_groq_fails(client, auth_headers, groq_configured):
-    respx.post(GROQ_URL).mock(return_value=Response(500))
+def test_generate_questions_returns_502_when_openai_fails(client, auth_headers, openai_configured):
+    respx.post(OPENAI_URL).mock(return_value=Response(500))
     resp = client.post("/v1/assessment/generate-questions", json={}, headers=auth_headers)
     assert resp.status_code == 502
 

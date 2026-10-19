@@ -5,18 +5,18 @@ import httpx
 
 from app.config import get_settings
 
-logger = logging.getLogger("ai-service.groq")
+logger = logging.getLogger("ai-service.openai")
 
 
-class GroqError(Exception):
-    """Raised when a configured Groq call fails outright (network error,
+class OpenAIError(Exception):
+    """Raised when a configured OpenAI call fails outright (network error,
     non-2xx response, or unparseable JSON when jsonResponse was requested).
     Callers translate this into a 502 — distinct from "not configured",
-    which routes check for themselves via settings.is_groq_configured
+    which routes check for themselves via settings.is_openai_configured
     before ever reaching this module."""
 
 
-async def groq_complete(
+async def openai_complete(
     system_prompt: str,
     user_prompt: str,
     *,
@@ -26,9 +26,11 @@ async def groq_complete(
 ) -> str | dict:
     settings = get_settings()
     body = {
-        "model": settings.groq_model,
+        "model": settings.openai_model,
         "temperature": temperature,
-        "max_tokens": max_tokens,
+        # OpenAI's current chat models take max_completion_tokens; the older
+        # max_tokens is rejected by reasoning-style models.
+        "max_completion_tokens": max_tokens,
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
@@ -40,15 +42,15 @@ async def groq_complete(
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
             resp = await client.post(
-                f"{settings.groq_base_url}/chat/completions",
-                headers={"Authorization": f"Bearer {settings.groq_api_key}"},
+                f"{settings.openai_base_url}/chat/completions",
+                headers={"Authorization": f"Bearer {settings.openai_api_key}"},
                 json=body,
             )
             resp.raise_for_status()
             data = resp.json()
     except httpx.HTTPError as exc:
-        logger.error("Groq request failed: %s", exc)
-        raise GroqError(str(exc)) from exc
+        logger.error("OpenAI request failed: %s", exc)
+        raise OpenAIError(str(exc)) from exc
 
     content = data["choices"][0]["message"]["content"] or ""
     if not json_response:
@@ -56,5 +58,5 @@ async def groq_complete(
     try:
         return json.loads(content)
     except json.JSONDecodeError as exc:
-        logger.error("Groq returned non-JSON content for a json_response request: %s", exc)
-        raise GroqError(f"Groq returned invalid JSON: {exc}") from exc
+        logger.error("OpenAI returned non-JSON content for a json_response request: %s", exc)
+        raise OpenAIError(f"OpenAI returned invalid JSON: {exc}") from exc

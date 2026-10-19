@@ -5,7 +5,7 @@ const { seedInstitution, seedUser } = require('../helpers/seed');
 // Regression coverage for the Phase 3 AI-service migration: interview
 // question generation, resume AI features, and assessment question
 // generation now proxy to the FastAPI ai-service (see
-// utils/aiServiceClient.js) instead of calling Groq directly from node-api.
+// utils/aiServiceClient.js) instead of calling OpenAI directly from node-api.
 // The ai-service is never running during this Jest suite, so every call
 // here genuinely fails to connect — this exercises the real
 // AiServiceUnavailableError fallback path, not a mocked one.

@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends
 
 from app.config import get_settings
 from app.db import timed_log
-from app.groq_client import GroqError, groq_complete
+from app.openai_client import OpenAIError, openai_complete
 from app.schemas.interview import (
     AnswerEvaluation,
     AnswerToEvaluate,
@@ -138,7 +138,7 @@ async def generate_questions(payload: GenerateQuestionsRequest):
     settings = get_settings()
     spec = ROUNDS[payload.round]
 
-    if not settings.is_groq_configured:
+    if not settings.is_openai_configured:
         return _fallback_questions(payload.company, payload.role, payload.round)
 
     system_prompt = (
@@ -161,7 +161,7 @@ async def generate_questions(payload: GenerateQuestionsRequest):
             # 2048, not 1024: gpt-oss models spend part of the budget on
             # reasoning before the JSON, and at 1024 the list was sometimes cut
             # off mid-array — silently falling back to the canned pool.
-            result = await groq_complete(system_prompt, user_prompt, temperature=0.7, max_tokens=2048, json_response=True)
+            result = await openai_complete(system_prompt, user_prompt, temperature=0.7, max_tokens=2048, json_response=True)
             raw = result.get("questions", []) if isinstance(result, dict) else []
             # Accept plain strings too, in case the model ignores the object shape.
             questions = [
@@ -172,8 +172,8 @@ async def generate_questions(payload: GenerateQuestionsRequest):
             ]
             questions = [q for q in questions if q[0]]
             if len(questions) < 10:
-                raise GroqError("LLM did not return enough questions")
-        except GroqError as exc:
+                raise OpenAIError("LLM did not return enough questions")
+        except OpenAIError as exc:
             logger.error("Interview question generation failed, falling back: %s", exc)
             return _fallback_questions(payload.company, payload.role, payload.round)
 
@@ -216,7 +216,7 @@ async def evaluate_answers(payload: EvaluateAnswersRequest):
     settings = get_settings()
     heuristic = EvaluateAnswersResponse(source="heuristic", results=[_heuristic_score(a) for a in payload.answers])
     answered = [a for a in payload.answers if a.answer.strip()]
-    if not settings.is_groq_configured or not answered:
+    if not settings.is_openai_configured or not answered:
         return heuristic
 
     system_prompt = (
@@ -237,7 +237,7 @@ async def evaluate_answers(payload: EvaluateAnswersRequest):
     async with timed_log("interview.evaluate") as detail:
         detail["answers"] = len(answered)
         try:
-            result = await groq_complete(system_prompt, user_prompt, temperature=0.2, max_tokens=2048, json_response=True)
+            result = await openai_complete(system_prompt, user_prompt, temperature=0.2, max_tokens=2048, json_response=True)
             graded: dict[int, AnswerEvaluation] = {}
             for r in result.get("results", []) if isinstance(result, dict) else []:
                 try:
@@ -249,8 +249,8 @@ async def evaluate_answers(payload: EvaluateAnswersRequest):
                 except (KeyError, TypeError, ValueError):
                     continue
             if len(graded) < len(answered):
-                raise GroqError("LLM did not grade every answer")
-        except GroqError as exc:
+                raise OpenAIError("LLM did not grade every answer")
+        except OpenAIError as exc:
             logger.error("Answer evaluation failed, using heuristic: %s", exc)
             return heuristic
 
@@ -293,7 +293,7 @@ def _valid_mcqs(raw: list, limit: int) -> list[McqQuestion]:
 async def generate_mcq(payload: GenerateMcqRequest):
     """Round 1 of the mock interview: a written test for this role at this company."""
     settings = get_settings()
-    if not settings.is_groq_configured:
+    if not settings.is_openai_configured:
         return GenerateMcqResponse(source="unavailable", questions=[])
 
     aptitude = round(payload.count * 0.6)
@@ -318,7 +318,7 @@ async def generate_mcq(payload: GenerateMcqRequest):
         detail["role"] = payload.role
         detail["company"] = payload.company
         try:
-            result = await groq_complete(
+            result = await openai_complete(
                 system_prompt,
                 user_prompt,
                 temperature=0.6,
@@ -329,8 +329,8 @@ async def generate_mcq(payload: GenerateMcqRequest):
             questions = _valid_mcqs(raw, payload.count)
             # Too few usable items reads as a broken test, not a short one.
             if len(questions) < max(5, payload.count * 2 // 3):
-                raise GroqError(f"only {len(questions)} valid MCQs of {payload.count}")
-        except GroqError as exc:
+                raise OpenAIError(f"only {len(questions)} valid MCQs of {payload.count}")
+        except OpenAIError as exc:
             logger.error("Interview MCQ generation failed, caller will fall back: %s", exc)
             return GenerateMcqResponse(source="unavailable", questions=[])
 

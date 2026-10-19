@@ -12,7 +12,7 @@ class Settings(BaseSettings):
 
     Every field has a safe default so the service can boot (and its /health
     endpoint stay up) even with nothing configured — individual features
-    (Groq-backed generation, Mongo-backed request logging) check their own
+    (OpenAI-backed generation, Mongo-backed request logging) check their own
     "is this configured" flag and degrade rather than crashing at import time.
     """
 
@@ -32,20 +32,17 @@ class Settings(BaseSettings):
     # startup checks in main.py are — nothing else branches on it.
     ai_service_env: str = "development"
 
-    # --- Groq (LLM provider) ---
-    # Every AI-generation route checks `is_groq_configured` and degrades
+    # --- OpenAI (LLM provider) ---
+    # Every AI-generation route checks `is_openai_configured` and degrades
     # (fallback questions, unmodified resume text, or a clear 503) rather
-    # than crashing — matches node-api's groqClient.js philosophy exactly,
+    # than crashing — matches node-api's openaiClient.js philosophy exactly,
     # since node-api used to own this same check before it moved here.
-    groq_api_key: str = ""
-    # llama-3.3-70b-versatile was Groq's default here until its shutdown
-    # (deprecated 2026-06-17, fully decommissioned 2026-08-16 — confirmed
-    # directly: every AI-generation call was failing in production with a
-    # 404 from Groq's own /chat/completions, not a config/auth problem on
-    # our end). openai/gpt-oss-120b is Groq's own recommended replacement
-    # for this exact model, per https://console.groq.com/docs/deprecations.
-    groq_model: str = "openai/gpt-oss-120b"
-    groq_base_url: str = "https://api.groq.com/openai/v1"
+    openai_api_key: str = ""
+    # Deliberately no default: a model name that doesn't exist (or gets
+    # retired) turns every AI call into a 404. Set OPENAI_MODEL explicitly;
+    # until both key and model are set the service degrades as if unconfigured.
+    openai_model: str = ""
+    openai_base_url: str = "https://api.openai.com/v1"
 
     # --- MongoDB (optional: request/response observability logging only —
     # this service owns no business data, node-api remains the single
@@ -66,8 +63,8 @@ class Settings(BaseSettings):
         return self.ai_service_shared_secret == DEFAULT_DEV_SECRET
 
     @property
-    def is_groq_configured(self) -> bool:
-        return bool(self.groq_api_key)
+    def is_openai_configured(self) -> bool:
+        return bool(self.openai_api_key and self.openai_model)
 
     @property
     def is_mongo_configured(self) -> bool:

@@ -38,7 +38,7 @@
 #                                it's how node-api and ai-service authenticate
 #                                to each other (see aiServiceClient.js /
 #                                ai-service/app/config.py)
-#   ai-service-groq-api-key     Groq API key
+#   ai-service-openai-api-key     OpenAI API key
 #
 # Then grant the Cloud Run runtime service account
 # (<project-number>-compute@developer.gserviceaccount.com, unless you deploy
@@ -48,6 +48,7 @@
 substitutions:
   _REGION: asia-south1
   _AR_REPO: cloud-run-source-deploy
+  _OPENAI_MODEL: gpt-6-luna  # exact OpenAI model ID
 
 options:
   logging: CLOUD_LOGGING_ONLY
@@ -122,8 +123,8 @@ steps:
       - --region=${_REGION}
       - --port=8001
       - --no-allow-unauthenticated
-      - --set-env-vars=AI_SERVICE_ENV=production
-      - --set-secrets=AI_SERVICE_SHARED_SECRET=ai-service-shared-secret:latest,GROQ_API_KEY=ai-service-groq-api-key:latest
+      - --set-env-vars=AI_SERVICE_ENV=production,OPENAI_MODEL=${_OPENAI_MODEL}
+      - --set-secrets=AI_SERVICE_SHARED_SECRET=ai-service-shared-secret:latest,OPENAI_API_KEY=ai-service-openai-api-key:latest
       - --quiet
     waitFor: [push-ai-service]
 

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 
 from app.config import get_settings
 from app.db import timed_log
-from app.groq_client import GroqError, groq_complete
+from app.openai_client import OpenAIError, openai_complete
 from app.schemas.practice import (
     ExplainItem,
     ExplainRequest,
@@ -39,7 +39,7 @@ def _unavailable(count: int) -> ExplainResponse:
 async def explain(payload: ExplainRequest):
     settings = get_settings()
     count = len(payload.questions)
-    if not settings.is_groq_configured:
+    if not settings.is_openai_configured:
         return _unavailable(count)
 
     user_prompt = (
@@ -59,8 +59,8 @@ async def explain(payload: ExplainRequest):
         detail["count"] = count
         try:
             # Generous budget: gpt-oss models spend part of it on reasoning before the JSON.
-            result = await groq_complete(SYSTEM_PROMPT, user_prompt, temperature=0.2, max_tokens=4096, json_response=True)
-        except GroqError as exc:
+            result = await openai_complete(SYSTEM_PROMPT, user_prompt, temperature=0.2, max_tokens=4096, json_response=True)
+        except OpenAIError as exc:
             logger.error("Practice explanation failed: %s", exc)
             return _unavailable(count)
 

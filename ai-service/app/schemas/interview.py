@@ -62,7 +62,7 @@ class McqQuestion(BaseModel):
 
 class GenerateMcqResponse(BaseModel):
     # "ai" when the LLM produced the set; "unavailable" when it couldn't
-    # (Groq not configured, errored, or returned too few valid questions) —
+    # (OpenAI not configured, errored, or returned too few valid questions) —
     # the caller then falls back to its own company question banks.
     source: Literal["ai", "unavailable"]
     questions: list[McqQuestion]

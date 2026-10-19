@@ -3,7 +3,7 @@ const questionExplanationService = require('../services/questionExplanation.serv
 const asyncHandler = require('../utils/asyncHandler');
 const ApiResponse = require('../utils/ApiResponse');
 
-// Lives in resumeBuilder.service.js alongside resume.py's Groq methods (same
+// Lives in resumeBuilder.service.js alongside resume.py's OpenAI methods (same
 // dependency, same model) — this controller just gives it python-service's
 // original separate /ai prefix, since that's the path the frontend calls.
 const improveResume = asyncHandler(async (req, res) => {

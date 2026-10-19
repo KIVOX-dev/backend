@@ -4,18 +4,18 @@ def test_health(client):
     assert resp.json() == {"status": "ok"}
 
 
-def test_health_ready_with_groq_unconfigured(client):
+def test_health_ready_with_openai_unconfigured(client):
     resp = client.get("/health/ready")
     assert resp.status_code == 200
     body = resp.json()
     assert body["status"] == "ready"
-    assert body["checks"]["groq"]["status"] == "not_configured"
+    assert body["checks"]["openai"]["status"] == "not_configured"
     assert body["checks"]["mongo"]["status"] == "not_configured"
 
 
-def test_health_ready_with_groq_configured(client, groq_configured):
+def test_health_ready_with_openai_configured(client, openai_configured):
     resp = client.get("/health/ready")
-    assert resp.json()["checks"]["groq"]["status"] == "configured"
+    assert resp.json()["checks"]["openai"]["status"] == "configured"
 
 
 def test_health_does_not_require_auth(client):

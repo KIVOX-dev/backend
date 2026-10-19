@@ -3,7 +3,7 @@ const logger = require('../utils/logger');
 
 // Last-resort circuit breaker only — used exclusively when the AI service
 // itself can't be reached at all. The AI service owns the "real" fallback
-// decision (Groq configured or not) internally; see
+// decision (OpenAI configured or not) internally; see
 // ai-service/app/routers/interview.py's own copy of this pool, which is what
 // actually serves most fallback traffic in practice.
 const FALLBACK_QUESTION_POOL = [

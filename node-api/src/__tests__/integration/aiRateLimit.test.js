@@ -2,7 +2,7 @@ const request = require('supertest');
 const { buildTestApp, teardownTestApp } = require('../helpers/testApp');
 const { seedInstitution, seedUser } = require('../helpers/seed');
 
-// Regression tests for the P1 finding in PROJECT_AUDIT_REPORT.md: AI/Groq-
+// Regression tests for the P1 finding in PROJECT_AUDIT_REPORT.md: AI/OpenAI-
 // proxying endpoints (resume analyze/match-jd/ai-suggest/parse/improve,
 // interview generation, assessment question generation) used to share only
 // the generic apiLimiter, with no per-user ceiling on a metered, paid

@@ -115,14 +115,14 @@ module.exports = {
 
   // The FastAPI AI microservice (interview generation, resume AI features).
   // Not required at startup — utils/aiServiceClient.js degrades gracefully
-  // (local fallback) when unset or unreachable, same philosophy as groq above.
+  // (local fallback) when unset or unreachable, same philosophy as openai above.
   aiService: {
     url: process.env.AI_SERVICE_URL || 'http://localhost:8001',
     sharedSecret: process.env.AI_SERVICE_SHARED_SECRET || '',
     timeoutMs: parseInt(process.env.AI_SERVICE_TIMEOUT_MS, 10) || 15000,
   },
 
-  // Optional, same reasoning as groq above — see email.service.js#isEmailConfigured.
+  // Optional, same reasoning as openai above — see email.service.js#isEmailConfigured.
   brevo: {
     apiKey: process.env.BREVO_API_KEY || '',
     senderEmail: process.env.BREVO_SENDER_EMAIL || '',

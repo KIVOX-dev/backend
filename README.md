@@ -9,7 +9,7 @@ manage the pipeline behind them. This repository holds the two backend services 
 | Service | Stack | Role |
 |---|---|---|
 | [`node-api/`](node-api/README.md) | Node.js 24, Express 5, MongoDB | The public API. Every route the frontend calls lives here, and it owns all business data. |
-| [`ai-service/`](ai-service/README.md) | Python 3.12, FastAPI | An internal microservice for Groq-backed AI features. Only `node-api` calls it; the frontend never does. |
+| [`ai-service/`](ai-service/README.md) | Python 3.12, FastAPI | An internal microservice for OpenAI-backed AI features. Only `node-api` calls it; the frontend never does. |
 
 ## Features
 
@@ -48,7 +48,7 @@ cp .env.compose.example .env
 # Edit .env:
 #   JWT_SECRET, JWT_REFRESH_SECRET   required; generate each with: openssl rand -base64 48
 #   MONGODB_URI                      required; add this line, it is not in the example file
-#   GROQ_API_KEY                     optional; AI features fall back gracefully without it
+#   OPENAI_API_KEY                     optional; AI features fall back gracefully without it
 docker compose up --build
 ```
 
@@ -82,7 +82,7 @@ node-api × 2  ──┬──▶  MongoDB   users, students, tests, placements,
   │             ├──▶  Redis     shared rate limits, chat pub/sub between replicas
   │ internal JWT
   ▼
-ai-service (:8001)  ──▶  Groq API   question generation, resume analysis
+ai-service (:8001)  ──▶  OpenAI API   question generation, resume analysis
 ```
 
 - `node-api` is the only entry point for the frontend and the source of truth for business data.
@@ -91,7 +91,7 @@ ai-service (:8001)  ──▶  Groq API   question generation, resume analysis
 - Compose runs two `node-api` replicas on purpose. Without `REDIS_URL`, chat messages stop crossing
   replicas and rate limits become per-instance. Running two locally makes that kind of bug show
   up before production does.
-- If `GROQ_API_KEY` is unset, `ai-service` degrades instead of failing. Interview and assessment
+- If `OPENAI_API_KEY` is unset, `ai-service` degrades instead of failing. Interview and assessment
   generation return local placeholder questions, resume improvement returns the original text,
   and the other resume routes return `503`. `node-api` translates each of these into the error
   format the frontend already expects.
@@ -118,7 +118,7 @@ GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs on 
 requests to `main`:
 
 - `node-api`: `npm run lint`, `npm test` (Jest), and `npm audit --audit-level=high`
-- `ai-service`: `ruff check .` and `pytest` (Groq calls are mocked)
+- `ai-service`: `ruff check .` and `pytest` (OpenAI calls are mocked)
 
 ## Deployment
 

@@ -1,6 +1,6 @@
 # TalentSnaps — AI Service
 
-A narrow FastAPI microservice that owns every Groq-backed AI feature the platform uses:
+A narrow FastAPI microservice that owns every OpenAI-backed AI feature the platform uses:
 
 - Interview question generation (`POST /v1/interview/generate-questions`)
 - Resume ATS analysis, JD matching, AI-suggest, parsing, and improvement (`POST /v1/resume/*`)
@@ -15,11 +15,11 @@ A narrow FastAPI microservice that owns every Groq-backed AI feature the platfor
   JWT-authenticated internal API (see `app/security.py`) — every route requires a short-lived
   HS256 token signed with a shared secret only `node-api` holds
   (`utils/aiServiceClient.js` on that side). A browser has no way to reach this service or its
-  Groq quota.
+  OpenAI quota.
 - It is **not** a restoration of the old `python-service/` that was removed from this repo in an
   earlier pass — that was a full duplicate backend (auth, students, placements, its own MongoDB
   database). This service is a deliberately small slice of one concern.
-- Every route degrades gracefully when `GROQ_API_KEY` isn't set: interview/assessment generation
+- Every route degrades gracefully when `OPENAI_API_KEY` isn't set: interview/assessment generation
   fall back to a local placeholder, resume improvement returns the original text unchanged, and
   the four remaining resume routes (analyze/match-jd/suggest/parse) return a clear `503` rather
   than crashing. `node-api` never needs to know which case it got — see
@@ -40,7 +40,7 @@ uvicorn app.main:app --reload --port 8001
 ## Testing
 
 ```bash
-pytest -v       # 32 tests — Groq calls are mocked via respx, nothing hits the real API
+pytest -v       # 32 tests — OpenAI calls are mocked via respx, nothing hits the real API
 ruff check .
 ```
 
