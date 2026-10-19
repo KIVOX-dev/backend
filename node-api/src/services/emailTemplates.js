@@ -46,12 +46,12 @@ function baseLayout({ preheader, eyebrow, title, hero = 'security', bodyHtml }) 
               </td>
             </tr>
             <tr>
-              <td class="pad" background="${ASSET_BASE}/email/hero-${hero}.png" bgcolor="#1b0f6b" style="background-color:#1b0f6b; background-image:url('${ASSET_BASE}/email/hero-${hero}.png'), linear-gradient(135deg,#050312 0%,#1b0f6b 55%,#2a1a9e 100%); background-size:cover; background-position:center; border-radius:24px 24px 0 0; padding:30px;">
+              <td class="pad" background="${ASSET_BASE}/email/hero-${hero}.png" bgcolor="#eaf3f8" style="background-color:#eaf3f8; background-image:url('${ASSET_BASE}/email/hero-${hero}.png'), linear-gradient(135deg,#eaf3f8 0%,#dcebf5 100%); background-size:cover; background-position:center; border-radius:24px 24px 0 0; padding:30px;">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td class="hero-inner" align="center" style="border:1px solid rgba(255,255,255,0.22); background:rgba(255,255,255,0.07); border-radius:18px; padding:30px 24px;">
-                      <div style="font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:#b9b4f5; padding-bottom:10px;">${eyebrow}</div>
-                      <div class="hero-title" style="font-size:30px; line-height:36px; font-weight:700; color:#ffffff;">${title}</div>
+                    <td class="hero-inner" align="center" style="border:1px solid rgba(11,31,77,0.14); background:rgba(255,255,255,0.62); border-radius:18px; padding:30px 24px;">
+                      <div style="font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:#2c6e8e; padding-bottom:10px;">${eyebrow}</div>
+                      <div class="hero-title" style="font-size:30px; line-height:36px; font-weight:700; color:#0b1f4d;">${title}</div>
                     </td>
                   </tr>
                 </table>
