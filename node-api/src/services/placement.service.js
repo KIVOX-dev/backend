@@ -10,6 +10,14 @@ const ApiError = require('../utils/ApiError');
 const { ownsPlacement } = require('../utils/hrScope');
 const { assertLogoRef, removeLogo } = require('../utils/companyLogo');
 const { signMediaInBody } = require('../utils/privateMedia');
+const placementRoundRepository = require('../repositories/placementRound.repository');
+const driveNotificationService = require('./driveNotification.service');
+const logger = require('../utils/logger');
+
+// A change to any of these can make a different set of students eligible (or
+// make the drive visible for the first time), so it re-runs the drive-assigned
+// notification — which only ever emails students who haven't been emailed yet.
+const NOTIFY_TRIGGER_FIELDS = ['status', 'is_active', 'eligible_departments', 'eligible_years', 'min_cgpa'];
 
 class PlacementService extends BaseService {
   constructor() {
@@ -42,7 +50,20 @@ class PlacementService extends BaseService {
       }
     }
 
-    return this.repository.create(payload);
+    const created = await this.repository.create(payload);
+    return { ...created, notifying_count: await this.#notifyDriveAssigned(created) };
+  }
+
+  // The drive is already saved by the time this runs, so an email problem must
+  // never fail the admin's request — rows are recorded first and can be
+  // resent from the drive's notification summary.
+  async #notifyDriveAssigned(drive) {
+    try {
+      return await driveNotificationService.notifyDriveAssigned(drive);
+    } catch (err) {
+      logger.error('Could not queue drive-assigned emails', { placementId: drive.id, error: err.message });
+      return 0;
+    }
   }
 
   // Stores an uploaded logo's reference and returns it with a signed preview
@@ -69,7 +90,21 @@ class PlacementService extends BaseService {
     if ('company_logo_url' in patch && existing.company_logo_url && existing.company_logo_url !== updated.company_logo_url) {
       await removeLogo(existing.company_logo_url);
     }
-    return updated;
+    const notifying_count = NOTIFY_TRIGGER_FIELDS.some((f) => f in patch) ? await this.#notifyDriveAssigned(updated) : 0;
+    return { ...updated, notifying_count };
+  }
+
+  // What each round of a drive is (name, when, where, instructions) — read by
+  // the "shortlisted for round N" email. Staff who can shortlist can define
+  // rounds; institution scoping is the same as for the drive itself.
+  async listRounds(placementId, actor) {
+    await this.getById(placementId, actor);
+    return placementRoundRepository.listForPlacement(placementId);
+  }
+
+  async upsertRound(placementId, roundNumber, data, actor) {
+    const placement = await this.getById(placementId, actor);
+    return placementRoundRepository.upsert(placementId, placement.institution_id, roundNumber, data);
   }
 
   async remove(id, actor) {

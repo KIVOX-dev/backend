@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<title>New aptitude test assigned: {{ params.assessmentTitle }}</title>
+<!--
+  Brevo template for BREVO_TEST_ASSIGNED_TEMPLATE_ID. Paste into a Brevo
+  "New Template Language" HTML template. Subject line (set in Brevo):
+    New aptitude test assigned: {{ params.assessmentTitle }}
+  Params sent by the API: studentName, assessmentTitle, departmentName,
+  batchName, startDateTime, endDateTime, durationMinutes, testLink.
+  {{ mirror }} is Brevo's own "view in browser" URL.
+-->
+<style>
+  body { margin: 0; padding: 0; background: #ffffff; }
+  table { border-collapse: collapse; }
+  img { border: 0; }
+  @media only screen and (max-width: 520px) {
+    .container { width: 100% !important; }
+    .pad { padding-left: 20px !important; padding-right: 20px !important; }
+    .hero-title { font-size: 26px !important; line-height: 32px !important; }
+    .hero-inner { padding: 22px 16px !important; }
+  }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#ffffff;font-family:Inter,'Segoe UI',Helvetica,Arial,sans-serif;">
+
+<!-- hidden preheader -->
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#ffffff;">
+  {{ params.assessmentTitle }} · {{ params.startDateTime }} to {{ params.endDateTime }} · {{ params.durationMinutes }} minutes
+</div>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;">
+<tr><td align="center" style="padding:12px 12px 0;">
+
+  <table role="presentation" class="container" width="480" cellpadding="0" cellspacing="0" style="width:480px;max-width:100%;">
+
+    <!-- view in browser -->
+    <tr><td align="center" style="background:#f4f4f6;border-radius:8px;padding:9px 12px;font-size:12px;color:#1a1a2e;">
+      <a href="{{ mirror }}" style="color:#1a1a2e;text-decoration:none;">View this email in your browser</a>
+    </td></tr>
+
+    <!-- wordmark -->
+    <tr><td align="center" style="padding:26px 0 22px;font-size:22px;font-weight:700;letter-spacing:-0.3px;color:#3b4cf0;">
+      <img src="https://www.talentsnaps.com/brand/lockup.png" alt="TalentSnaps" width="190" style="display:block;width:190px;max-width:100%;height:auto;border:0;">
+    </td></tr>
+
+    <!-- hero -->
+    <tr><td style="background:#0b0620;background-image:linear-gradient(135deg,#050312 0%,#1b0f6b 55%,#2a1a9e 100%);border-radius:24px 24px 0 0;padding:30px 30px;" class="pad">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <tr><td class="hero-inner" align="center" style="border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.07);border-radius:18px;padding:30px 24px;">
+          <div style="font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#b9b4f5;padding-bottom:10px;">Aptitude Test</div>
+          <div class="hero-title" style="font-size:30px;line-height:36px;font-weight:700;color:#ffffff;">New test assigned<br>to you</div>
+        </td></tr>
+      </table>
+    </td></tr>
+
+    <!-- body card -->
+    <tr><td class="pad" style="background:#f4f4f6;border-radius:0 0 24px 24px;padding:28px 34px 34px;">
+      <p style="margin:0 0 14px;font-size:15px;line-height:22px;color:#6b6b7a;">
+        Hi {{ params.studentName }},
+      </p>
+      <p style="margin:0 0 18px;font-size:15px;line-height:22px;color:#6b6b7a;">
+        <strong style="color:#1a1a2e;">{{ params.assessmentTitle }}</strong> has been assigned to you
+        ({{ params.departmentName }}, {{ params.batchName }}).
+      </p>
+
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:14px;margin-bottom:22px;">
+        <tr><td style="padding:16px 18px;font-size:14px;line-height:22px;color:#1a1a2e;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            <tr><td style="color:#8a8a98;padding:3px 0;width:90px;">Opens</td><td style="padding:3px 0;">{{ params.startDateTime }}</td></tr>
+            <tr><td style="color:#8a8a98;padding:3px 0;">Closes</td><td style="padding:3px 0;">{{ params.endDateTime }}</td></tr>
+            <tr><td style="color:#8a8a98;padding:3px 0;">Duration</td><td style="padding:3px 0;">{{ params.durationMinutes }} minutes</td></tr>
+          </table>
+        </td></tr>
+      </table>
+
+      <table role="presentation" align="center" cellpadding="0" cellspacing="0">
+        <tr><td align="center" style="background:#1f3bff;border-radius:999px;">
+          <a href="{{ params.testLink }}" style="display:inline-block;padding:13px 30px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;">Start Test</a>
+        </td></tr>
+      </table>
+
+      <p style="margin:20px 0 0;font-size:12px;line-height:18px;color:#8a8a98;text-align:center;">
+        Button not working? Copy this link into your browser:<br>
+        <a href="{{ params.testLink }}" style="color:#3b4cf0;word-break:break-all;">{{ params.testLink }}</a>
+      </p>
+    </td></tr>
+
+    <tr><td style="height:36px;line-height:36px;font-size:0;">&nbsp;</td></tr>
+
+    <!-- footer card -->
+    <tr><td class="pad" align="center" style="background:#f4f4f6;border-radius:24px;padding:26px 28px 20px;font-size:12px;line-height:19px;color:#6b6b7a;">
+      <p style="margin:0 0 12px;">You received this email because your institution assigned you a test on TalentSnaps.</p>
+      <p style="margin:0 0 12px;">Having trouble accessing the test? Contact your department coordinator.</p>
+      <p style="margin:0 0 10px;">&copy; TalentSnaps. All rights reserved.</p>
+      <p style="margin:0 0 16px;">Need help? Contact us at <a href="mailto:admin@talentsnaps.com" style="color:#3b4cf0;text-decoration:none;">admin@talentsnaps.com</a></p>
+      <img src="https://www.talentsnaps.com/brand/lockup.png" alt="TalentSnaps" width="130" style="display:block;margin:0 auto;width:130px;max-width:100%;height:auto;border:0;opacity:0.6;">
+    </td></tr>
+
+    <tr><td style="height:24px;line-height:24px;font-size:0;">&nbsp;</td></tr>
+  </table>
+
+</td></tr>
+</table>
+</body>
+</html>

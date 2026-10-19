@@ -5,7 +5,8 @@ const multer = require('multer');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
 const env = require('../config/env');
-const { uploadPrivateFile } = require('../utils/gcsClient');
+const { uploadPrivateFile, uploadPublicFile } = require('../utils/gcsClient');
+const { normalizeLogo, LOGO_MAX_BYTES } = require('../utils/companyLogo');
 const { gcsRef, LOCAL_URL_PREFIX } = require('../utils/privateMedia');
 
 // Browsers may reuse a profile image for this long — kept inside the signed
@@ -201,16 +202,26 @@ const verifyAndUploadLogo = asyncHandler(async (req, res, next) => {
   if (!rule || !rule.magic(file.buffer)) {
     throw ApiError.badRequest(`"${file.originalname}" does not look like a valid ${file.mimetype.split('/')[1].toUpperCase()} file.`);
   }
-  const ext = extensionOf(file.originalname);
-  if (env.gcs.bucketName) {
-    const destination = `company-logo/${crypto.randomUUID()}${ext}`;
-    await uploadPrivateFile(file.buffer, { bucketName: env.gcs.bucketName, destination, contentType: file.mimetype, cacheControl: MEDIA_CACHE_CONTROL });
+  if (file.size > LOGO_MAX_BYTES) throw ApiError.badRequest('Logo must be 2 MB or smaller.');
+  // Resized to fit 400x160 and re-encoded as PNG (see utils/companyLogo.js).
+  const png = await normalizeLogo(file.buffer);
+  if (env.gcs.publicLogoBucket) {
+    // Public bucket: the stored reference IS the permanent public URL, so it
+    // can be used directly in emails. Only logos ever go in this bucket.
+    file.storageRef = await uploadPublicFile(png, {
+      bucketName: env.gcs.publicLogoBucket,
+      destination: `company-logo/${crypto.randomUUID()}.png`,
+      contentType: 'image/png',
+    });
+  } else if (env.gcs.bucketName) {
+    const destination = `company-logo/${crypto.randomUUID()}.png`;
+    await uploadPrivateFile(png, { bucketName: env.gcs.bucketName, destination, contentType: 'image/png', cacheControl: MEDIA_CACHE_CONTROL });
     file.storageRef = gcsRef(destination);
   } else if (env.isProduction) {
     throw ApiError.serviceUnavailable('Image uploads are not configured');
   } else {
-    const filename = `logo-${crypto.randomUUID()}${ext}`; // logo- prefix: only these local files may ever be deleted as logos (utils/companyLogo.js)
-    await fs.promises.writeFile(path.join(uploadDir, filename), file.buffer);
+    const filename = `logo-${crypto.randomUUID()}.png`; // logo- prefix: only these local files may ever be deleted as logos (utils/companyLogo.js)
+    await fs.promises.writeFile(path.join(uploadDir, filename), png);
     file.storageRef = `${LOCAL_URL_PREFIX}${filename}`;
   }
   next();

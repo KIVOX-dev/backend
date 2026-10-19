@@ -11,6 +11,7 @@ const { buildInstitutionFilter } = require('../utils/authz');
 const { ROLES } = require('../config/constants');
 const ApiError = require('../utils/ApiError');
 const logger = require('../utils/logger');
+const testNotificationService = require('./testNotification.service');
 
 class TestService extends BaseService {
   constructor() {
@@ -26,6 +27,22 @@ class TestService extends BaseService {
       throw ApiError.badRequest('End date must be after the start date');
     }
     return this.repository.create(payload);
+  }
+
+  // A draft test that is assigned but not yet visible notifies nobody; the
+  // moment it becomes `active`, everyone already assigned to it is emailed
+  // (once — see testNotification.service.js#notifyAssigned).
+  async update(id, data, actor) {
+    const before = data.status ? await this.repository.findById(id) : null;
+    const updated = await super.update(id, data, actor);
+    if (before && before.status !== 'active' && updated.status === 'active') {
+      try {
+        await testNotificationService.notifyExistingAssignments(updated);
+      } catch (err) {
+        logger.error('Could not queue test-assigned emails on activation', { testId: id, error: err.message });
+      }
+    }
+    return updated;
   }
 
   // A student's own list is gated: open practice-bank tests (category set)

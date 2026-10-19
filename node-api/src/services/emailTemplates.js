@@ -4,38 +4,70 @@
 // deliberate: it's the one HTML dialect that renders consistently across
 // Outlook/Gmail/Apple Mail, which all strip or ignore <style> blocks to
 // varying degrees.
-function baseLayout({ preheader, bodyHtml }) {
+// Email clients can't reach localhost, so the logo is always the public
+// production asset (served from the frontend's /public/brand/).
+const LOGO_URL = 'https://www.talentsnaps.com/brand/lockup.png';
+const SUPPORT_EMAIL = 'admin@talentsnaps.com';
+
+// Same visual design as docs/email-templates/test-assigned.html (the Brevo
+// template), so every email the platform sends looks like one family.
+function baseLayout({ preheader, eyebrow, title, bodyHtml }) {
   return `<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="x-apple-disable-message-reformatting" />
     <title>TalentSnaps</title>
+    <style>
+      body { margin: 0; padding: 0; background: #ffffff; }
+      table { border-collapse: collapse; }
+      img { border: 0; }
+      @media only screen and (max-width: 520px) {
+        .container { width: 100% !important; }
+        .pad { padding-left: 20px !important; padding-right: 20px !important; }
+        .hero-title { font-size: 26px !important; line-height: 32px !important; }
+        .hero-inner { padding: 22px 16px !important; }
+      }
+    </style>
   </head>
-  <body style="margin:0; padding:0; background-color:#F3F6FA; font-family:Arial, Helvetica, sans-serif;">
-    <span style="display:none; max-height:0; overflow:hidden;">${preheader}</span>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F3F6FA; padding:32px 16px;">
+  <body style="margin:0; padding:0; background:#ffffff; font-family:Inter,'Segoe UI',Helvetica,Arial,sans-serif;">
+    <div style="display:none; max-height:0; overflow:hidden; opacity:0; color:#ffffff;">${preheader}</div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;">
       <tr>
-        <td align="center">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px; background-color:#FFFFFF; border-radius:12px; overflow:hidden; border:1px solid #E1E7EF;">
+        <td align="center" style="padding:12px 12px 0;">
+          <table role="presentation" class="container" width="480" cellpadding="0" cellspacing="0" style="width:480px; max-width:100%;">
             <tr>
-              <td style="padding:28px 32px 0;">
-                <!-- Logo placeholder: swap for an <img> once a hosted logo asset exists -->
-                <div style="font-size:20px; font-weight:700; color:#164A61;">TalentSnaps</div>
+              <td align="center" style="padding:26px 0 22px;">
+                <img src="${LOGO_URL}" alt="TalentSnaps" width="190" style="display:block; width:190px; max-width:100%; height:auto; border:0;" />
               </td>
             </tr>
             <tr>
-              <td style="padding:24px 32px 32px; color:#1A2430; font-size:15px; line-height:1.6;">
+              <td class="pad" style="background:#0b0620; background-image:linear-gradient(135deg,#050312 0%,#1b0f6b 55%,#2a1a9e 100%); border-radius:24px 24px 0 0; padding:30px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td class="hero-inner" align="center" style="border:1px solid rgba(255,255,255,0.22); background:rgba(255,255,255,0.07); border-radius:18px; padding:30px 24px;">
+                      <div style="font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:#b9b4f5; padding-bottom:10px;">${eyebrow}</div>
+                      <div class="hero-title" style="font-size:30px; line-height:36px; font-weight:700; color:#ffffff;">${title}</div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td class="pad" style="background:#f4f4f6; border-radius:0 0 24px 24px; padding:28px 34px 34px; font-size:15px; line-height:22px; color:#6b6b7a;">
                 ${bodyHtml}
               </td>
             </tr>
-          </table>
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;">
+            <tr><td style="height:36px; line-height:36px; font-size:0;">&nbsp;</td></tr>
             <tr>
-              <td style="padding:16px 32px; color:#8A97A8; font-size:12px; text-align:center;">
-                TalentSnaps Platform &mdash; this is an automated message, please don't reply directly to it.
+              <td class="pad" align="center" style="background:#f4f4f6; border-radius:24px; padding:26px 28px 22px; font-size:12px; line-height:19px; color:#6b6b7a;">
+                <p style="margin:0 0 12px;">This is an automated message from TalentSnaps &mdash; please don't reply directly to it.</p>
+                <p style="margin:0 0 12px;">Need help? Contact us at <a href="mailto:${SUPPORT_EMAIL}" style="color:#3b4cf0; text-decoration:none;">${SUPPORT_EMAIL}</a></p>
+                <p style="margin:0;">&copy; TalentSnaps. All rights reserved.</p>
               </td>
             </tr>
+            <tr><td style="height:24px; line-height:24px; font-size:0;">&nbsp;</td></tr>
           </table>
         </td>
       </tr>
@@ -45,26 +77,28 @@ function baseLayout({ preheader, bodyHtml }) {
 }
 
 function button(href, label) {
-  return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px 0;">
+  return `<table role="presentation" align="center" cellpadding="0" cellspacing="0" style="margin:24px auto;">
     <tr>
-      <td style="border-radius:8px; background-color:#2C6E8E;">
-        <a href="${href}" target="_blank" style="display:inline-block; padding:12px 28px; color:#FFFFFF; text-decoration:none; font-size:15px; font-weight:600; border-radius:8px;">${label}</a>
+      <td align="center" style="background:#1f3bff; border-radius:999px;">
+        <a href="${href}" target="_blank" style="display:inline-block; padding:13px 30px; color:#ffffff; text-decoration:none; font-size:15px; font-weight:600;">${label}</a>
       </td>
     </tr>
-  </table>`;
+  </table>
+  <p style="margin:0 0 4px; font-size:12px; line-height:18px; color:#8a8a98; text-align:center;">Button not working? Copy this link into your browser:<br /><a href="${href}" style="color:#3b4cf0; word-break:break-all;">${href}</a></p>`;
 }
 
 function passwordResetTemplate({ fullName, resetUrl, expiresInMinutes = 15 }) {
   const greeting = fullName ? `Hi ${fullName},` : 'Hi,';
   const html = baseLayout({
+    eyebrow: 'Account security',
+    title: 'Reset your<br />password',
     preheader: 'Reset your TalentSnaps password',
     bodyHtml: `
-      <p style="margin:0 0 12px; font-size:17px; font-weight:600;">Reset your password</p>
-      <p style="margin:0 0 4px;">${greeting}</p>
-      <p style="margin:0 0 4px;">We received a request to reset the password for your TalentSnaps account. Click the button below to choose a new one.</p>
+      <p style="margin:0 0 14px;">${greeting}</p>
+      <p style="margin:0 0 14px;">We received a request to reset the password for your TalentSnaps account. Click the button below to choose a new one.</p>
       ${button(resetUrl, 'Reset Password')}
-      <p style="margin:0 0 4px; color:#54637A; font-size:13px;">This link expires in ${expiresInMinutes} minutes.</p>
-      <p style="margin:16px 0 0; color:#54637A; font-size:13px;">If you didn't request this, you can safely ignore this email — your password won't be changed.</p>
+      <p style="margin:0 0 4px; color:#8a8a98; font-size:13px;">This link expires in ${expiresInMinutes} minutes.</p>
+      <p style="margin:16px 0 0; color:#8a8a98; font-size:13px;">If you didn't request this, you can safely ignore this email — your password won't be changed.</p>
     `,
   });
 
@@ -76,7 +110,9 @@ Reset your password here: ${resetUrl}
 
 This link expires in ${expiresInMinutes} minutes.
 
-If you didn't request this, you can safely ignore this email — your password won't be changed.`;
+If you didn't request this, you can safely ignore this email — your password won't be changed.
+
+Need help? Contact us at ${SUPPORT_EMAIL}`;
 
   return { subject: 'Reset your TalentSnaps password', html, text };
 }
@@ -84,14 +120,15 @@ If you didn't request this, you can safely ignore this email — your password w
 function verificationTemplate({ fullName, verifyUrl, expiresInMinutes = 15 }) {
   const greeting = fullName ? `Hi ${fullName},` : 'Hi,';
   const html = baseLayout({
+    eyebrow: 'Verify email',
+    title: 'Confirm your<br />email address',
     preheader: 'Verify your email to finish setting up your TalentSnaps account',
     bodyHtml: `
-      <p style="margin:0 0 12px; font-size:17px; font-weight:600;">Welcome to TalentSnaps</p>
-      <p style="margin:0 0 4px;">${greeting}</p>
-      <p style="margin:0 0 4px;">Thanks for signing up. Confirm your email address to activate your account.</p>
+      <p style="margin:0 0 14px;">${greeting}</p>
+      <p style="margin:0 0 14px;">Thanks for signing up. Confirm your email address to activate your account.</p>
       ${button(verifyUrl, 'Verify Email')}
-      <p style="margin:0 0 4px; color:#54637A; font-size:13px;">This link expires in ${expiresInMinutes} minutes.</p>
-      <p style="margin:16px 0 0; color:#54637A; font-size:13px;">If you didn't create a TalentSnaps account, you can ignore this email.</p>
+      <p style="margin:0 0 4px; color:#8a8a98; font-size:13px;">This link expires in ${expiresInMinutes} minutes.</p>
+      <p style="margin:16px 0 0; color:#8a8a98; font-size:13px;">If you didn't create a TalentSnaps account, you can ignore this email.</p>
     `,
   });
 
@@ -103,7 +140,9 @@ Verify your email here: ${verifyUrl}
 
 This link expires in ${expiresInMinutes} minutes.
 
-If you didn't create a TalentSnaps account, you can ignore this email.`;
+If you didn't create a TalentSnaps account, you can ignore this email.
+
+Need help? Contact us at ${SUPPORT_EMAIL}`;
 
   return { subject: 'Verify your TalentSnaps email', html, text };
 }
@@ -111,17 +150,18 @@ If you didn't create a TalentSnaps account, you can ignore this email.`;
 function studentWelcomeTemplate({ fullName, email, tempPassword, loginUrl }) {
   const greeting = fullName ? `Hi ${fullName},` : 'Hi,';
   const html = baseLayout({
+    eyebrow: 'Welcome',
+    title: 'Your account<br />is ready',
     preheader: 'Your TalentSnaps account is ready — set your password to get started',
     bodyHtml: `
-      <p style="margin:0 0 12px; font-size:17px; font-weight:600;">Welcome to TalentSnaps</p>
-      <p style="margin:0 0 4px;">${greeting}</p>
-      <p style="margin:0 0 4px;">An account has been created for you. Use these temporary credentials to log in — you'll be asked to set your own password on first login.</p>
-      <p style="margin:16px 0 4px; padding:12px 16px; background-color:#F3F6FA; border-radius:8px; font-family:monospace;">
+      <p style="margin:0 0 14px;">${greeting}</p>
+      <p style="margin:0 0 14px;">An account has been created for you. Use these temporary credentials to log in — you'll be asked to set your own password on first login.</p>
+      <p style="margin:16px 0 4px; padding:16px 18px; background-color:#ffffff; border-radius:14px; font-family:monospace; color:#1a1a2e;">
         Email: ${email}<br />
         Temporary password: ${tempPassword}
       </p>
       ${button(loginUrl, 'Log In')}
-      <p style="margin:16px 0 0; color:#54637A; font-size:13px;">This temporary password only works until you set a new one — it cannot be reused after that.</p>
+      <p style="margin:16px 0 0; color:#8a8a98; font-size:13px;">This temporary password only works until you set a new one — it cannot be reused after that.</p>
     `,
   });
 
@@ -134,7 +174,9 @@ Temporary password: ${tempPassword}
 
 Log in here: ${loginUrl}
 
-You'll be asked to set your own password on first login. This temporary password cannot be reused after that.`;
+You'll be asked to set your own password on first login. This temporary password cannot be reused after that.
+
+Need help? Contact us at ${SUPPORT_EMAIL}`;
 
   return { subject: 'Your TalentSnaps account is ready', html, text };
 }

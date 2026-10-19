@@ -5,6 +5,7 @@ const { connect, close } = require('./config/database');
 const { attachChatServer } = require('./websocket/chatServer');
 const { broadcaster } = require('./websocket/broadcaster');
 const { closeRedisClient } = require('./config/redis');
+const { startWorker, closeNotificationQueue } = require('./queues/emailNotification.queue');
 const logger = require('./utils/logger');
 
 // Created explicitly (rather than via app.listen()) so the WebSocket server
@@ -15,6 +16,11 @@ attachChatServer(server);
 
 async function start() {
   await connect(); // must succeed before we accept traffic
+  // Local dev: run the email worker inside this process. In production set
+  // NOTIFICATION_WORKER_MODE=separate and run `npm run worker` instead.
+  if (env.notifications.workerMode === 'inprocess') {
+    await startWorker().catch((err) => logger.error('Notification worker failed to start', { error: err.message }));
+  }
   server.listen(env.port, () => {
     logger.info(`TalentSnaps Node API listening on port ${env.port} [${env.nodeEnv}]`);
   });
@@ -25,7 +31,7 @@ async function start() {
 async function shutdown(signal) {
   logger.info(`${signal} received, shutting down gracefully`);
   server?.close(async () => {
-    await Promise.allSettled([close(), broadcaster.close(), closeRedisClient()]);
+    await Promise.allSettled([close(), broadcaster.close(), closeRedisClient(), closeNotificationQueue()]);
     logger.info('Shutdown complete');
     process.exit(0);
   });

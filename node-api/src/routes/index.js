@@ -31,6 +31,8 @@ router.use('/faculty', require('./faculty.routes'));
 router.use('/students/profile', require('./studentProfile.routes'));
 router.use('/students', require('./student.routes'));
 router.use('/placements', require('./placement.routes'));
+// Placement drives: notification emails (summary/resend) and round definitions.
+router.use('/drives', require('./drive.routes'));
 // Alias for the live frontend's HR module, which still calls /jobs (its
 // original python-service path) rather than /placements — same router
 // instance, so /me, /drives, /applications/me and CRUD all work identically

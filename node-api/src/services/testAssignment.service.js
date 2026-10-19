@@ -8,6 +8,8 @@ const { applyTestResult } = require('../utils/studentStats');
 const { ROLES } = require('../config/constants');
 const { buildInstitutionFilter } = require('../utils/authz');
 const ApiError = require('../utils/ApiError');
+const logger = require('../utils/logger');
+const testNotificationService = require('./testNotification.service');
 
 // Called once per student being assigned — $sample returns an independently
 // random subset AND order every time it's called, so simply calling this
@@ -84,7 +86,7 @@ class TestAssignmentService extends BaseService {
       if (actor.role !== ROLES.SUPER_ADMIN && student.institution_id !== actor.institutionId) {
         throw ApiError.forbidden('You may only assign tests to students in your own institution');
       }
-      return this.repository.create({
+      const assignment = await this.repository.create({
         test_id: data.test_id,
         student_id: data.student_id,
         scheduled_at: data.scheduled_at,
@@ -92,6 +94,8 @@ class TestAssignmentService extends BaseService {
         assigned_by: actor.id,
         question_ids: await drawQuestionIds(test),
       });
+      const notifying_count = await this.#notify(test, [student.id]);
+      return { ...assignment, notifying_count };
     }
 
     // Bulk path — assign to every student in the actor's own institution
@@ -124,6 +128,10 @@ class TestAssignmentService extends BaseService {
     // concurrent writes at once.
     const CHUNK_SIZE = 10;
     let assignedCount = 0;
+    // Only students who got a *new* assignment row are candidates for the
+    // email — so adding a batch to an already-assigned test notifies just
+    // that batch's students.
+    const newlyAssignedIds = [];
     for (let i = 0; i < students.length; i += CHUNK_SIZE) {
       const chunk = students.slice(i, i + CHUNK_SIZE);
       const results = await Promise.all(
@@ -144,12 +152,27 @@ class TestAssignmentService extends BaseService {
             institution_id: actor.institutionId,
             assigned_by: actor.id,
           });
-          return true;
+          return student.id;
         })
       );
-      assignedCount += results.filter(Boolean).length;
+      const created = results.filter(Boolean);
+      assignedCount += created.length;
+      newlyAssignedIds.push(...created);
     }
-    return { assigned_count: assignedCount, matched_students: students.length };
+    const notifying_count = await this.#notify(test, newlyAssignedIds);
+    return { assigned_count: assignedCount, matched_students: students.length, notifying_count };
+  }
+
+  // The assignment has already been saved by the time this runs, so an email
+  // problem must never fail the admin's request — the rows are recorded first
+  // and can be resent from the notification summary.
+  async #notify(test, studentIds) {
+    try {
+      return await testNotificationService.notifyAssigned(test, studentIds);
+    } catch (err) {
+      logger.error('Could not queue test-assigned emails', { testId: test.id, error: err.message });
+      return 0;
+    }
   }
 
   // Resolves this assignment's stored question_ids to full question content,

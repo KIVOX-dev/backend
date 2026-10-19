@@ -73,6 +73,11 @@ module.exports = {
       Math.max(parseInt(process.env.MEDIA_URL_TTL_SECONDS, 10) || 900, 60),
       7 * 24 * 60 * 60
     ),
+    // Company logos only: a separate bucket that IS public-read, so a logo
+    // has a permanent direct URL that can go in an email (a signed URL would
+    // expire). The main bucket above stays private. Unset = logos stay
+    // private and emails fall back to the company name as text.
+    publicLogoBucket: process.env.GCS_PUBLIC_LOGO_BUCKET || '',
     // Placement-proof offer letters (utils/placementProofStorage.js), stored
     // per institution under placement-proof/<institution_id>/. Defaults to
     // the profile-photo bucket above. A separate bucket is still recommended
@@ -127,6 +132,34 @@ module.exports = {
     apiKey: process.env.BREVO_API_KEY || '',
     senderEmail: process.env.BREVO_SENDER_EMAIL || '',
     senderName: process.env.BREVO_SENDER_NAME || '',
+    // Brevo template id per email event — see services/emailNotification.service.js.
+    // 0 = unset (sends for that event are recorded as failed, and can be resent).
+    templates: {
+      test_assigned: parseInt(process.env.BREVO_TEST_ASSIGNED_TEMPLATE_ID, 10) || 0,
+      drive_assigned: parseInt(process.env.BREVO_DRIVE_ASSIGNED_TEMPLATE_ID, 10) || 0,
+      round_shortlisted: parseInt(process.env.BREVO_ROUND_SHORTLIST_TEMPLATE_ID, 10) || 0,
+    },
+    // messageVersions per POST /smtp/email call. Brevo allows up to 1000
+    // versions / 2000 recipients per request (99 recipients per version);
+    // each student is their own version, so the cap is 1000. Clamped here.
+    batchSize: Math.min(Math.max(parseInt(process.env.BREVO_BATCH_SIZE, 10) || 100, 1), 1000),
+    // Pause between consecutive Brevo calls. The endpoint allows 100 req/min
+    // on some plans, so the default stays under that.
+    minRequestIntervalMs: parseInt(process.env.BREVO_MIN_REQUEST_INTERVAL_MS, 10) || 650,
+    maxAttempts: Math.max(parseInt(process.env.BREVO_MAX_ATTEMPTS, 10) || 3, 1),
+  },
+
+  // Background job for transactional notification emails (queues/emailNotification.queue.js).
+  // Needs REDIS_URL; without it the rows are still recorded as `queued` and
+  // are sent when a worker next runs against Redis, or via the resend route.
+  notifications: {
+    // 'inprocess' runs the worker inside the API process (local dev);
+    // 'separate' leaves it to `npm run worker` (production).
+    workerMode: process.env.NOTIFICATION_WORKER_MODE || 'inprocess',
+    // Path on the frontend the student opens — the Aptitude Tests screen.
+    testLinkPath: process.env.TEST_LINK_PATH || '/learner/aptitude-tests',
+    // Where the placement-drive emails' button goes — the student's Placements screen.
+    driveLinkPath: process.env.DRIVE_LINK_PATH || '/learner/placements',
   },
 
   // Where "Talk to Sales" requests from the public site are emailed.

@@ -29,6 +29,23 @@ async function uploadPrivateFile(buffer, { bucketName, destination, contentType,
   }
 }
 
+// Company logos only — written to the separate public-read logo bucket (never
+// the private one) with a long public cache lifetime, since each logo gets a
+// fresh random object name and is never overwritten. Returns the direct URL.
+async function uploadPublicFile(buffer, { bucketName, destination, contentType }) {
+  try {
+    await storage.bucket(bucketName).file(destination).save(buffer, {
+      contentType,
+      resumable: false,
+      metadata: { cacheControl: 'public, max-age=31536000, immutable' },
+    });
+  } catch (err) {
+    logger.error('GCS public upload failed', { destination, error: err.message });
+    throw ApiError.serviceUnavailable("Couldn't upload the file right now — try again shortly");
+  }
+  return `https://storage.googleapis.com/${bucketName}/${destination}`;
+}
+
 // Resolves to { buffer, contentType }, or null if the object doesn't exist.
 async function downloadFile({ bucketName, destination }) {
   const file = storage.bucket(bucketName).file(destination);
@@ -59,4 +76,4 @@ async function signReadUrl({ bucketName, destination, ttlSeconds }) {
   return url;
 }
 
-module.exports = { uploadPrivateFile, downloadFile, deleteFile, signReadUrl };
+module.exports = { uploadPrivateFile, uploadPublicFile, downloadFile, deleteFile, signReadUrl };

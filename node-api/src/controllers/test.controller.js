@@ -1,5 +1,6 @@
 const createCrudController = require('./crudControllerFactory');
 const testService = require('../services/test.service');
+const testNotificationService = require('../services/testNotification.service');
 const asyncHandler = require('../utils/asyncHandler');
 const ApiResponse = require('../utils/ApiResponse');
 
@@ -39,4 +40,24 @@ const submitAttempt = asyncHandler(async (req, res) => {
   ApiResponse.created(res, attempt);
 });
 
-module.exports = { ...base, list, create, generateQuestions, overviewStats, getResults, collegeResults, submitAttempt };
+// testService.getById does the institution-ownership check, so an admin can
+// only see/resend notifications for tests in their own institution.
+const getNotifications = asyncHandler(async (req, res) => {
+  await testService.getById(req.params.id, req.user);
+  const [summary, failedRecipients] = await Promise.all([
+    testNotificationService.getSummary(req.params.id),
+    testNotificationService.listFailed(req.params.id),
+  ]);
+  ApiResponse.ok(res, { ...summary, failed_recipients: failedRecipients });
+});
+
+const resendFailedNotifications = asyncHandler(async (req, res) => {
+  const test = await testService.getById(req.params.id, req.user);
+  const result = await testNotificationService.resendFailed(test);
+  ApiResponse.ok(res, result, 'Resend queued');
+});
+
+module.exports = {
+  ...base, list, create, generateQuestions, overviewStats, getResults, collegeResults, submitAttempt,
+  getNotifications, resendFailedNotifications,
+};

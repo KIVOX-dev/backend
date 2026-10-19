@@ -7,6 +7,8 @@ const { ownsPlacement } = require('../utils/hrScope');
 const { ROLES } = require('../config/constants');
 const { buildInstitutionFilter, assertInstitutionOwnership } = require('../utils/authz');
 const ApiError = require('../utils/ApiError');
+const logger = require('../utils/logger');
+const driveNotificationService = require('./driveNotification.service');
 
 const STAFF_ROLES = [ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY];
 
@@ -95,19 +97,34 @@ class PlacementApplicationService extends BaseService {
 
     const roundFields = data.round ? { round: data.round } : {};
     const existing = await this.repository.findOne({ placement_id: data.placement_id, student_id: data.student_id });
+    let application;
     if (existing) {
       const updated = await hrPipeline.applyTransition(existing, 'shortlisted', actor);
-      return roundFields.round ? this.repository.updateById(existing.id, roundFields) : updated;
+      application = roundFields.round ? await this.repository.updateById(existing.id, roundFields) : updated;
+    } else {
+      application = await this.repository.create({
+        placement_id: data.placement_id,
+        student_id: data.student_id,
+        institution_id: student.institution_id,
+        status: 'shortlisted',
+        ...this._shortlistFields(actor, placement),
+        ...roundFields,
+      });
     }
+    const notifying_count = await this.#notifyRound(placement, data.round, [student.id]);
+    return { ...application, notifying_count };
+  }
 
-    return this.repository.create({
-      placement_id: data.placement_id,
-      student_id: data.student_id,
-      institution_id: student.institution_id,
-      status: 'shortlisted',
-      ...this._shortlistFields(actor, placement),
-      ...roundFields,
-    });
+  // Shortlisting is already saved when this runs; an email problem must never
+  // fail the request (rows are recorded first and can be resent). Only round 2
+  // and later email — see driveNotification.service.js#notifyRoundShortlisted.
+  async #notifyRound(placement, round, studentIds) {
+    try {
+      return await driveNotificationService.notifyRoundShortlisted(placement, round, studentIds);
+    } catch (err) {
+      logger.error('Could not queue round-shortlist emails', { placementId: placement.id, round, error: err.message });
+      return 0;
+    }
   }
 
   // Bulk twin of createOnBehalf — student_ids are already resolved (the
@@ -136,6 +153,7 @@ class PlacementApplicationService extends BaseService {
     const roundFields = data.round ? { round: data.round } : {};
 
     let skipped = 0;
+    const shortlistedIds = [];
     for (const student of inInstitution) {
       const existing = existingByStudentId.get(student.id);
       if (existing) {
@@ -147,6 +165,7 @@ class PlacementApplicationService extends BaseService {
           continue;
         }
         if (roundFields.round) await this.repository.updateById(existing.id, roundFields);
+        shortlistedIds.push(student.id);
       } else {
         await this.repository.create({
           placement_id: data.placement_id,
@@ -156,10 +175,13 @@ class PlacementApplicationService extends BaseService {
           ...this._shortlistFields(actor, placement),
           ...roundFields,
         });
+        shortlistedIds.push(student.id);
       }
     }
 
-    return { shortlisted_count: inInstitution.length - skipped, requested_count: uniqueStudentIds.length };
+    // Skipped students (already hired/withdrawn) are not emailed.
+    const notifying_count = await this.#notifyRound(placement, data.round, shortlistedIds);
+    return { shortlisted_count: inInstitution.length - skipped, requested_count: uniqueStudentIds.length, notifying_count };
   }
 
   async updateStatus(id, status, actor) {

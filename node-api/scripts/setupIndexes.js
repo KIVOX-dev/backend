@@ -100,6 +100,22 @@ const INDEX_PLAN = {
     { key: { status: 1 }, options: {} },
     { key: { institution_id: 1 }, options: {} },
   ],
+  // Idempotency record for every notification email (test assigned, drive
+  // assigned, round shortlisted) — the unique index is what stops a student
+  // ever being emailed twice for the same event. round_number is always
+  // written (null when an event has no round). See models/emailNotification.model.js.
+  email_notifications: [
+    {
+      key: { entity_type: 1, entity_id: 1, student_id: 1, event_type: 1, round_number: 1 },
+      options: { unique: true },
+    },
+    { key: { entity_type: 1, entity_id: 1, status: 1 }, options: {} },
+    { key: { status: 1 }, options: {} },
+  ],
+  // What each round of a drive is — one row per round number.
+  placement_rounds: [
+    { key: { placement_id: 1, round_number: 1 }, options: { unique: true } },
+  ],
   results: [
     { key: { test_assignment_id: 1 }, options: { unique: true } },
     { key: { student_id: 1 }, options: {} },

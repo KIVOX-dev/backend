@@ -32,6 +32,8 @@ router.post('/submit', validate(schema.submit), controller.submitAttempt);
 router.get('/', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.STUDENT), controller.list);
 router.get('/:id', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.STUDENT), controller.getById);
 router.get('/:id/results', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY), controller.getResults);
+router.get('/:id/notifications', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN), controller.getNotifications);
+router.post('/:id/notifications/resend-failed', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN), controller.resendFailedNotifications);
 router.post('/', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN), validate(schema.create), controller.create);
 router.put('/:id', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN), validate(schema.update), controller.update);
 // python-service's delete_assessment had no role restriction at all beyond
