@@ -135,6 +135,7 @@ describe('GET /students/profile/summary', () => {
     // Overall: average of the 3 pillars that have data: (67 + 80 + 50) / 3 = 65.67 -> 66.
     expect(body.overall_readiness).toBe(66);
     expect(body.executive_summary).toContain('3 practice attempts');
+    expect(body.highlights.join(' ')).toContain("You've completed 3 practice attempts");
 
     const quant = body.category_trends.find((c) => c.category === 'quantitative');
     expect(quant.avg_percentage).toBe(80);

@@ -266,9 +266,40 @@ class StudentProfileService {
       executiveSummary = summary;
     }
 
+    // The student's own view of the same data, written to them and split into
+    // one fact per bullet. executive_summary stays for anything that wants a
+    // single third-person sentence.
+    const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
+    const highlights = [];
+    if (hasData) {
+      const level = overallReadiness >= 75 ? 'strong' : overallReadiness >= 50 ? 'building well' : 'at an early stage';
+      highlights.push(`Your placement readiness is ${overallReadiness}/100 — ${level}.`);
+      if (attempts.length > 0) {
+        highlights.push(`You've completed ${plural(attempts.length, 'practice attempt')}, averaging ${aptitudePct}% overall.`);
+      } else {
+        highlights.push("You haven't completed a practice attempt yet — start with Mock Practice to build your aptitude score.");
+      }
+      if (topSkill) highlights.push(`Your strongest area is ${topSkill.label} at ${topSkill.avg_percentage}% average across ${plural(topSkill.attempts, 'attempt')}.`);
+      if (weakness) highlights.push(`${weakness.label} has the most room to grow at ${weakness.avg_percentage}% average — a few more attempts here will lift your overall score.`);
+      const untried = categoryStats.filter((c) => c.attempts === 0).map((c) => c.label);
+      if (untried.length > 0) highlights.push(`You haven't tried ${untried.join(', ')} yet.`);
+      if (interviews.length > 0) {
+        highlights.push(`You've done ${plural(interviews.length, 'mock interview')}, averaging ${(interviewPct / 10).toFixed(1)}/10.`);
+      } else {
+        highlights.push("You haven't taken a mock interview yet — one attempt gives you a baseline score.");
+      }
+      highlights.push(
+        resume
+          ? `Your resume is ${resumePct}% complete${missingSections.length > 0 ? `; still missing ${missingSections.map((m) => m.charAt(0).toUpperCase() + m.slice(1)).join(', ')}` : ''}.`
+          : "You haven't started your resume yet — Resume Builder is the next step."
+      );
+      if (idealRole) highlights.push(`Based on your results, ${idealRole} roles look like your best fit right now.`);
+    }
+
     return {
       has_data: hasData,
       executive_summary: executiveSummary,
+      highlights,
       top_skill: topSkill?.label ?? null,
       weakness: weakness?.label ?? null,
       ideal_role: idealRole,
