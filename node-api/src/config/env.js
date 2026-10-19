@@ -119,7 +119,7 @@ module.exports = {
   aiService: {
     url: process.env.AI_SERVICE_URL || 'http://localhost:8001',
     sharedSecret: process.env.AI_SERVICE_SHARED_SECRET || '',
-    timeoutMs: parseInt(process.env.AI_SERVICE_TIMEOUT_MS, 10) || 15000,
+    timeoutMs: parseInt(process.env.AI_SERVICE_TIMEOUT_MS, 10) || 100000,
   },
 
   // Optional, same reasoning as openai above — see email.service.js#isEmailConfigured.

@@ -34,12 +34,29 @@ async function requireStudent(actor) {
   return student;
 }
 
-// A 'malpractice' attempt (device_detected fired during submitLessonAssessment
-// below) permanently blocks retaking that lesson's assessment — checked
-// before a new attempt can even be started, not just on submit, so the
-// student can't re-request a fresh question set to work around it.
-async function findMalpracticeAttempt(studentId, lessonId) {
-  return lessonAssessmentAttemptRepository.findOne({ student_id: studentId, lesson_id: lessonId, status: 'malpractice' });
+// A 'malpractice' attempt (device_detected / tab switches during
+// submitLessonAssessment below) blocks retaking that lesson's assessment for
+// MALPRACTICE_COOLDOWN_MS, counted from that attempt — checked before a new
+// attempt can even be started, not just on submit, so the student can't
+// re-request a fresh question set to work around it. Only the newest attempt
+// counts, so a clean attempt after the cooldown lifts the block for good.
+const MALPRACTICE_COOLDOWN_MS = 12 * 60 * 60 * 1000;
+
+function malpracticeBlockedUntil(attempt) {
+  if (!attempt || attempt.status !== 'malpractice') return null;
+  const until = new Date(attempt.created_at).getTime() + MALPRACTICE_COOLDOWN_MS;
+  return until > Date.now() ? new Date(until) : null;
+}
+
+async function findMalpracticeBlockedUntil(studentId, lessonId) {
+  return malpracticeBlockedUntil(await lessonAssessmentAttemptRepository.findLatestForLesson(studentId, lessonId));
+}
+
+function malpracticeBlockedError(until) {
+  const hours = Math.max(1, Math.ceil((until.getTime() - Date.now()) / (60 * 60 * 1000)));
+  return ApiError.forbidden(
+    `This assessment was disqualified for malpractice. You can retake it in about ${hours} hour${hours === 1 ? '' : 's'}.`
+  );
 }
 
 // Every course/lesson-scoped endpoint needs both: the course must belong to
@@ -54,6 +71,20 @@ async function requireOwnedLesson(studentId, courseId, lessonId) {
   if (!lesson || lesson.course_id !== courseId) throw ApiError.notFound('Lesson not found');
   return { course, lesson };
 }
+
+// Stand-in quiz used when the AI service can't generate questions. Its shape
+// is also how a saved placeholder is recognised later (isPlaceholderQuiz).
+const placeholderQuestion = (title) => ({
+  question: `What is this lesson, "${title}", primarily about?`,
+  options: ['A', 'B', 'C', 'D'],
+  correct_answer: 'A',
+});
+
+const isPlaceholderQuiz = (questions) =>
+  questions.length === 1
+  && Array.isArray(questions[0].options)
+  && questions[0].options.join('') === 'ABCD'
+  && /^What is this lesson, ".*", primarily about\?$/.test(questions[0].question || '');
 
 class CourseService {
   isConfigured() {
@@ -159,15 +190,18 @@ class CourseService {
       const { assessment_questions, ...lessonFields } = lesson;
       const progress = progressByLesson.get(lesson.id);
       const latestAttempt = latestAttemptByLesson.get(lesson.id);
+      const blockedUntil = malpracticeBlockedUntil(latestAttempt);
       return {
         ...lessonFields,
         has_assessment: Array.isArray(assessment_questions) && assessment_questions.length > 0,
         status: progress?.status || 'not_started',
         watched_seconds: progress?.watched_seconds || 0,
-        // 'blocked': malpractice attempt exists, cannot retake (see
-        // getLessonAssessment's block check). 'completed': a clean attempt
-        // exists. 'not_attempted': never taken, or never generated.
-        assessment_status: latestAttempt ? (latestAttempt.status === 'malpractice' ? 'blocked' : 'completed') : 'not_attempted',
+        // 'blocked': a malpractice attempt within the last 12 hours, cannot
+        // retake yet (see getLessonAssessment's block check). 'completed': a
+        // clean attempt exists. 'not_attempted': never taken, never
+        // generated, or the malpractice cooldown has passed.
+        assessment_status: blockedUntil ? 'blocked' : (latestAttempt && latestAttempt.status !== 'malpractice' ? 'completed' : 'not_attempted'),
+        assessment_blocked_until: blockedUntil,
       };
     });
     const completedCount = lessonsWithProgress.filter((l) => l.status === 'completed').length;
@@ -254,13 +288,14 @@ class CourseService {
     const student = await requireStudent(actor);
     const { lesson } = await requireOwnedLesson(student.id, courseId, lessonId);
 
-    if (await findMalpracticeAttempt(student.id, lessonId)) {
-      throw ApiError.forbidden('This assessment was disqualified for malpractice and cannot be retaken');
-    }
+    const blockedUntil = await findMalpracticeBlockedUntil(student.id, lessonId);
+    if (blockedUntil) throw malpracticeBlockedError(blockedUntil);
 
     let questions = lesson.assessment_questions;
     let skillName = lesson.skill_name;
-    if (!Array.isArray(questions) || questions.length === 0) {
+    // A saved placeholder (AI was down when the lesson was first opened) counts
+    // as "not generated yet", so the real quiz replaces it once the AI is back.
+    if (!Array.isArray(questions) || questions.length === 0 || isPlaceholderQuiz(questions)) {
       questions = await this._generateQuestions(lesson.title);
       // Skill tagging happens right alongside question generation, from the
       // same title, once — not re-derived at submit time — see
@@ -308,16 +343,15 @@ class CourseService {
     } catch (err) {
       logger.error('Lesson assessment generation failed, using fallback', { title, error: err.message });
     }
-    return [{ question: `What is this lesson, "${title}", primarily about?`, options: ['A', 'B', 'C', 'D'], correct_answer: 'A' }];
+    return [placeholderQuestion(title)];
   }
 
   async submitLessonAssessment(actor, courseId, lessonId, answers, violations) {
     const student = await requireStudent(actor);
     const { lesson } = await requireOwnedLesson(student.id, courseId, lessonId);
 
-    if (await findMalpracticeAttempt(student.id, lessonId)) {
-      throw ApiError.forbidden('This assessment was disqualified for malpractice and cannot be retaken');
-    }
+    const blockedUntil = await findMalpracticeBlockedUntil(student.id, lessonId);
+    if (blockedUntil) throw malpracticeBlockedError(blockedUntil);
 
     const questions = Array.isArray(lesson.assessment_questions) ? lesson.assessment_questions : [];
     if (questions.length === 0) throw ApiError.badRequest('No assessment has been generated for this lesson yet');

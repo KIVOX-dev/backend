@@ -43,7 +43,7 @@ async def openai_complete(
     headers = {"Authorization": f"Bearer {settings.openai_api_key}"}
 
     try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
+        async with httpx.AsyncClient(timeout=90.0) as client:
             resp = await client.post(url, headers=headers, json=body)
             # Some models (reasoning-style) only accept the default temperature
             # and answer 400 otherwise — retry once without it.
