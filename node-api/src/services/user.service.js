@@ -76,6 +76,9 @@ class UserService extends BaseService {
     const studentUserIds = visible.filter((u) => u.role === ROLES.STUDENT).map((u) => u.id);
     const students = await studentRepository.findByUserIds(studentUserIds);
     const rollNumberByUserId = new Map(students.map((s) => [s.user_id, s.roll_number]));
+    // A student's uploaded photo lives on the students row (users.avatar_url is
+    // a separate, usually empty field) — prefer it so the table shows the real photo.
+    const avatarByUserId = new Map(students.filter((s) => s.avatar_url).map((s) => [s.user_id, s.avatar_url]));
 
     const departmentIds = [...new Set(students.map((s) => s.department_id).filter(Boolean))];
     const departments = await departmentRepository.findByIds(departmentIds);
@@ -90,6 +93,7 @@ class UserService extends BaseService {
       rows: visible.map((u) => ({
         ...sanitize(u),
         roll_number: rollNumberByUserId.get(u.id),
+        avatar_url: avatarByUserId.get(u.id) ?? u.avatar_url ?? null,
         department: departmentNameByUserId.get(u.id) ?? u.department,
       })),
       meta,
