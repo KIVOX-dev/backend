@@ -104,6 +104,8 @@ class ReportService {
           roll_number: s.roll_number || null,
           department: (s.department_id && deptName.get(s.department_id)) || 'Unassigned',
           batch_year: Number(s.batch_year) || null,
+          // The student's uploaded photo, else the one on their account.
+          avatar_url: s.avatar_url || userById.get(s.user_id)?.avatar_url || null,
         },
       ])
     );
@@ -401,6 +403,7 @@ class ReportService {
       return {
         id: r.id,
         student: p?.name || 'Unknown student',
+        avatar_url: p?.avatar_url || null,
         roll_number: p?.roll_number || null,
         department: p?.department || 'Unassigned',
         batch_year: p?.batch_year || null,
