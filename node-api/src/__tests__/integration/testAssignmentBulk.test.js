@@ -22,12 +22,27 @@ describe('POST /test-assignments (bulk department+batch_year)', () => {
   let departmentRepository;
   let testRepository;
   let testAssignmentRepository;
+  let questionRepository;
 
   beforeAll(async () => {
     ({ app, database, institutionRepository, userRepository, studentRepository, hashPassword } = await buildTestApp());
     departmentRepository = require('../../repositories/department.repository');
     testRepository = require('../../repositories/test.repository');
     testAssignmentRepository = require('../../repositories/testAssignment.repository');
+    questionRepository = require('../../repositories/question.repository');
+
+    // Assignment now refuses a test whose source category has no questions,
+    // so the 'quantitative' bank the tests below draw from needs some rows.
+    if (!(await questionRepository.findOne({ category: 'quantitative' }))) {
+      for (let i = 0; i < 5; i++) {
+        await questionRepository.create({
+          category: 'quantitative',
+          question: `Seed question ${i}`,
+          options: ['1', '2', '3', '4'],
+          answer: '1',
+        });
+      }
+    }
   });
 
   afterAll(async () => {
@@ -154,5 +169,111 @@ describe('POST /test-assignments (bulk department+batch_year)', () => {
       filters: { test_id: test.id },
     });
     expect(assignments).toHaveLength(1);
+  });
+
+  async function seedClass(label, batchYear) {
+    const institution = await seedInstitution(institutionRepository, { code: `${label}-${Date.now()}` });
+    const department = await departmentRepository.create({ institution_id: institution.id, name: label, code: label });
+    const { user: admin, password } = await seedUser(userRepository, hashPassword, {
+      role: 'institution_admin',
+      institutionId: institution.id,
+      email: `${label}-admin-${Date.now()}@example.com`,
+    });
+    const adminToken = await login(admin.email, password);
+
+    const makeStudent = async (suffix, year) => {
+      const { user, password: pw } = await seedUser(userRepository, hashPassword, {
+        role: 'student',
+        institutionId: institution.id,
+        email: `${label}-${suffix}-${Date.now()}@example.com`,
+      });
+      await studentRepository.create({
+        user_id: user.id,
+        institution_id: institution.id,
+        department_id: department.id,
+        batch_year: year,
+        roll_number: `${label}-${suffix}`,
+      });
+      return login(user.email, pw);
+    };
+    return { institution, department, adminToken, makeStudent, batchYear };
+  }
+
+  it('rejects assignment when the source question bank is empty and saves nothing', async () => {
+    const { institution, department, adminToken, makeStudent } = await seedClass('EMP', 2030);
+    await makeStudent('s1', 2030);
+    const test = await testRepository.create({
+      institution_id: institution.id,
+      title: 'Empty Bank Test',
+      source_category: `no_such_category_${Date.now()}`,
+      question_count: 5,
+    });
+
+    const res = await request(app)
+      .post('/api/v1/test-assignments')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ test_id: test.id, department_id: department.id, batch_year: 2030 })
+      .expect(400);
+    expect(res.body.message || res.body.error?.message).toMatch(/question bank is empty/i);
+
+    const { rows } = await testAssignmentRepository.findAll({ page: 1, limit: 10, filters: { test_id: test.id } });
+    expect(rows).toHaveLength(0);
+  });
+
+  it('shows an assigned, published test (with questions) only to assigned students', async () => {
+    const { institution, department, adminToken, makeStudent } = await seedClass('VIS', 2031);
+    const assignedToken = await makeStudent('in', 2031);
+    const otherBatchToken = await makeStudent('out', 2032);
+    const test = await testRepository.create({
+      institution_id: institution.id,
+      title: 'Visible Test',
+      source_category: 'quantitative',
+      question_count: 3,
+      status: 'active',
+    });
+
+    await request(app)
+      .post('/api/v1/test-assignments')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ test_id: test.id, department_id: department.id, batch_year: 2031 })
+      .expect(201);
+
+    const mine = await request(app).get('/api/v1/tests').set('Authorization', `Bearer ${assignedToken}`).expect(200);
+    const row = (mine.body.data.rows || mine.body.data).find((t) => t.id === test.id);
+    expect(row).toBeTruthy();
+    expect(row.assignment_id).toBeTruthy();
+
+    const qs = await request(app)
+      .get(`/api/v1/test-assignments/${row.assignment_id}/questions`)
+      .set('Authorization', `Bearer ${assignedToken}`)
+      .expect(200);
+    expect((qs.body.data.rows || qs.body.data).length).toBeGreaterThan(0);
+
+    const theirs = await request(app).get('/api/v1/tests').set('Authorization', `Bearer ${otherBatchToken}`).expect(200);
+    expect((theirs.body.data.rows || theirs.body.data).some((t) => t.id === test.id)).toBe(false);
+  });
+
+  it('hides an assigned draft test from the student until it is published', async () => {
+    const { institution, department, adminToken, makeStudent } = await seedClass('DRF', 2033);
+    const studentToken = await makeStudent('s', 2033);
+    const test = await testRepository.create({
+      institution_id: institution.id,
+      title: 'Draft Test',
+      source_category: 'quantitative',
+      question_count: 3,
+      status: 'draft',
+    });
+    await request(app)
+      .post('/api/v1/test-assignments')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ test_id: test.id, department_id: department.id, batch_year: 2033 })
+      .expect(201);
+
+    const before = await request(app).get('/api/v1/tests').set('Authorization', `Bearer ${studentToken}`).expect(200);
+    expect((before.body.data.rows || before.body.data).some((t) => t.id === test.id)).toBe(false);
+
+    await testRepository.updateById(test.id, { status: 'active' });
+    const after = await request(app).get('/api/v1/tests').set('Authorization', `Bearer ${studentToken}`).expect(200);
+    expect((after.body.data.rows || after.body.data).some((t) => t.id === test.id)).toBe(true);
   });
 });

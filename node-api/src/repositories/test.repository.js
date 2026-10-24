@@ -12,6 +12,9 @@ class TestRepository extends BaseRepository {
   async findVisibleToStudent(institutionId, assignedTestIds, { page, limit }) {
     const filter = {
       institution_id: institutionId,
+      // A draft is the admin's unpublished work-in-progress — assigning one
+      // must not expose it to students before it's published.
+      status: { $ne: 'draft' },
       $or: [
         { category: { $ne: null } },
         { _id: { $in: assignedTestIds } },

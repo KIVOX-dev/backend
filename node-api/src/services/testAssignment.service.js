@@ -11,6 +11,20 @@ const ApiError = require('../utils/ApiError');
 const logger = require('../utils/logger');
 const testNotificationService = require('./testNotification.service');
 
+// A test sourced from a category with no questions would otherwise be
+// "assigned" successfully with an empty question_ids list — the admin sees
+// success and each student sees an assessment with nothing to answer. Refuse
+// up front instead, before any assignment row is written.
+async function assertQuestionBankReady(test) {
+  if (!test.source_category || !test.question_count) return;
+  const anyQuestion = await questionRepository.findOne({ category: test.source_category });
+  if (!anyQuestion) {
+    throw ApiError.badRequest(
+      `The "${test.source_category}" question bank is empty, so this test can't be assigned yet. Seed the question bank (scripts/seedQuestionBank.js) and try again.`
+    );
+  }
+}
+
 // Called once per student being assigned — $sample returns an independently
 // random subset AND order every time it's called, so simply calling this
 // once per student (rather than once per test) is what gives each of them a
@@ -79,6 +93,7 @@ class TestAssignmentService extends BaseService {
   async create(data, actor) {
     const test = await testRepository.findById(data.test_id);
     if (!test) throw ApiError.badRequest('test_id does not reference a valid test');
+    await assertQuestionBankReady(test);
 
     if (data.student_id) {
       const student = await studentRepository.findById(data.student_id);
@@ -181,6 +196,9 @@ class TestAssignmentService extends BaseService {
   async getQuestions(assignmentId, actor) {
     const { assignment } = await assertOwnAssignment(assignmentId, actor);
     const test = await testRepository.findById(assignment.test_id);
+    if (test?.status === 'draft') {
+      throw ApiError.forbidden('This assessment has not been published yet');
+    }
     const now = new Date();
     if (test?.start_at && now < new Date(test.start_at)) {
       throw ApiError.forbidden('This assessment has not started yet');
