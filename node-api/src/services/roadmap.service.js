@@ -42,6 +42,7 @@ class RoadmapService {
       id,
       title,
       description,
+      skills,
       skill_count: skills.length,
     }));
   }

@@ -55,6 +55,11 @@ class PlacementApplicationService extends BaseService {
     if (!student) throw ApiError.badRequest('No student profile is linked to this account');
 
     const placement = await placementRepository.findById(data.placement_id);
+    // An admin or recruiter closing a drive (status 'closed' or 'cancelled')
+    // stops new applications; students already applied are untouched.
+    if (placement && ['closed', 'cancelled'].includes(placement.status)) {
+      throw ApiError.badRequest('Applications for this drive are closed');
+    }
     return this.repository.create({
       placement_id: data.placement_id,
       student_id: student.id,

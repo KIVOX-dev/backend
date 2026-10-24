@@ -14,6 +14,31 @@
 // matching on each keyword means "Java" won't falsely match inside
 // "JavaScript" without needing ordering to protect against that specific case.
 const SKILLS = [
+  // More specific skills sit before the broad ones below: first match wins, so
+  // "Generative AI with Python" tags as Generative AI, not plain Python or AI.
+  { name: 'Generative AI', keywords: ['generative ai', 'genai', 'llm', 'large language model', 'prompt engineering', 'chatgpt'] },
+  { name: 'Natural Language Processing', keywords: ['natural language processing', 'nlp'] },
+  { name: 'Computer Vision', keywords: ['computer vision', 'opencv', 'image processing'] },
+  { name: 'Data Structures & Algorithms', keywords: ['data structures', 'algorithms', 'dsa'] },
+  { name: 'System Design', keywords: ['system design', 'low level design', 'high level design'] },
+  { name: 'Spring Boot', keywords: ['spring boot', 'springboot', 'spring framework'] },
+  { name: 'Django', keywords: ['django'] },
+  { name: 'REST APIs', keywords: ['rest api', 'rest apis', 'restful', 'graphql', 'api development'] },
+  { name: 'Data Engineering', keywords: ['data engineering', 'etl', 'apache spark', 'pyspark', 'data pipeline', 'data warehouse'] },
+  { name: 'Tableau', keywords: ['tableau'] },
+  { name: 'Statistics', keywords: ['statistics', 'statistical', 'probability'] },
+  { name: 'Business Analysis', keywords: ['business analysis', 'business analyst', 'requirements gathering'] },
+  { name: 'Software Testing', keywords: ['software testing', 'manual testing', 'test automation', 'selenium', 'qa testing', 'quality assurance'] },
+  { name: 'Agile & Scrum', keywords: ['agile', 'scrum', 'kanban'] },
+  { name: 'Terraform', keywords: ['terraform', 'infrastructure as code'] },
+  { name: 'CI/CD', keywords: ['ci/cd', 'cicd', 'jenkins', 'github actions', 'continuous integration'] },
+  { name: 'Penetration Testing', keywords: ['penetration testing', 'pentesting', 'bug bounty'] },
+  { name: 'Embedded Systems', keywords: ['embedded systems', 'embedded c', 'arduino', 'microcontroller', 'raspberry pi', 'iot'] },
+  { name: 'Graphic Design', keywords: ['graphic design', 'photoshop', 'illustrator', 'canva', 'logo design'] },
+  { name: 'Video Editing', keywords: ['video editing', 'premiere pro', 'after effects', 'davinci resolve'] },
+  { name: 'Content Writing', keywords: ['content writing', 'copywriting', 'technical writing', 'blog writing'] },
+  { name: 'Social Media Marketing', keywords: ['social media marketing', 'social media', 'instagram marketing'] },
+  { name: 'Human Resources', keywords: ['human resources', 'talent acquisition', 'recruitment', 'hr management'] },
   { name: 'React', keywords: ['react', 'react.js', 'reactjs'] },
   { name: 'Node.js', keywords: ['node.js', 'nodejs', 'node js'] },
   { name: 'Next.js', keywords: ['next.js', 'nextjs'] },
