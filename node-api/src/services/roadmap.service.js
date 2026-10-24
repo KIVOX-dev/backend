@@ -15,7 +15,9 @@ const BADGES_PER_CERTIFICATE = 5;
 // (100 units/search.list call) to roughly once per skill per month, shared
 // across every role and every student, rather than once per request.
 const CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
-const PLAYLISTS_PER_SKILL = 6;
+// Larger than the 6 the roadmap shows at once: when a student adds a playlist
+// it leaves the list and the next one from this pool takes its place.
+const PLAYLISTS_PER_SKILL = 18;
 
 async function requireStudent(actor) {
   const student = await studentRepository.findByUserId(actor.id);
