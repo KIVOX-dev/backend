@@ -221,6 +221,17 @@ class UserService extends BaseService {
   // Route-level authorize(super_admin, institution_admin) used to block that
   // second path entirely, 403ing every self-service update including the
   // student upgrade flow — see H-4.
+  // Profile photo / banner for non-student accounts (students keep theirs on
+  // their students row — see studentProfile.service.js). `storageRef` is the
+  // private storage reference set by the upload middleware; it's signed on
+  // the way out of the response (utils/privateMedia.js).
+  async setOwnMedia(actor, field, storageRef) {
+    if (!['avatar_url', 'cover_image_url'].includes(field)) throw ApiError.badRequest('Unsupported image field');
+    if (!storageRef) throw ApiError.badRequest('No image uploaded');
+    const updated = await userRepository.updateById(actor.id, { [field]: storageRef });
+    return sanitize(updated);
+  }
+
   async update(id, data, actor) {
     const target = await userRepository.findById(id);
     if (!target) throw ApiError.notFound('User not found');

@@ -153,6 +153,22 @@ describe('Reports & Compliance', () => {
     expect(otherRes.body.data.rows).toHaveLength(0);
   });
 
+  it('audit log: carries the student and actor profile photos', async () => {
+    const { institution, department } = await setup();
+    const { student, record } = await seedStudent(institution.id, department.id, 2026, {});
+    await repos.studentRepository.updateById(student.id, { avatar_url: '/uploads/profile/audit-student.png' });
+
+    const { user: adminUser, token } = await seedAdmin(institution.id);
+    await repos.userRepository.updateById(adminUser.id, { avatar_url: '/uploads/profile/audit-admin.png' });
+    const auth = { Authorization: `Bearer ${token}` };
+    await request(app).put(`/api/v1/placement-records/${record.id}/verify`).set(auth).send({ verification_status: 'verified' }).expect(200);
+
+    const res = await request(app).get('/api/v1/reports/audit-log').set(auth).expect(200);
+    const row = res.body.data.rows.find((r) => r.action === 'placement_verified');
+    expect(row.student_avatar_url).toEqual(expect.stringContaining('audit-student.png'));
+    expect(row.actor_avatar_url).toEqual(expect.stringContaining('audit-admin.png'));
+  });
+
   it('is closed to students and faculty, and a super_admin must name an institution', async () => {
     const { institution, department } = await setup();
     const { user, password } = await seedUser(repos.userRepository, hashPassword, {

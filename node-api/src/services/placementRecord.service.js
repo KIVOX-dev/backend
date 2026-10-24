@@ -5,6 +5,8 @@ const { ROLES } = require('../config/constants');
 const { assertInstitutionOwnership } = require('../utils/authz');
 const { sign } = require('../utils/signedUrl');
 const placementProofStorage = require('../utils/placementProofStorage');
+const { normalizeCompanyName } = require('../utils/companyName');
+const { normalizeRoleName } = require('../utils/roleName');
 const ApiError = require('../utils/ApiError');
 const logger = require('../utils/logger');
 const { PLACEMENT_ACTIONS, recordPlacementEvent } = require('../utils/placementAudit');
@@ -76,8 +78,8 @@ class PlacementRecordService extends BaseService {
     const record = await this.repository.create({
       student_id: student.id,
       institution_id: student.institution_id,
-      company_name: data.company_name,
-      role: data.role,
+      company_name: normalizeCompanyName(data.company_name),
+      role: normalizeRoleName(data.role),
       salary_lpa: data.salary_lpa,
       work_type: data.work_type,
       mode: data.mode,

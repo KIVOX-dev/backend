@@ -6,6 +6,7 @@ const validate = require('../middlewares/validate');
 const scopeInstitution = require('../middlewares/scopeInstitution');
 const schema = require('../validations/user.validation');
 const { ROLES } = require('../config/constants');
+const { upload, verifyAndUploadToGcs } = require('../middlewares/upload');
 
 const router = express.Router();
 router.use(authenticate, scopeInstitution);
@@ -13,6 +14,11 @@ router.use(authenticate, scopeInstitution);
 // Must come before GET '/:id' — same route-ordering hazard flagged in the
 // audit for python-service's students.py (/pending vs /{student_id}).
 router.get('/pending', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN), controller.listPending);
+
+// Own profile photo / banner for staff accounts (students use /students/profile/avatar|cover).
+const STAFF = [ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN, ROLES.FACULTY, ROLES.HR];
+router.post('/me/avatar', authorize(...STAFF), upload.any(), verifyAndUploadToGcs, controller.uploadMyAvatar);
+router.post('/me/cover', authorize(...STAFF), upload.any(), verifyAndUploadToGcs, controller.uploadMyCover);
 
 router.get('/', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN), controller.list);
 router.get('/:id', authorize(ROLES.SUPER_ADMIN, ROLES.INSTITUTION_ADMIN), controller.getById);

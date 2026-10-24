@@ -500,6 +500,21 @@ class ReportService {
     const actors = await userRepository.findByIds(docs.map((d) => d.user_id));
     const actorById = new Map(actors.map((u) => [u.id, u]));
 
+    // Profile photos for the "By" and "Student" columns. A student's own
+    // uploaded photo (on their students row) wins over the one on their user
+    // account; both lookups are single batched queries, not one per row.
+    const studentIds = [...new Set(docs.map((d) => d.metadata?.student_id).filter(Boolean))];
+    const [studentRows, actorStudentRows] = await Promise.all([
+      studentIds.length ? studentRepository.findByIds(studentIds) : [],
+      studentRepository.findByUserIds(actors.filter((u) => u.role === ROLES.STUDENT).map((u) => u.id)),
+    ]);
+    const studentAvatarById = new Map(studentRows.filter((s) => s.avatar_url).map((s) => [s.id, s.avatar_url]));
+    const actorStudentAvatarByUserId = new Map(actorStudentRows.filter((s) => s.avatar_url).map((s) => [s.user_id, s.avatar_url]));
+    const studentUserIds = studentRows.map((s) => s.user_id).filter(Boolean);
+    const studentUsers = studentUserIds.length ? await userRepository.findByIds(studentUserIds) : [];
+    const userAvatarByUserId = new Map(studentUsers.filter((u) => u.avatar_url).map((u) => [u.id, u.avatar_url]));
+    const studentUserIdByStudentId = new Map(studentRows.map((s) => [s.id, s.user_id]));
+
     return {
       rows: docs.map((d) => {
         const a = actorById.get(d.user_id);
@@ -510,7 +525,10 @@ class ReportService {
           action: d.action,
           actor: a?.full_name || 'Unknown user',
           actor_role: a?.role || null,
+          actor_avatar_url: actorStudentAvatarByUserId.get(d.user_id) || a?.avatar_url || null,
           student: m.student_name || null,
+          student_avatar_url:
+            studentAvatarById.get(m.student_id) || userAvatarByUserId.get(studentUserIdByStudentId.get(m.student_id)) || null,
           subject: m.company_name || m.subject || null,
           detail: m.verification_status || null,
         };

@@ -9,7 +9,7 @@ module.exports = {
     // account's email or when the link was made.
     'google_email', 'google_connected_at',
     // Ported from python-service's users.py:
-    'status', 'is_email_verified', 'avatar_url', 'preferences', 'department',
+    'status', 'is_email_verified', 'avatar_url', 'cover_image_url', 'preferences', 'department',
     // Email verification + password reset (see authService.js). Only the
     // hashed token is ever stored — see utils/token.js for why.
     'email_verification_token_hash', 'email_verification_expires',
