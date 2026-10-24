@@ -68,7 +68,9 @@ class StudentService extends BaseService {
       // email (those live on the user) — fill them in so staff screens that
       // list students always have something to show.
       // `status` (approval state) also lives on the user, not the student row.
-      const needUsers = result.rows.filter((r) => (!r.full_name || !r.status) && r.user_id);
+      // A student with no uploaded photo of their own falls back to the one on
+      // their user account, so screens that show avatars have it when either exists.
+      const needUsers = result.rows.filter((r) => (!r.full_name || !r.status || !r.avatar_url) && r.user_id);
       // department name often lives only on the department record (via
       // department_id), not on the student/user rows.
       const needDeptIds = [...new Set(result.rows.filter((r) => !r.department && r.department_id).map((r) => r.department_id))];
@@ -82,7 +84,7 @@ class StudentService extends BaseService {
           const user = userById.get(r.user_id);
           const department = r.department || user?.department || deptNameById.get(r.department_id) || r.department;
           return user
-            ? { ...r, full_name: r.full_name || user.full_name, email: r.email || user.email, department, status: r.status ?? user.status }
+            ? { ...r, full_name: r.full_name || user.full_name, email: r.email || user.email, department, status: r.status ?? user.status, avatar_url: r.avatar_url || user.avatar_url || null }
             : { ...r, department };
         }),
         meta: result.meta,
