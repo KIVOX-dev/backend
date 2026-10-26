@@ -18,12 +18,16 @@ const requestLogger = require('./middlewares/requestLogger');
 const signPrivateMedia = require('./middlewares/signPrivateMedia');
 const auditStaffActions = require('./middlewares/auditStaffActions');
 const logger = require('./utils/logger');
+const frontendProxyIp = require('./middlewares/frontendProxyIp');
 
 const app = express();
 
 // Trust the first proxy hop (Cloud Run / load balancer) so req.ip and rate limiting
 // see the real client IP instead of the proxy's.
 app.set('trust proxy', 1);
+// Before everything that reads req.ip (request log, rate limits): believes the
+// visitor IP forwarded by our own web app, and only when it proves who it is.
+app.use(frontendProxyIp);
 
 app.use(requestId);
 app.use(requestLogger);

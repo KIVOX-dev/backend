@@ -57,6 +57,12 @@ module.exports = {
     appToken: process.env.GITHUB_APP_TOKEN || '',
   },
 
+  // Shared with the web app (its API_PROXY_SECRET) when it forwards API calls
+  // through its own address — lets it tell us the visitor's real IP, see
+  // middlewares/frontendProxyIp.js. Unset = that feature is off.
+  frontendProxy: {
+    secret: process.env.FRONTEND_PROXY_SECRET || null,
+  },
   // Profile photos, cover banners, and onboarding photo/signature uploads
   // (middlewares/upload.js, utils/gcsClient.js). Cloud Run's own filesystem
   // is wiped on every restart/redeploy/scale event, so anything meant to
