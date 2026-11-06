@@ -12,11 +12,15 @@ from app.schemas.interview import (
     AnswerToEvaluate,
     EvaluateAnswersRequest,
     EvaluateAnswersResponse,
+    FinalReportRequest,
+    FinalReportResponse,
     GenerateMcqRequest,
     GenerateMcqResponse,
     GenerateQuestionsRequest,
     InterviewQuestion,
     McqQuestion,
+    ReportMissedOpportunity,
+    ReportSuggestion,
 )
 from app.security import verify_service_token
 
@@ -341,3 +345,67 @@ async def generate_mcq(payload: GenerateMcqRequest):
     for i, q in enumerate(questions):
         q.id = i + 1
     return GenerateMcqResponse(source="ai", questions=questions)
+
+
+def _clean_list(raw, limit: int = 5) -> list[str]:
+    return [str(x).strip()[:200] for x in (raw if isinstance(raw, list) else []) if str(x).strip()][:limit]
+
+
+@router.post("/final-report", response_model=FinalReportResponse)
+async def final_report(payload: FinalReportRequest):
+    """Coaching text for the consolidated report after all three rounds. Scores come from the
+    caller's own scoring; this only words strengths, missed moments and concrete next steps."""
+    settings = get_settings()
+    if not settings.is_openai_configured:
+        return FinalReportResponse(source="unavailable")
+
+    system_prompt = (
+        f"You are a placement coach reviewing a college student's full mock interview for a {payload.role} role"
+        f"{' at ' + payload.company if payload.company else ''}. Be specific, honest and encouraging. "
+        "Base everything on the data given; never invent facts about the student."
+    )
+    user_prompt = (
+        "Data (scores are 0-10; answers are speech transcripts, ignore transcription errors):\n"
+        f"MCQ topic scores: {payload.mcq_topics}\n"
+        f"Group discussion: {payload.gd}\n"
+        f"HR interview: {payload.hr}\n\n"
+        "Return a raw JSON object with: "
+        '"strengths" (2-4 short strings), "improvements" (2-4 short strings), '
+        '"missed_opportunities" (1-4 items {"round": 2 or 3, "moment": what happened, '
+        '"sample_better_line": one better sentence the student could have said}), '
+        '"suggestions" (3-5 items {"text": the advice, "action": one concrete thing to do this week, "area": short label}). '
+        "No markdown."
+    )
+    async with timed_log("interview.final_report") as detail:
+        detail["role"] = payload.role
+        try:
+            result = await openai_complete(system_prompt, user_prompt, temperature=0.4, max_tokens=1400, json_response=True)
+            if not isinstance(result, dict):
+                raise OpenAIError("report was not a JSON object")
+            missed = []
+            for m in result.get("missed_opportunities", []) if isinstance(result.get("missed_opportunities"), list) else []:
+                try:
+                    missed.append(ReportMissedOpportunity(round=int(m["round"]), moment=str(m["moment"]).strip()[:300],
+                                                          sample_better_line=str(m["sample_better_line"]).strip()[:300]))
+                except (KeyError, TypeError, ValueError):
+                    continue
+            suggestions = []
+            for sg in result.get("suggestions", []) if isinstance(result.get("suggestions"), list) else []:
+                try:
+                    suggestions.append(ReportSuggestion(text=str(sg["text"]).strip()[:300], action=str(sg["action"]).strip()[:300],
+                                                        area=str(sg.get("area", "")).strip()[:80]))
+                except (KeyError, TypeError):
+                    continue
+            if not suggestions:
+                raise OpenAIError("no usable suggestions")
+        except OpenAIError as exc:
+            logger.error("Final report generation failed, caller keeps its own report: %s", exc)
+            return FinalReportResponse(source="unavailable")
+
+    return FinalReportResponse(
+        source="ai",
+        strengths=_clean_list(result.get("strengths")),
+        improvements=_clean_list(result.get("improvements")),
+        missed_opportunities=missed[:4],
+        suggestions=suggestions[:5],
+    )

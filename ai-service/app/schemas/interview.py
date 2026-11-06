@@ -66,3 +66,32 @@ class GenerateMcqResponse(BaseModel):
     # the caller then falls back to its own company question banks.
     source: Literal["ai", "unavailable"]
     questions: list[McqQuestion]
+
+
+class FinalReportRequest(BaseModel):
+    role: str = Field(min_length=1, max_length=255)
+    company: str = Field(default="", max_length=255)
+    mcq_topics: list[dict] = Field(default_factory=list, max_length=20)
+    gd: dict | None = None
+    hr: dict | None = None
+
+
+class ReportMissedOpportunity(BaseModel):
+    round: int = Field(ge=2, le=3)
+    moment: str
+    sample_better_line: str
+
+
+class ReportSuggestion(BaseModel):
+    text: str
+    action: str
+    area: str = ""
+
+
+class FinalReportResponse(BaseModel):
+    # "ai" when the LLM wrote it; "unavailable" otherwise (the caller keeps its rules-based report).
+    source: Literal["ai", "unavailable"]
+    strengths: list[str] = Field(default_factory=list)
+    improvements: list[str] = Field(default_factory=list)
+    missed_opportunities: list[ReportMissedOpportunity] = Field(default_factory=list)
+    suggestions: list[ReportSuggestion] = Field(default_factory=list)
