@@ -142,4 +142,17 @@ const roadmapLimiter = rateLimit({
   store: storeFor('roadmap-user', ROADMAP_WINDOW_MS),
 });
 
-module.exports = { apiLimiter, authLimiter, identifyLimiter, aiLimiter, aiInstitutionLimiter, healthLimiter, roadmapLimiter };
+// Mock-interview voice synthesis: one GD session is dozens of short bot lines, so this is far
+// looser than aiLimiter, but still per-user so one account can't run up the TTS bill.
+const TTS_WINDOW_MS = 15 * 60 * 1000;
+const ttsLimiter = rateLimit({
+  windowMs: TTS_WINDOW_MS,
+  max: parseInt(process.env.TTS_RATE_LIMIT_MAX, 10) || 400,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => `user:${req.user.id}`,
+  message: { success: false, message: 'Too many voice requests, please try again later.' },
+  store: storeFor('tts-user', TTS_WINDOW_MS),
+});
+
+module.exports = { apiLimiter, authLimiter, identifyLimiter, aiLimiter, aiInstitutionLimiter, healthLimiter, roadmapLimiter, ttsLimiter };

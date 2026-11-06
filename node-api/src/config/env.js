@@ -193,6 +193,19 @@ module.exports = {
       .filter(Boolean),
   },
 
+  // Google Cloud Text-to-Speech (mock-interview voices). Called server-side over REST with an
+  // API key, so the key never reaches the browser. Bot/interviewer voices are named here, never
+  // taken from the client. Unset key = /tts returns 503 and the UI falls back to browser voices.
+  tts: {
+    apiKey: process.env.GCP_TTS_API_KEY || '',
+    languageCode: process.env.TTS_LANGUAGE_CODE || 'en-IN',
+    botVoices: (process.env.TTS_BOT_VOICES || 'en-IN-Wavenet-A,en-IN-Wavenet-B,en-IN-Wavenet-C,en-IN-Wavenet-D')
+      .split(',').map((v) => v.trim()).filter(Boolean),
+    interviewerVoice: process.env.TTS_INTERVIEWER_VOICE || 'en-IN-Chirp3-HD-Aoede',
+    // Private bucket for cached audio; falls back to the main private bucket.
+    cacheBucket: process.env.TTS_CACHE_BUCKET || process.env.GCS_BUCKET_NAME || '',
+  },
+
   rateLimit: {
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 15 * 60 * 1000,
     max: parseInt(process.env.RATE_LIMIT_MAX, 10) || 300,
