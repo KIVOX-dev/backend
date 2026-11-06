@@ -153,6 +153,16 @@ const INDEX_PLAN = {
   interview_responses: [
     { key: { attempt_id: 1 }, options: {} },
   ],
+  // Mock interview v2 (3-round flow). One session per attempt, one result per round; the
+  // unique (session_id, round) index makes a round submission idempotent-safe.
+  mock_sessions: [
+    { key: { student_id: 1, started_at: -1 }, options: {} },
+    { key: { institution_id: 1, status: 1 }, options: {} },
+  ],
+  mock_round_results: [
+    { key: { session_id: 1, round: 1 }, options: { unique: true } },
+    { key: { student_id: 1 }, options: {} },
+  ],
   resume_versions: [
     { key: { student_id: 1, created_at: -1 }, options: {} },
   ],

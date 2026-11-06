@@ -55,6 +55,7 @@ router.use('/reports', require('./report.routes'));
 router.use('/profile', require('./profile.routes'));
 router.use('/ai', require('./ai.routes'));
 router.use('/interviews', require('./interview.routes'));
+router.use('/mock-sessions', require('./mockSession.routes'));
 router.use('/leaderboard', require('./leaderboard.routes'));
 router.use('/dashboard', require('./dashboard.routes'));
 router.use('/batches', require('./batch.routes'));
