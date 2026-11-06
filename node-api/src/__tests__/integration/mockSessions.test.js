@@ -40,6 +40,7 @@ describe('mock sessions', () => {
 
   beforeAll(async () => {
     const built = await buildTestApp();
+    jest.spyOn(require('../../utils/aiServiceClient'), 'callAiService').mockRejectedValue(new Error('ai-service down in tests'));
     ({ app, database } = built);
     repos = built;
     const instA = await seedInstitution(built.institutionRepository, { code: `MS-A-${Date.now()}` });
@@ -82,6 +83,14 @@ describe('mock sessions', () => {
     expect(r3.body.data.session.final_report).toBeTruthy();
     const full = await request(app).get(`/api/v1/mock-sessions/${id}`).set(auth(ctx.s1.token)).expect(200);
     expect(full.body.data.rounds).toHaveLength(3);
+    // The consolidated report is built from the stored rounds and only exists once completed.
+    const report = full.body.data.final_report;
+    expect(report.attempt_id).toBe(id);
+    expect(report.round_scores[1]).toBe(0);
+    expect(report.rounds).toHaveLength(3);
+    expect(report.suggestions.length).toBeGreaterThan(0);
+    expect(report.suggestions.every((x) => x.text && x.action)).toBe(true);
+    expect(report.gd_metrics).toBeTruthy();
   });
 
   it('enforces round order and rejects replays', async () => {
