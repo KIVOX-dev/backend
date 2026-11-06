@@ -1,10 +1,13 @@
 // Round 2 / Round 3 scoring. Heuristics always run (deterministic, free); an LLM refinement via
 // ai-service is layered on in a later step and must never block or fail a submission.
 const scoring = require('../utils/mockScoring');
+const { referencesOther } = require('../utils/gdEngine');
 
 async function scoreGd(payload) {
-  const metrics = scoring.computeGdMetrics(payload.turns);
-  const parameter_scores = scoring.heuristicGdScores(payload.turns, metrics);
+  // Don't trust the client for 'built on another participant's point': detect it from the text.
+  const turns = payload.turns.map((t) => (t.is_student ? { ...t, references_other: t.references_other || referencesOther(t.text) } : t));
+  const metrics = scoring.computeGdMetrics(turns);
+  const parameter_scores = scoring.heuristicGdScores(turns, metrics);
   return {
     overall_score: scoring.avgParams(parameter_scores),
     parameter_scores,
@@ -14,7 +17,7 @@ async function scoreGd(payload) {
       difficulty: payload.difficulty,
       duration_seconds: payload.duration_seconds,
       metrics,
-      transcript: payload.turns,
+      transcript: turns,
     },
   };
 }

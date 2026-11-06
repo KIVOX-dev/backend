@@ -47,4 +47,26 @@ const submitRound = {
   }),
 };
 
-module.exports = { createSession, submitRound };
+const gdTopicsQuery = Joi.object({
+  category: Joi.string().valid('current_affairs', 'abstract', 'case_study', 'tech_business'),
+  difficulty: Joi.string().valid('easy', 'medium', 'hard'),
+  random: Joi.boolean().default(false),
+});
+
+const gdNextTurn = Joi.object({
+  topic: Joi.string().max(300).required(),
+  turns: Joi.array().items(gdTurn).max(150).required(),
+  elapsed_ms: Joi.number().min(0).max(3600000).required(),
+  student_silent_ms: Joi.number().min(0).max(3600000).required(),
+  student_name: Joi.string().max(60).default('you'),
+  closing_done: Joi.boolean().default(false),
+});
+
+const gdInterruptCheck = Joi.object({
+  topic: Joi.string().max(300).required(),
+  turns: Joi.array().items(gdTurn).max(150).required(),
+  student_speaking_ms: Joi.number().min(0).max(600000).required(),
+  ms_since_last_interrupt: Joi.number().min(0).default(Number.MAX_SAFE_INTEGER),
+});
+
+module.exports = { createSession, submitRound, gdTopicsQuery, gdNextTurn, gdInterruptCheck };
