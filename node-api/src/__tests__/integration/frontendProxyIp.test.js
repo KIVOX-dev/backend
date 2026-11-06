@@ -1,3 +1,10 @@
+// config/env.js throws at require time if these are missing. Locally they come from .env.node;
+// CI has no such file, so set harmless test values first (same ones testApp.js uses).
+process.env.JWT_SECRET ||= 'test-jwt-secret';
+process.env.JWT_REFRESH_SECRET ||= 'test-jwt-refresh-secret';
+process.env.MONGODB_URI ||= 'mongodb://localhost:27017/unused-in-this-test';
+process.env.TURNSTILE_SECRET_KEY ||= 'test-turnstile-secret';
+
 const request = require('supertest');
 const express = require('express');
 const env = require('../../config/env');
