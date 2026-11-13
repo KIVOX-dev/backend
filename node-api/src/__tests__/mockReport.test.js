@@ -1,3 +1,11 @@
+// mockReport.service pulls in the repositories -> config/env.js, which throws
+// at import time unless these are set (CI has no .env.node). Must run before
+// the require below.
+process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-jwt-secret';
+process.env.JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'test-jwt-refresh-secret';
+process.env.MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017';
+process.env.TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY || 'test-turnstile-secret';
+
 const { rulesReport, mergeAi } = require('../services/mockReport.service');
 
 const session = { id: 'sess-1', role: 'Software Engineer', company: 'TCS', overall_score: 5.9, completed_at: new Date('2026-11-07') };
