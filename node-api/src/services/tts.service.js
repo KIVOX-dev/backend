@@ -70,6 +70,24 @@ async function writeBucket(key, buffer) {
   }
 }
 
+// A real MP3 starts with an ID3 tag or an MPEG frame sync (0xFFEx). Anything else — an HTML/JSON
+// error body, a truncated or empty download — would fail to decode in the browser, and because
+// results are cached it would then fail for every student until someone deleted the object.
+function isMp3(buf) {
+  if (!Buffer.isBuffer(buf) || buf.length < 128) return false;
+  if (buf.subarray(0, 3).toString('latin1') === 'ID3') return true;
+  return buf[0] === 0xff && (buf[1] & 0xe0) === 0xe0;
+}
+
+async function dropBucket(key) {
+  try {
+    const file = bucketFile(key);
+    if (file) await file.delete({ ignoreNotFound: true });
+  } catch (err) {
+    logger.warn('TTS cache delete failed', { error: err.message });
+  }
+}
+
 function remember(key, buffer) {
   if (memCache.size >= MEM_MAX) memCache.delete(memCache.keys().next().value);
   memCache.set(key, buffer);
@@ -99,7 +117,7 @@ async function synthesizeRemote(cfg, text) {
     throw ApiError.serviceUnavailable('Voice is unavailable right now');
   }
   const json = await res.json();
-  return Buffer.from(json.audioContent, 'base64');
+  return Buffer.from(json.audioContent || '', 'base64');
 }
 
 // Returns an MP3 Buffer. Order: memory -> bucket -> Google (then written back to both).
@@ -112,14 +130,24 @@ async function synthesize(slot, rawText) {
   const cfg = resolve(slot);
   const key = cacheKey(cfg, text);
   const hit = memCache.get(key) || (await readBucket(key));
-  if (hit) {
+  if (hit && isMp3(hit)) {
     remember(key, hit);
     return hit;
   }
+  if (hit) {
+    // Poisoned cache entry: forget it everywhere and regenerate.
+    logger.warn('TTS cache entry is not valid MP3, regenerating', { bytes: hit.length });
+    memCache.delete(key);
+    await dropBucket(key);
+  }
   const audio = await synthesizeRemote(cfg, text);
+  if (!isMp3(audio)) {
+    logger.error('TTS returned audio that is not valid MP3', { voice: cfg.voice, bytes: audio.length });
+    throw ApiError.serviceUnavailable('Voice is unavailable right now');
+  }
   remember(key, audio);
   await writeBucket(key, audio);
   return audio;
 }
 
-module.exports = { synthesize, toSsml, SLOTS, MAX_CHARS };
+module.exports = { synthesize, toSsml, isMp3, SLOTS, MAX_CHARS };

@@ -32,4 +32,16 @@ const submit = asyncHandler(async (req, res) => {
   ApiResponse.created(res, attempt);
 });
 
-module.exports = { list, getById, create, update, getQuestions, submit };
+const getSession = asyncHandler(async (req, res) => {
+  ApiResponse.ok(res, await testAssignmentService.getSession(req.params.id, req.user));
+});
+
+const autosave = asyncHandler(async (req, res) => {
+  ApiResponse.ok(res, await testAssignmentService.autosave(req.params.id, req.body, req.user), 'Saved');
+});
+
+const resume = asyncHandler(async (req, res) => {
+  ApiResponse.ok(res, await testAssignmentService.resume(req.params.id, req.body, req.user));
+});
+
+module.exports = { list, getById, create, update, getQuestions, submit, getSession, autosave, resume };

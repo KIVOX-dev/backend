@@ -10,6 +10,7 @@ const { buildInstitutionFilter } = require('../utils/authz');
 const ApiError = require('../utils/ApiError');
 const logger = require('../utils/logger');
 const testNotificationService = require('./testNotification.service');
+const examClock = require('../utils/examClock');
 
 // A test sourced from a category with no questions would otherwise be
 // "assigned" successfully with an empty question_ids list — the admin sees
@@ -194,7 +195,7 @@ class TestAssignmentService extends BaseService {
   // in the order they were drawn, with the correct answer stripped — the
   // scoring check in submit() below is the only place that ever reads it.
   async getQuestions(assignmentId, actor) {
-    const { assignment } = await assertOwnAssignment(assignmentId, actor);
+    const { assignment, student } = await assertOwnAssignment(assignmentId, actor);
     const test = await testRepository.findById(assignment.test_id);
     if (test?.status === 'draft') {
       throw ApiError.forbidden('This assessment has not been published yet');
@@ -206,6 +207,10 @@ class TestAssignmentService extends BaseService {
     if (test?.end_at && now > new Date(test.end_at)) {
       throw ApiError.forbidden('This assessment has already ended');
     }
+    if (assignment.status === 'completed') {
+      throw ApiError.badRequest('This assessment has already been submitted');
+    }
+    await this.#startOrExpire(assignment, student, test, now);
 
     const questionIds = assignment.question_ids || [];
     const questions = await questionRepository.findByIds(questionIds);
@@ -225,10 +230,93 @@ class TestAssignmentService extends BaseService {
       throw ApiError.badRequest('This assessment has already been submitted');
     }
     const test = await testRepository.findById(assignment.test_id);
-    if (test?.end_at && new Date() > new Date(test.end_at)) {
+    const now = Date.now();
+    let current = assignment;
+    if (assignment.started_at) {
+      current = await this.#recordPause(assignment, now, data);
+      if (now > examClock.cutoffMs(current, test)) {
+        // Past the server cutoff (own deadline + grace). Whatever the browser
+        // sends now is not trusted, but the student isn't punished for being
+        // slow or offline either: their last autosave is what gets scored.
+        return this.#finalize(current, student, test, current.saved_answers || {}, { malpractice: data.malpractice, late: true });
+      }
+    } else if (test?.end_at && now > new Date(test.end_at).getTime() + examClock.GRACE_MS) {
       throw ApiError.badRequest('This assessment window has closed');
     }
+    return this.#finalize(current, student, test, data.answers, { malpractice: data.malpractice, late: false });
+  }
 
+  // Records a connection-loss pause when the client says it reconnected and
+  // the server's own last-contact time confirms a real gap (examClock.buildPause).
+  async #recordPause(assignment, now, { reconnected, offline_since: offlineSince } = {}) {
+    const pause = examClock.buildPause(assignment, now, { reported: reconnected, claimedOfflineSince: offlineSince });
+    if (!pause) return assignment;
+    const pauses = [...(assignment.pauses || []), pause];
+    await this.repository.updateById(assignment.id, { pauses });
+    return { ...assignment, pauses };
+  }
+
+  // First question fetch starts the server clock. A student who comes back
+  // after their time is already over has their saved answers submitted for
+  // them rather than being locked out with nothing recorded.
+  async #startOrExpire(assignment, student, test, now) {
+    if (!assignment.started_at) {
+      await this.repository.updateById(assignment.id, {
+        started_at: now, last_heartbeat_at: now, status: 'in_progress', pauses: [],
+      });
+      return;
+    }
+    if (now.getTime() > examClock.cutoffMs(assignment, test)) {
+      await this.#finalize(assignment, student, test, assignment.saved_answers || {}, { late: true });
+      throw ApiError.badRequest('Your time for this assessment ended — your saved answers were submitted.');
+    }
+  }
+
+  // Everything the client needs to restore a session after a refresh or crash.
+  async getSession(assignmentId, actor) {
+    const { assignment } = await assertOwnAssignment(assignmentId, actor);
+    const test = await testRepository.findById(assignment.test_id);
+    const now = Date.now();
+    return {
+      started: Boolean(assignment.started_at),
+      status: assignment.status,
+      started_at: assignment.started_at || null,
+      remaining_seconds: assignment.started_at ? examClock.remainingSeconds(assignment, test, now) : (test?.duration_minutes || 0) * 60,
+      saved_answers: assignment.saved_answers || {},
+      saved_at: assignment.saved_at || null,
+      server_time: new Date(now),
+      grace_seconds: examClock.GRACE_MS / 1000,
+    };
+  }
+
+  // Periodic autosave, which is also the heartbeat the server uses to verify
+  // a reported connection loss.
+  async autosave(assignmentId, data, actor) {
+    const { assignment } = await assertOwnAssignment(assignmentId, actor);
+    if (assignment.status === 'completed') throw ApiError.badRequest('This assessment has already been submitted');
+    if (!assignment.started_at) throw ApiError.badRequest('This assessment has not been started');
+    const test = await testRepository.findById(assignment.test_id);
+    const now = Date.now();
+    const current = await this.#recordPause(assignment, now, data);
+    if (now > examClock.cutoffMs(current, test)) throw ApiError.badRequest('Time is up for this assessment');
+    await this.repository.updateById(assignment.id, { saved_answers: data.answers, saved_at: now, last_heartbeat_at: now });
+    return { saved_at: new Date(now), remaining_seconds: examClock.remainingSeconds(current, test, now) };
+  }
+
+  // Explicit "I'm back" call (a reconnect with nothing to save yet).
+  async resume(assignmentId, data, actor) {
+    const { assignment } = await assertOwnAssignment(assignmentId, actor);
+    if (assignment.status === 'completed') throw ApiError.badRequest('This assessment has already been submitted');
+    if (!assignment.started_at) throw ApiError.badRequest('This assessment has not been started');
+    const test = await testRepository.findById(assignment.test_id);
+    const now = Date.now();
+    const current = await this.#recordPause(assignment, now, { reconnected: true, offline_since: data.offline_since });
+    await this.repository.updateById(assignment.id, { last_heartbeat_at: now });
+    return { remaining_seconds: examClock.remainingSeconds(current, test, now), pauses: (current.pauses || []).length };
+  }
+
+  async #finalize(assignment, student, test, answers, { malpractice, late }) {
+    const data = { answers, malpractice };
     const questionIds = assignment.question_ids || [];
     const questions = await questionRepository.findByIds(questionIds);
     const byId = new Map(questions.map((q) => [q.id, q]));
@@ -247,6 +335,7 @@ class TestAssignmentService extends BaseService {
     const maxScore = questionIds.length;
     const percentage = maxScore ? Math.round((score / maxScore) * 10000) / 100 : 0;
     const attemptNumber = (await assessmentAttemptRepository.countForStudentAndTest(student.id, assignment.test_id)) + 1;
+    const pauses = assignment.pauses || [];
 
     const attempt = await assessmentAttemptRepository.create({
       test_id: assignment.test_id,
@@ -259,6 +348,9 @@ class TestAssignmentService extends BaseService {
       passed: !data.malpractice && percentage >= (test?.pass_percentage != null ? test.pass_percentage : 40),
       status: data.malpractice ? 'malpractice' : 'completed',
       completed_at: new Date(),
+      late_submission: Boolean(late),
+      pause_seconds: Math.round(examClock.creditedPauseMs(pauses) / 1000),
+      pauses,
     });
 
     await this.repository.updateById(assignment.id, { status: 'completed' });

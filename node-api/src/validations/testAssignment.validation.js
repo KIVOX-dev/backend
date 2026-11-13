@@ -18,7 +18,24 @@ const update = Joi.object({
   status: Joi.string().valid('assigned', 'in_progress', 'completed', 'expired'),
 });
 
+const answersMap = Joi.object().pattern(Joi.string().uuid(), Joi.string().max(2000).allow(''));
+
+// Periodic autosave doubles as the heartbeat. `reconnected` is the client
+// saying "I was offline and just got back" — the server decides what that's
+// worth (utils/examClock.js#buildPause), it's never taken at face value.
+const autosave = Joi.object({
+  answers: answersMap.required(),
+  reconnected: Joi.boolean(),
+  offline_since: Joi.date().iso(),
+});
+
+const resume = Joi.object({
+  offline_since: Joi.date().iso(),
+});
+
 const submit = Joi.object({
+  reconnected: Joi.boolean(),
+  offline_since: Joi.date().iso(),
   // .allow('') — an unanswered question is a valid, expected submission
   // (skipped, not wrong-shaped input): testAssignment.service.js#submitForAssignment
   // already treats a falsy/empty answer as simply not scoring, never as an
@@ -33,4 +50,4 @@ const submit = Joi.object({
   malpractice: Joi.boolean(),
 });
 
-module.exports = { create, update, submit };
+module.exports = { create, update, submit, autosave, resume };

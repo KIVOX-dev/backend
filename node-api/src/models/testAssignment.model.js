@@ -8,6 +8,10 @@ module.exports = {
     // even for the same test, which is what "different pattern" per student
     // actually means. Empty on any test with no `source_category`.
     'question_ids',
+    // Server-side exam session (see utils/examClock.js): when the student
+    // actually began, their autosaved answers, the last time we heard from
+    // their client, and every recorded connection-loss pause (for admin review).
+    'started_at', 'saved_answers', 'saved_at', 'last_heartbeat_at', 'pauses',
   ],
   defaults: { status: 'assigned' },
 };

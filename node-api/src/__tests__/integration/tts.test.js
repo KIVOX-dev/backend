@@ -11,7 +11,8 @@ describe('POST /tts', () => {
   let studentToken;
   let adminToken;
   let fetchSpy;
-  const audio = Buffer.from('fake-mp3-bytes');
+  // Looks like a real MP3 (ID3 header + padding) so it passes the server's validity check.
+  const audio = Buffer.concat([Buffer.from('ID3'), Buffer.alloc(200, 1)]);
 
   beforeAll(async () => {
     process.env.GCP_TTS_API_KEY = 'test-tts-key';
@@ -80,5 +81,14 @@ describe('POST /tts', () => {
   it('returns 503 when Google fails, so the UI can fall back to browser voices', async () => {
     fetchSpy.mockResolvedValue({ ok: false, status: 500, json: async () => ({}) });
     await post(studentToken, { voice: 'bot1', text: 'Uncached failing line.' }).expect(503);
+  });
+
+  it('refuses to serve or cache a response that is not valid MP3', async () => {
+    fetchSpy.mockResolvedValue({ ok: true, json: async () => ({ audioContent: Buffer.from('<html>blocked</html>'.repeat(10)).toString('base64') }) });
+    await post(studentToken, { voice: 'bot1', text: 'A line that comes back garbled.' }).expect(503);
+    // Not cached: the next attempt calls Google again and succeeds with real audio.
+    fetchSpy.mockResolvedValue({ ok: true, json: async () => ({ audioContent: audio.toString('base64') }) });
+    await post(studentToken, { voice: 'bot1', text: 'A line that comes back garbled.' }).expect(200);
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
   });
 });

@@ -9,6 +9,8 @@ module.exports = {
     'test_id', 'student_id', 'institution_id', 'attempt_number',
     'score', 'max_score', 'percentage', 'time_taken_seconds', 'passed',
     'status', 'section_scores', 'weak_areas', 'completed_at',
+    // Exam-session bookkeeping — informational only, never affects `status`/`passed`.
+    'late_submission', 'pause_seconds', 'pauses',
   ],
   defaults: { status: 'completed' },
 };
