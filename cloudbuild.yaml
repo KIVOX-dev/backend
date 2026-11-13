@@ -155,10 +155,15 @@ steps:
       # GCP_TTS_API_KEY / TTS_*: mock-interview voices (node-api/src/services/tts.service.js).
       # --set-env-vars/--set-secrets REPLACE the whole list on every deploy, so anything added only
       # in the Cloud Run console is wiped by the next build. Add new settings here.
+      # RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET: paid plan checkout (node-api/src/services/payment.service.js).
+      # Create secrets node-api-razorpay-key-id and node-api-razorpay-key-secret in Secret Manager
+      # BEFORE the next deploy (a missing secret fails the deploy), and grant the runtime service
+      # account Secret Manager Secret Accessor on both. Use rzp_test_ values on staging, rzp_live_
+      # on production. Without them the API still boots but /payments/* answers 503.
       # TURNSTILE_SECRET_KEY: create this secret in Secret Manager BEFORE the next
       # deploy runs — env.js requires it at boot (same as the JWT secrets), so a
       # missing secret here means node-api fails to start in production, not just
       # a degraded feature. See node-api/docs/API.md's Auth section.
-      - --set-secrets=JWT_SECRET=node-api-jwt-secret:latest,JWT_REFRESH_SECRET=node-api-jwt-refresh-secret:latest,MONGODB_URI=node-api-mongodb-uri:latest,AI_SERVICE_SHARED_SECRET=ai-service-shared-secret:latest,BREVO_API_KEY=node-api-brevo-api-key:latest,TURNSTILE_SECRET_KEY=node-api-turnstile-secret-key:latest,YOUTUBE_API_KEY=node-api-youtube-api-key:latest,GITHUB_CLIENT_SECRET=node-api-github-client-secret:latest,GCP_TTS_API_KEY=GCP_TTS_API_KEY:latest
+      - --set-secrets=JWT_SECRET=node-api-jwt-secret:latest,JWT_REFRESH_SECRET=node-api-jwt-refresh-secret:latest,MONGODB_URI=node-api-mongodb-uri:latest,AI_SERVICE_SHARED_SECRET=ai-service-shared-secret:latest,BREVO_API_KEY=node-api-brevo-api-key:latest,TURNSTILE_SECRET_KEY=node-api-turnstile-secret-key:latest,YOUTUBE_API_KEY=node-api-youtube-api-key:latest,GITHUB_CLIENT_SECRET=node-api-github-client-secret:latest,GCP_TTS_API_KEY=GCP_TTS_API_KEY:latest,RAZORPAY_KEY_ID=node-api-razorpay-key-id:latest,RAZORPAY_KEY_SECRET=node-api-razorpay-key-secret:latest
       - --quiet
     waitFor: [push-node-api, deploy-ai-service]
