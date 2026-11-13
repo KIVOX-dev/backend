@@ -33,7 +33,17 @@ class TestService extends BaseService {
   // moment it becomes `active`, everyone already assigned to it is emailed
   // (once — see testNotification.service.js#notifyAssigned).
   async update(id, data, actor) {
-    const before = data.status ? await this.repository.findById(id) : null;
+    const needsBefore = data.status || 'start_at' in data || 'end_at' in data;
+    const before = needsBefore ? await this.repository.findById(id) : null;
+    if (before && ('start_at' in data || 'end_at' in data)) {
+      // Validate the resulting window, not just the fields sent — extending
+      // end_at alone must still land after the stored start_at.
+      const start = 'start_at' in data ? data.start_at : before.start_at;
+      const end = 'end_at' in data ? data.end_at : before.end_at;
+      if (start && end && new Date(end) <= new Date(start)) {
+        throw ApiError.badRequest('End date must be after the start date');
+      }
+    }
     const updated = await super.update(id, data, actor);
     if (before && before.status !== 'active' && updated.status === 'active') {
       try {
