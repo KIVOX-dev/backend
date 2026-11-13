@@ -37,19 +37,22 @@ describe('RBAC: self-service updates and institution-scoped approvals', () => {
     const res = await request(app)
       .put(`/api/v1/users/${user.id}`)
       .set('Authorization', `Bearer ${token}`)
-      .send({ preferences: { plan: 'pro' } })
+      .send({ preferences: { theme: 'dark', plan: 'pro' } })
       .expect(200);
-    expect(res.body.data.preferences.plan).toBe('pro');
+    // Ordinary preferences are self-editable. The paid plan is not: it is
+    // set only by a verified payment (see payments.test.js).
+    expect(res.body.data.preferences.theme).toBe('dark');
+    expect(res.body.data.preferences.plan).toBeUndefined();
 
     // Privilege escalation attempt via the same self-service path must be
     // silently dropped, not applied.
     const escalate = await request(app)
       .put(`/api/v1/users/${user.id}`)
       .set('Authorization', `Bearer ${token}`)
-      .send({ role: 'super_admin', preferences: { plan: 'basic' } })
+      .send({ role: 'super_admin', preferences: { theme: 'light' } })
       .expect(200);
     expect(escalate.body.data.role).toBe('student');
-    expect(escalate.body.data.preferences.plan).toBe('basic');
+    expect(escalate.body.data.preferences.theme).toBe('light');
   });
 
   it('rejects a student updating a different user', async () => {

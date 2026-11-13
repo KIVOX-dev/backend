@@ -155,4 +155,17 @@ const ttsLimiter = rateLimit({
   store: storeFor('tts-user', TTS_WINDOW_MS),
 });
 
-module.exports = { apiLimiter, authLimiter, identifyLimiter, aiLimiter, aiInstitutionLimiter, healthLimiter, roadmapLimiter, ttsLimiter };
+// Order creation calls Razorpay each time, and verify is a signature-guessing target, so both
+// are capped per user, far below the general limiter.
+const PAYMENT_WINDOW_MS = 15 * 60 * 1000;
+const paymentLimiter = rateLimit({
+  windowMs: PAYMENT_WINDOW_MS,
+  max: parseInt(process.env.PAYMENT_RATE_LIMIT_MAX, 10) || 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => `user:${req.user.id}`,
+  message: { success: false, message: 'Too many payment requests, please try again later.' },
+  store: storeFor('payment-user', PAYMENT_WINDOW_MS),
+});
+
+module.exports = { apiLimiter, authLimiter, identifyLimiter, aiLimiter, aiInstitutionLimiter, healthLimiter, roadmapLimiter, ttsLimiter, paymentLimiter };

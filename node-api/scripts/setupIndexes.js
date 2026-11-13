@@ -197,6 +197,11 @@ const INDEX_PLAN = {
   questions: [
     { key: { category: 1 }, options: {} },
   ],
+  // One row per Razorpay order. Unique order id means an order can only ever be settled once.
+  payments: [
+    { key: { razorpay_order_id: 1 }, options: { unique: true } },
+    { key: { user_id: 1, created_at: -1 }, options: {} },
+  ],
 };
 
 async function main() {

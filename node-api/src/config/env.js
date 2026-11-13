@@ -57,6 +57,15 @@ module.exports = {
     appToken: process.env.GITHUB_APP_TOKEN || '',
   },
 
+  // Razorpay Standard Checkout for the paid plan (services/payment.service.js).
+  // Optional, same philosophy as github/aiService above: the payment endpoints
+  // answer 503 until both are set instead of blocking boot. The secret stays
+  // on the server; only keyId is ever sent to a browser.
+  razorpay: {
+    keyId: process.env.RAZORPAY_KEY_ID || '',
+    keySecret: process.env.RAZORPAY_KEY_SECRET || '',
+  },
+
   // Shared with the web app (its API_PROXY_SECRET) when it forwards API calls
   // through its own address — lets it tell us the visitor's real IP, see
   // middlewares/frontendProxyIp.js. Unset = that feature is off.

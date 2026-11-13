@@ -20,6 +20,18 @@ const { securityEvent, EVENTS } = require('../utils/securityLog');
 // in at all — each change is a security event (see update() below).
 const ACCESS_STATUS_FIELDS = ['is_active', 'status', 'is_email_verified'];
 
+// Preference keys only the server may change. Self-service edits keep the stored value.
+const SERVER_OWNED_PREFERENCE_KEYS = ['plan', 'plan_id', 'plan_expires_at'];
+
+function keepServerOwnedPreferences(incoming, existing) {
+  const next = { ...incoming };
+  for (const key of SERVER_OWNED_PREFERENCE_KEYS) {
+    if (existing && existing[key] !== undefined) next[key] = existing[key];
+    else delete next[key];
+  }
+  return next;
+}
+
 function sanitize(user) {
   if (!user) return user;
   const { password_hash, ...safe } = user;
@@ -258,6 +270,11 @@ class UserService extends BaseService {
       payload = Object.fromEntries(
         Object.entries(payload).filter(([key]) => SELF_EDITABLE_FIELDS.includes(key))
       );
+      // The paid plan is set only by a verified payment (payment.service.js).
+      // Without this, anyone could send preferences.plan = "pro" for free.
+      if (payload.preferences) {
+        payload.preferences = keepServerOwnedPreferences(payload.preferences, target.preferences);
+      }
     }
 
     const passwordSet = Boolean(payload.password);

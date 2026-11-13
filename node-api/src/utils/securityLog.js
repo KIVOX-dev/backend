@@ -34,6 +34,8 @@ const EVENTS = Object.freeze({
   RECORD_DELETED: { name: 'record.deleted', level: 'info' },
   DOCUMENT_ACCESS_GRANTED: { name: 'document.access_granted', level: 'info' },
   ADMIN_ACTION: { name: 'admin.action', level: 'info' },
+  PAYMENT_COMPLETED: { name: 'payment.completed', level: 'info' },
+  PAYMENT_VERIFY_FAILED: { name: 'payment.verify_failed', level: 'warn' },
 });
 
 const PRIVILEGED_ROLES = new Set(['super_admin', 'institution_admin']);
