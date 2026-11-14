@@ -11,7 +11,9 @@ class TestRepository extends BaseRepository {
   // test.service.js#list, which resolves assignedTestIds before calling this.
   async findVisibleToStudent(institutionId, assignedTestIds, { page, limit }) {
     const filter = {
-      institution_id: institutionId,
+      // Independent learners have no institution: they see the shared practice
+      // banks stored with institution_id null, not another college's rows.
+      institution_id: institutionId || null,
       // A draft is the admin's unpublished work-in-progress — assigning one
       // must not expose it to students before it's published.
       status: { $ne: 'draft' },

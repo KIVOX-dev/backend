@@ -12,6 +12,7 @@ const { ROLES } = require('../config/constants');
 const ApiError = require('../utils/ApiError');
 const logger = require('../utils/logger');
 const testNotificationService = require('./testNotification.service');
+const { seedPracticeBankForInstitution } = require('../utils/practiceBankSeed');
 
 class TestService extends BaseService {
   constructor() {
@@ -76,6 +77,16 @@ class TestService extends BaseService {
     // A student is only ever assigned a given test once (unique index on
     // test_id+student_id), so this map is safe to key by test_id alone.
     const assignmentByTestId = new Map(assignments.map((a) => [a.test_id, a]));
+
+    // Independent learners (no college) use one shared set of practice banks
+    // (institution_id null). Created on first need so production needs no manual seed.
+    if (!student.institution_id) {
+      try {
+        await seedPracticeBankForInstitution(null);
+      } catch (err) {
+        logger.error('Could not seed shared practice banks', { error: err.message });
+      }
+    }
 
     const page = Math.max(parseInt(queryParams.page, 10) || 1, 1);
     const limit = Math.min(Math.max(parseInt(queryParams.limit, 10) || 20, 1), 100);
