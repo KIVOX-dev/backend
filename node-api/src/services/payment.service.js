@@ -7,6 +7,8 @@ const paymentRepository = require('../repositories/payment.repository');
 const userRepository = require('../repositories/user.repository');
 const ApiError = require('../utils/ApiError');
 const logger = require('../utils/logger');
+const { sendEmail } = require('./email.service');
+const { subscriptionThanksTemplate } = require('./emailTemplates');
 const { securityEvent, EVENTS } = require('../utils/securityLog');
 
 let client = null;
@@ -173,6 +175,22 @@ class PaymentService {
     }
 
     securityEvent(EVENTS.PAYMENT_COMPLETED, { actorId: actor.id, orderId, planId: plan.id, amount: payment.amount });
+
+    // Thank-you email. Sent only on the first successful verification (the claim
+    // above guards retries) and never allowed to fail the payment response.
+    if (user.email) {
+      const dashboardUrl = `${env.frontendUrl.replace(/\/$/, '')}${user.role === ROLES.HR ? '/hr' : '/learner'}`;
+      const { subject, html, text } = subscriptionThanksTemplate({
+        fullName: user.full_name,
+        months: plan.months,
+        amountPaise: payment.amount,
+        expiresAt,
+        dashboardUrl,
+      });
+      sendEmail({ to: user.email, subject, html, text }).catch((err) =>
+        logger.error('Subscription email failed', { error: err.message })
+      );
+    }
     return { verified: true, already_processed: false, plan_id: plan.id, plan_expires_at: expiresAt };
   }
 }

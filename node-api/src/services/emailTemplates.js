@@ -187,4 +187,49 @@ Need help? Contact us at ${SUPPORT_EMAIL}`;
   return { subject: 'Your TalentSnaps account is ready', html, text };
 }
 
-module.exports = { passwordResetTemplate, verificationTemplate, studentWelcomeTemplate };
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function subscriptionThanksTemplate({ fullName, months, amountPaise, expiresAt, dashboardUrl }) {
+  const name = fullName ? escapeHtml(fullName) : '';
+  const greeting = name ? `Hi ${name},` : 'Hi,';
+  const duration = `${months} months`;
+  const amount = `₹${(amountPaise / 100).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+  const until = expiresAt.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' });
+  const html = baseLayout({
+    hero: 'welcome',
+    eyebrow: 'Pro plan',
+    title: 'Thanks for<br />subscribing!',
+    preheader: `Thanks for subscribing to the TalentSnaps ${duration} Pro plan`,
+    bodyHtml: `
+      <p style="margin:0 0 14px;">${greeting}</p>
+      <p style="margin:0 0 14px;">Thank you for subscribing to our <strong>${duration} Pro plan</strong>. Your payment of ${amount} was received and Pro is now active on your account.</p>
+      <p style="margin:16px 0 4px; padding:16px 18px; background-color:#ffffff; border-radius:14px; color:#1a1a2e;">
+        Plan: Pro, ${duration}<br />
+        Amount paid: ${amount}<br />
+        Active until: ${until}
+      </p>
+      ${button(dashboardUrl, 'Go to TalentSnaps')}
+      <p style="margin:16px 0 0; color:#8a8a98; font-size:13px;">This is a one-time payment &mdash; it won't renew automatically.</p>
+    `,
+  });
+
+  const text = `${greeting}
+
+Thank you for subscribing to our ${duration} Pro plan. Your payment of ${amount} was received and Pro is now active on your account.
+
+Plan: Pro, ${duration}
+Amount paid: ${amount}
+Active until: ${until}
+
+Open TalentSnaps: ${dashboardUrl}
+
+This is a one-time payment — it won't renew automatically.
+
+Need help? Contact us at ${SUPPORT_EMAIL}`;
+
+  return { subject: `Thanks for subscribing to TalentSnaps Pro (${duration})`, html, text };
+}
+
+module.exports = { passwordResetTemplate, verificationTemplate, studentWelcomeTemplate, subscriptionThanksTemplate };
